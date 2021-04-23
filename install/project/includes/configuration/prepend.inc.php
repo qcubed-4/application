@@ -41,7 +41,7 @@ if (!defined('__PREPEND_INCLUDED__')) {
     require_once(QCUBED_BASE_DIR . '/common/src/AutoloaderService.php');   // Find the autoloader
     \QCubed\AutoloaderService::instance()
         ->initialize(dirname(QCUBED_BASE_DIR) )   // register with the vendor directory
-        ->addPsr4('QCubed\\Project\\', QCUBED_PROJECT_DIR . '/qcubed')
+        ->addPsr4('QCubed\\Project\\', QCUBED_PROJECT_DIR . '/qcubed-4')
         ->addPsr4('QCubed\\Plugin\\', QCUBED_PROJECT_DIR . '/includes/plugins')
         ->addClassmapFile(QCUBED_APP_INCLUDES_DIR . '/app_includes.inc.php')
     ;
