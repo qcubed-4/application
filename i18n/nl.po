@@ -1,0 +1,121 @@
+# QCubed Distributed Language File
+# for Dutch
+
+
+
+# For QTextBoxBase controls
+msgid "%s is required"
+msgstr "%s is verplicht"
+
+msgid "Required"
+msgstr "Verplicht"
+
+msgid "%s must have at least %s characters"
+msgstr "%s moet minstens %s karakters lang zijn"
+
+msgid "Must have at least %s characters"
+msgstr "Moet minstens %s karakters lang zijn"
+
+
+# For QWriteBox controls
+msgid ""
+"Tags &lt;b&gt; &lt;u&gt; &lt;i&gt; &lt;br&gt; &lt;code&gt; and &lt;http://...&gt; are allowed.  "
+"Use ** at the beginning of any line for a bulleted list."
+msgstr ""
+"Tags &lt;b&gt; &lt;u&gt; &lt;i&gt; &lt;br&gt; &lt;code&gt; and &lt;http://...&gt; zijn toeglaten.  "
+"Gebruik ** aan het begin van een lijn om een lijst te maken."
+
+
+# For QPaginatedControl controls
+msgid "item"
+msgstr "item"
+
+msgid "items"
+msgstr "items"
+
+
+# For QListBox and QCalendar controls
+msgid "Reset"
+msgstr "Leegmaken"
+
+
+# For ListBoxes in Generated Forms
+msgid "- Select One -"
+msgstr "- Selecteer een waarde -"
+
+
+# For QIntegerTextBox and QFloatTextBox controls
+msgid "Invalid Integer"
+msgstr "Ongeldig getal"
+
+msgid "Invalid Float"
+msgstr "Ongeldig decimaal getal"
+
+msgid "Value must be less than %s"
+msgstr "Waarde moet kleiner zijn dan %s"
+
+msgid "Value must be greater than %s"
+msgstr "Waarde moet groter zijn dan %s"
+
+
+# For QDataGrid controls
+msgid "<b>Results:</b>&nbsp;Viewing&nbsp;%s&nbsp;%s-%s&nbsp;of&nbsp;%s."
+msgstr "<b>Resultaat:</b>&nbsp;&nbsp;%s&nbsp;%s&nbsp;tot&nbsp;%s&nbsp;worden&nbsp;getoond&nbsp;(totaal %s)."
+
+msgid "<b>Results:</b> No %s found."
+msgstr "<b>Resultaat:</b> Geen %s gevonden."
+
+msgid "<b>Results:</b> 1 %s found."
+msgid_plural "<b>Results:</b> %s %s found."
+msgstr[0] "<b>Resultaat:</b> 1 %s gevonden."
+msgstr[1] "<b>Resultaat:</b> %s %s gevonden."
+
+
+# For QPaginator controls
+msgid "Previous"
+msgstr "Vorige"
+
+msgid "Next"
+msgstr "Volgende"
+
+
+# For the List FormDraft Include template
+msgid "List All"
+msgstr "Lijst Alle"
+
+msgid "Create a New"
+msgstr "Maak een nieuwe"
+
+msgid "Go to \"Form Drafts\""
+msgstr "Ga naar \"Form Drafts\""
+
+
+# For the Edit FormBase class template
+msgid "Create"
+msgstr "Creëren"
+
+msgid "Edit"
+msgstr "Bewerk"
+
+msgid "Save"
+msgstr "Opslaan"
+
+msgid "Cancel"
+msgstr "Annuleren"
+
+msgid "Delete"
+msgstr "Verwijderen"
+
+msgid "Are you SURE you want to DELETE this %s?"
+msgstr "Bent u ZEKER dat u dat u dit %s wil VERWIJDEREN?"
+
+
+# For the form_drafts/index.php page
+msgid "List of Form Drafts"
+msgstr "Lijst van Form Drafts"
+
+msgid "View List"
+msgstr "Bekijk lijst"
+
+msgid "Create New"
+msgstr "Maak nieuw"

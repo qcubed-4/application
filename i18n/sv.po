@@ -1,0 +1,110 @@
+# QCubed Distributed Language File
+# for Swedish (default)
+# Contributed by "mickis"
+
+
+# For QTextBoxBase controls
+msgid "%s is required"
+msgstr "%s er obligatorisk"
+
+msgid "Required"
+msgstr "Obligatorisk"
+
+
+# For QWriteBox controls
+msgid ""
+"Tags &lt;b&gt; &lt;u&gt; &lt;i&gt; &lt;br&gt; &lt;code&gt; and &lt;http://...&gt; are allowed.  "
+"Use ** at the beginning of any line for a bulleted list."
+msgstr ""
+"Taggar &lt;b&gt; &lt;u&gt; &lt;i&gt; &lt;br&gt; &lt;code&gt; och &lt;http://...&gt; &auml;r till&aring;tna.  "
+"Anv&auml;nd ** i b&ouml;rjan av rader f&ouml;r punkt lista."
+
+
+# For QPaginatedControl controls
+msgid "item"
+msgstr "rad"
+
+msgid "items"
+msgstr "rader"
+
+
+# For QListBox and QCalendar controls
+msgid "Reset"
+msgstr "Nollst&auml;ll"
+
+
+# For QIntegerTextBox and QFloatTextBox controls
+msgid "Invalid Integer"
+msgstr "Ogiltigt heltall"
+
+msgid "Invalid Float"
+msgstr "Ogiltigt flyttall"
+
+msgid "Value must be less than %s"
+msgstr "V&auml;rdet m&aring;ste vara mindre &auml;n %s"
+
+msgid "Value must be greater than %s"
+msgstr "V&auml;rdet m&aring;ste vara st&ouml;rre &auml;n %s"
+
+
+# For QDataGrid controls
+msgid "<b>Results:</b>&nbsp;Viewing&nbsp;%s&nbsp;%s-%s&nbsp;of&nbsp;%s."
+msgstr "<b>Resultat:</b>&nbsp;Visar&nbsp;%s&nbsp;%s-%s&nbsp;av&nbsp;%s."
+
+msgid "<b>Results:</b> No %s found."
+msgstr "<b>Resultat:</b> Inget %s funnet."
+
+msgid "<b>Results:</b> 1 %s found."
+msgid_plural "<b>Results:</b> %s %s found."
+msgstr[0] "<b>Resultat:</b> 1 %s funnet."
+msgstr[1] "<b>Resultat:</b> %s %s funnet."
+
+
+# For QPaginator controls
+msgid "Previous"
+msgstr "F&ouml;reg&aring;nde"
+
+msgid "Next"
+msgstr "N&auml;sta"
+
+
+# For the List FormDraft Include template
+msgid "List All"
+msgstr "Visa alla"
+
+msgid "Create a New"
+msgstr "Skapa en ny"
+
+msgid "Go to \"Form Drafts\""
+msgstr "G&aring; til \"formul&auml;rutkast\""
+
+
+# For the Edit FormBase class template
+msgid "Create"
+msgstr "Skapa"
+
+msgid "Edit"
+msgstr "Redigera"
+
+msgid "Save"
+msgstr "Spara"
+
+msgid "Cancel"
+msgstr "Avbryt"
+
+msgid "Delete"
+msgstr "Radera"
+
+msgid "Are you SURE you want to DELETE this %s?"
+msgstr "&Auml;r du s&auml;ker p&aring; att du vill RADERA %s?"
+
+
+# For the form_drafts/index.php page
+msgid "List of Form Drafts"
+msgstr "Lista over formul&auml;rutkast"
+
+msgid "View List"
+msgstr "Visa lista"
+
+msgid "Create New"
+msgstr "Skapa ny"

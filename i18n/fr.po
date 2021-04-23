@@ -1,0 +1,110 @@
+# QCubed Distributed Language File
+# for French (default) [ &eacute; -> � | &egrave; -> � | &ecirc; -> � | &agrave; -> � | &oacute; -> � ]
+# Contributed by Christophe Damour and "gibran"
+
+
+# For QTextBoxBase controls
+msgid "%s is required"
+msgstr "%s doit &ecirc;tre renseign&eacute;"
+
+msgid "Required"
+msgstr "Requis"
+
+
+# For QWriteBox controls
+msgid ""
+"Tags &lt;b&gt; &lt;u&gt; &lt;i&gt; &lt;br&gt; &lt;code&gt; and &lt;http://...&gt; are allowed.  "
+"Use ** at the beginning of any line for a bulleted list."
+msgstr ""
+"Les balises &lt;b&gt; &lt;u&gt; &lt;i&gt; &lt;br&gt; &lt;code&gt; et &lt;http://...&gt; sont autoris&eacute;es.  "
+"Utiliser ** au d&eacute;but d\'une ligne pour une liste &agrave; puces."
+
+
+# For QPaginatedControl controls
+msgid "item"
+msgstr "&eacute;l&eacute;ment"
+
+msgid "items"
+msgstr "&eacute;l&eacute;ments"
+
+
+# For QListBox and QCalendar controls
+msgid "Reset"
+msgstr "R&eacute;initialiser"
+
+
+# For QIntegerTextBox and QFloatTextBox controls
+msgid "Invalid Integer"
+msgstr "Entier incorrect"
+
+msgid "Invalid Float"
+msgstr "Nombre d&eacute;cimal incorrect"
+
+msgid "Value must be less than %s"
+msgstr "La valeur doit &ecirc;tre inf&eacute;rieure &agrave; %s"
+
+msgid "Value must be greater than %s"
+msgstr "La valeur doit &ecirc;tre sup&eacute;rieure &agrave; %s"
+
+
+# For QDataGrid controls
+msgid "<b>Results:</b>&nbsp;Viewing&nbsp;%s&nbsp;%s-%s&nbsp;of&nbsp;%s."
+msgstr "<b>R&eacute;sultats:</b>&nbsp;Liste des&nbsp;%s&nbsp;%s-%s&nbsp;sur&nbsp;%s."
+
+msgid "<b>Results:</b> No %s found."
+msgstr "<b>R&eacute;sultats:</b> %s introuvable."
+
+msgid "<b>Results:</b> 1 %s found."
+msgid_plural "<b>Results:</b> %s %s found."
+msgstr[0] "<b>R&eacute;sultats:</b> 1 %s trouv&eacute;."
+msgstr[1] "<b>R&eacute;sultats:</b> %s %s trouv&eacute;s."
+
+
+# For QPaginator controls
+msgid "Previous"
+msgstr "Pr&eacute;c&eacute;dent"
+
+msgid "Next"
+msgstr "Suivant"
+
+
+# For the List FormDraft Include template
+msgid "List All"
+msgstr "Tout Afficher"
+
+msgid "Create a New"
+msgstr "Ajouter"
+
+msgid "Go to \"Form Drafts\""
+msgstr "Retour \"Brouillons de formulaires\""
+
+
+# For the Edit FormBase class template
+msgid "Create"
+msgstr "Ajouter"
+
+msgid "Edit"
+msgstr "Modifier"
+
+msgid "Save"
+msgstr "Enregistrer"
+
+msgid "Cancel"
+msgstr "Annuler"
+
+msgid "Delete"
+msgstr "Supprimer"
+
+msgid "Are you SURE you want to DELETE this %s?"
+msgstr "Etes vous CERTAIN de vouloir SUPPRIMER ce %s?"
+
+
+# For the form_drafts/index.php page
+msgid "List of Form Drafts"
+msgstr "Liste des Brouillons de Formulaires"
+
+msgid "View List"
+msgstr "Afficher la Liste"
+
+msgid "Create New"
+msgstr "Ajouter"

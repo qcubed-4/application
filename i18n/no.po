@@ -1,0 +1,110 @@
+# QCubed Distributed Language File
+# for Norwegian (default)
+# Contributed by Martin Kronstad
+
+
+# For QTextBoxBase controls
+msgid "%s is required"
+msgstr "%s er p�krevd"
+
+msgid "Required"
+msgstr "P�krevd"
+
+
+# For QWriteBox controls
+msgid ""
+"Tags &lt;b&gt; &lt;u&gt; &lt;i&gt; &lt;br&gt; &lt;code&gt; and &lt;http://...&gt; are allowed.  "
+"Use ** at the beginning of any line for a bulleted list."
+msgstr ""
+"Tagger &lt;b&gt; &lt;u&gt; &lt;i&gt; &lt;br&gt; &lt;code&gt; og &lt;http://...&gt; er tillatt.  "
+"Bruk ** i begynnelsen av linjer for uordnet liste."
+
+
+# For QPaginatedControl controls
+msgid "item"
+msgstr "rad"
+
+msgid "items"
+msgstr "rader"
+
+
+# For QListBox and QCalendar controls
+msgid "Reset"
+msgstr "Nullstill"
+
+
+# For QIntegerTextBox and QFloatTextBox controls
+msgid "Invalid Integer"
+msgstr "Ugyldig heltall"
+
+msgid "Invalid Float"
+msgstr "Ugyldig flyttall"
+
+msgid "Value must be less than %s"
+msgstr "Verdien m� v�re mindre enn %s"
+
+msgid "Value must be greater than %s"
+msgstr "Verdien m� v�re st�rre enn %s"
+
+
+# For QDataGrid controls
+msgid "<b>Results:</b>&nbsp;Viewing&nbsp;%s&nbsp;%s-%s&nbsp;of&nbsp;%s."
+msgstr "<b>Resultater:</b>&nbsp;Viser&nbsp;%s&nbsp;%s-%s&nbsp;av&nbsp;%s."
+
+msgid "<b>Results:</b> No %s found."
+msgstr "<b>Resultater:</b> No %s found."
+
+msgid "<b>Results:</b> 1 %s found."
+msgid_plural "<b>Results:</b> %s %s found."
+msgstr[0] "<b>Resultat:</b> 1 %s funnet."
+msgstr[1] "<b>Resultat:</b> %s %s funnet."
+
+
+# For QPaginator controls
+msgid "Previous"
+msgstr "Forrige"
+
+msgid "Next"
+msgstr "Neste"
+
+
+# For the List FormDraft Include template
+msgid "List All"
+msgstr "Vis alle"
+
+msgid "Create a New"
+msgstr "Opprett en ny"
+
+msgid "Go to \"Form Drafts\""
+msgstr "G� til \"Skjemautkast\""
+
+
+# For the Edit FormBase class template
+msgid "Create"
+msgstr "Opprett"
+
+msgid "Edit"
+msgstr "Rediger"
+
+msgid "Save"
+msgstr "Lagre"
+
+msgid "Cancel"
+msgstr "Avbryt"
+
+msgid "Delete"
+msgstr "Slett"
+
+msgid "Are you SURE you want to DELETE this %s?"
+msgstr "Er du sikker p� at du vil SLETTE denne %s?"
+
+
+# For the form_drafts/index.php page
+msgid "List of Form Drafts"
+msgstr "Liste over skjemautkast"
+
+msgid "View List"
+msgstr "Vis liste"
+
+msgid "Create New"
+msgstr "Opprett ny"

@@ -1,0 +1,109 @@
+# QCubed Distributed Language File
+# for Traditional Chinese (Taiwan), using BIG5 encoding
+# Contributed by Edward Chou
+
+
+# For QTextBoxBase controls
+msgid "%s is required"
+msgstr "%s �O���ݪ�"
+msgid "Required"
+msgstr "���ݪ�"
+
+
+# For QWriteBox controls
+msgid ""
+"Tags &lt;b&gt; &lt;u&gt; &lt;i&gt; &lt;br&gt; &lt;code&gt; and &lt;http://...&gt; are allowed.  "
+"Use ** at the beginning of any line for a bulleted list."
+msgstr ""
+"�i�ϥΥH�U�аO &lt;b&gt; &lt;u&gt; &lt;i&gt; &lt;br&gt; &lt;code&gt; �� &lt;http://...&gt;   "
+"�b��Ʀ歺��J ** �i��ܶ��زŸ�."
+
+
+# For QPaginatedControl controls
+msgid "item"
+msgstr "����"
+
+msgid "items"
+msgstr "����"
+
+
+# For QListBox and QCalendar controls
+msgid "Reset"
+msgstr "���]"
+
+
+# For QIntegerTextBox and QFloatTextBox controls
+msgid "Invalid Integer"
+msgstr "�����T�����"
+
+msgid "Invalid Float"
+msgstr "�����T���B�I��"
+
+msgid "Value must be less than %s"
+msgstr "�ȥ��ݤp�� %s"
+
+msgid "Value must be greater than %s"
+msgstr "�ȥ��ݤj�� %s"
+
+
+# For QDataGrid controls
+msgid "<b>Results:</b>&nbsp;Viewing&nbsp;%s&nbsp;%s-%s&nbsp;of&nbsp;%s."
+msgstr "<b>���G:</b>&nbsp;���&nbsp;%s&nbsp;%s-%s&nbsp;of&nbsp;%s."
+
+msgid "<b>Results:</b> No %s found."
+msgstr "<b>���G:</b> ���o�{ %s."
+
+msgid "<b>Results:</b> 1 %s found."
+msgid_plural "<b>Results:</b> %s %s found."
+msgstr[0] "<b>���G:</b> �o�{ 1 %s ."
+msgstr[1] "<b>���G:</b> �o�{ %s %s ."
+
+
+# For QPaginator controls
+msgid "Previous"
+msgstr "�e�@��"
+
+msgid "Next"
+msgstr "��@��"
+
+
+# For the List FormDraft Include template
+msgid "List All"
+msgstr "��ܥ���"
+
+msgid "Create a New"
+msgstr "�s��"
+
+msgid "Go to \"Form Drafts\""
+msgstr "��� \"��Z\""
+
+
+# For the Edit FormBase class template
+msgid "Create"
+msgstr "�s��"
+
+msgid "Edit"
+msgstr "�s��"
+
+msgid "Save"
+msgstr "�x�s"
+
+msgid "Cancel"
+msgstr "���"
+
+msgid "Delete"
+msgstr "�R��"
+
+msgid "Are you SURE you want to DELETE this %s?"
+msgstr "�A�T�w�R���o�� %s?"
+
+
+# For the form_drafts/index.php page
+msgid "List of Form Drafts"
+msgstr "��Z�C��"
+
+msgid "View List"
+msgstr "��ɦC��"
+
+msgid "Create New"
+msgstr "�s��"

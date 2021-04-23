@@ -1,0 +1,110 @@
+# QCubed Distributed Language File
+# for Italian (default)
+# Contributed by Antonello Oliveri
+
+
+# For QTextBoxBase controls
+msgid "%s is required"
+msgstr "%s � obbligatorio"
+
+msgid "Required"
+msgstr "Richesto"
+
+
+# For QWriteBox controls
+msgid ""
+"Tags &lt;b&gt; &lt;u&gt; &lt;i&gt; &lt;br&gt; &lt;code&gt; and &lt;http://...&gt; are allowed.  "
+"Use ** at the beginning of any line for a bulleted list."
+msgstr ""
+"I Tags &lt;b&gt; &lt;u&gt; &lt;i&gt; &lt;br&gt; &lt;code&gt; y &lt;http://...&gt; sono consentiti.  "
+"Usare ** all'inizio di ogni linea per un elenco puntato."
+
+
+# For QPaginatedControl controls
+msgid "item"
+msgstr "elemento"
+
+msgid "items"
+msgstr "elementi"
+
+
+# For QListBox and QCalendar controls
+msgid "Reset"
+msgstr "Reimposta"
+
+
+# For QIntegerTextBox and QFloatTextBox controls
+msgid "Invalid Integer"
+msgstr "Intero non valido"
+
+msgid "Invalid Float"
+msgstr "Decimale non valido"
+
+msgid "Value must be less than %s"
+msgstr "Il valore deve essere minore di %s"
+
+msgid "Value must be greater than %s"
+msgstr "Il Numero deve essere maggiore di %s"
+
+
+# For QDataGrid controls
+msgid "<b>Results:</b>&nbsp;Viewing&nbsp;%s&nbsp;%s-%s&nbsp;of&nbsp;%s."
+msgstr "<b>Risultati:</b>&nbsp;Visualizza&nbsp;%s&nbsp;%s-%s&nbsp;di&nbsp;%s."
+
+msgid "<b>Results:</b> No %s found."
+msgstr "<b>Resultati:</b> %s non trovato."
+
+msgid "<b>Results:</b> 1 %s found."
+msgid_plural "<b>Results:</b> %s %s found."
+msgstr[0] "<b>Resultati:</b> Trovato 1 %s."
+msgstr[1] "<b>Resultati:</b> Trovati %s %s."
+
+
+# For QPaginator controls
+msgid "Previous"
+msgstr "Precedente"
+
+msgid "Next"
+msgstr "Successivo"
+
+
+# For the List FormDraft Include template
+msgid "List All"
+msgstr "Elenca Tutti"
+
+msgid "Create a New"
+msgstr "Crea Nuovo"
+
+msgid "Go to \"Form Drafts\""
+msgstr "Vai a \"Form Drafts\""
+
+
+# For the Edit FormBase class template
+msgid "Create"
+msgstr "Crea"
+
+msgid "Edit"
+msgstr "Modifica"
+
+msgid "Save"
+msgstr "Salva"
+
+msgid "Cancel"
+msgstr "Annulla"
+
+msgid "Delete"
+msgstr "Elimina"
+
+msgid "Are you SURE you want to DELETE this %s?"
+msgstr "Sei SICURO di volere ELIMINARE questo %s?"
+
+
+# For the form_drafts/index.php page
+msgid "List of Form Drafts"
+msgstr "Lista delle \"Form Drafts\""
+
+msgid "View List"
+msgstr "Visualizza Elenco"
+
+msgid "Create New"
+msgstr "Crea Nuovo"

@@ -1,0 +1,110 @@
+# QCubed Distributed Language File
+# for German (default)
+# Contributed by Wolfgang Reinhardt
+
+
+# For QTextBoxBase controls
+msgid "%s is required"
+msgstr "%s wird ben&ouml;tigt"
+
+msgid "Required"
+msgstr "Ben&ouml;tigt"
+
+
+# For QWriteBox controls
+msgid ""
+"Tags &lt;b&gt; &lt;u&gt; &lt;i&gt; &lt;br&gt; &lt;code&gt; and &lt;http://...&gt; are allowed.  "
+"Use ** at the beginning of any line for a bulleted list."
+msgstr ""
+"Die  &lt;b&gt; &lt;u&gt; &lt;i&gt; &lt;br&gt; &lt;code&gt; and &lt;http://...&gt; sind zul&auml;ssig.  "
+"Benutze ** am Anfang einer beliebigen Zeile f&uuml;r eine Liste mit Aufz&auml;hlungszeichen."
+
+
+# For QPaginatedControl controls
+msgid "item"
+msgstr "Objekt"
+
+msgid "items"
+msgstr "Objekte"
+
+
+# For QListBox and QCalendar controls
+msgid "Reset"
+msgstr "Reset"
+
+
+# For QIntegerTextBox and QFloatTextBox controls
+msgid "Invalid Integer"
+msgstr "Keine g&uuml;ltige ganze Zahl"
+
+msgid "Invalid Float"
+msgstr "Keine g&uuml;ltige Gleitkomma-Zahl"
+
+msgid "Value must be less than %s"
+msgstr "Der Wert mu&szlig; kleiner als %s sein."
+
+msgid "Value must be greater than %s"
+msgstr "Der Wert mu&szlig; gr&ouml;&szlig;er als %s sein."
+
+
+# For QDataGrid controls
+msgid "<b>Results:</b>&nbsp;Viewing&nbsp;%s&nbsp;%s-%s&nbsp;of&nbsp;%s."
+msgstr "<b>Ergebnisse:</b>&nbsp;Angezeigt:&nbsp;%s&nbsp;%s-%s&nbsp;von&nbsp;%s."
+
+msgid "<b>Results:</b> No %s found."
+msgstr "<b>Ergebnisse:</b> Kein %s gefunden."
+
+msgid "<b>Results:</b> 1 %s found."
+msgid_plural "<b>Results:</b> %s %s found."
+msgstr[0] "<b>Ergebnisse:</b> 1 %s gefunden."
+msgstr[1] "<b>Ergebnisse:</b> %s %s gefunden."
+
+
+# For QPaginator controls
+msgid "Previous"
+msgstr "Vorherige"
+
+msgid "Next"
+msgstr "N&auml;chste"
+
+
+# For the List FormDraft Include template
+msgid "List All"
+msgstr "Alle anzeigen"
+
+msgid "Create a New"
+msgstr "Ein neues erstellen"
+
+msgid "Go to \"Form Drafts\""
+msgstr "Go to \"Form Drafts\""
+
+
+# For the Edit FormBase class template
+msgid "Create"
+msgstr "Erstellen"
+
+msgid "Edit"
+msgstr "&Auml;ndern"
+
+msgid "Save"
+msgstr "Speichern"
+
+msgid "Cancel"
+msgstr "Abbruch"
+
+msgid "Delete"
+msgstr "L&ouml;schen"
+
+msgid "Are you SURE you want to DELETE this %s?"
+msgstr "Soll %s WIRKLICH GEL&Ouml;SCHT werden??"
+
+
+# For the form_drafts/index.php page
+msgid "List of Form Drafts"
+msgstr "Liste der Formular Vorlagen"
+
+msgid "View List"
+msgstr "Liste anzeigen"
+
+msgid "Create New"
+msgstr "Neuen Eintrag erstellen"

@@ -1,0 +1,110 @@
+# QCubed Distributed Language File
+# for Portuguese (Brazil)
+# Contributed by "Netino"
+
+
+# For QTextBoxBase controls
+msgid "%s is required"
+msgstr "%s � obrigat�rio"
+
+msgid "Required"
+msgstr "Obrigat�rio"
+
+
+# For QWriteBox controls
+msgid ""
+"Tags &lt;b&gt; &lt;u&gt; &lt;i&gt; &lt;br&gt; &lt;code&gt; and &lt;http://...&gt; are allowed.  "
+"Use ** at the beginning of any line for a bulleted list."
+msgstr ""
+"Tags &lt;b&gt; &lt;u&gt; &lt;i&gt; &lt;br&gt; &lt;code&gt; e &lt;http://...&gt; est�o permitidas.  "
+"Use ** no in�cio de qualquer linha para uma lista pontuada."
+
+
+# For QPaginatedControl controls
+msgid "item"
+msgstr "item"
+
+msgid "items"
+msgstr "itens"
+
+
+# For QListBox and QCalendar controls
+msgid "Reset"
+msgstr "Resetar"
+
+
+# For QIntegerTextBox and QFloatTextBox controls
+msgid "Invalid Integer"
+msgstr "N�mero inteiro inv�lido"
+
+msgid "Invalid Float"
+msgstr "N�mero decimal inv�lido"
+
+msgid "Value must be less than %s"
+msgstr "Valor deve ser menor que %s"
+
+msgid "Value must be greater than %s"
+msgstr "Valor deve ser maior que %s"
+
+
+# For QDataGrid controls
+msgid "<b>Results:</b>&nbsp;Viewing&nbsp;%s&nbsp;%s-%s&nbsp;of&nbsp;%s."
+msgstr "<b>Resultados:</b>&nbsp;Mostrando&nbsp;%s&nbsp;%s-%s&nbsp;de&nbsp;%s."
+
+msgid "<b>Results:</b> No %s found."
+msgstr "<b>Resultados:</b> N�o localizado %s."
+
+msgid "<b>Results:</b> 1 %s found."
+msgid_plural "<b>Results:</b> %s %s found."
+msgstr[0] "<b>Resultados:</b> Localizado 1 %s."
+msgstr[1] "<b>Resultados:</b> Localizados %s %s."
+
+
+# For QPaginator controls
+msgid "Previous"
+msgstr "Anterior"
+
+msgid "Next"
+msgstr "Pr�ximo"
+
+
+# For the List FormDraft Include template
+msgid "List All"
+msgstr "Mostrar Todos"
+
+msgid "Create a New"
+msgstr "Criar um Novo"
+
+msgid "Go to \"Form Drafts\""
+msgstr "Ir para \"Form Drafts\""
+
+
+# For the Edit FormBase class template
+msgid "Create"
+msgstr "Criar"
+
+msgid "Edit"
+msgstr "Editar"
+
+msgid "Save"
+msgstr "Salvar"
+
+msgid "Cancel"
+msgstr "Cancelar"
+
+msgid "Delete"
+msgstr "Apagar"
+
+msgid "Are you SURE you want to DELETE this %s?"
+msgstr "Tem certeza que deseja apagar este %s?"
+
+
+# For the form_drafts/index.php page
+msgid "List of Form Drafts"
+msgstr "Lista de \"Form Drafts\""
+
+msgid "View List"
+msgstr "Mostrar Lista"
+
+msgid "Create New"
+msgstr "Criar Novo"

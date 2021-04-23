@@ -1,0 +1,110 @@
+# QCubed Distributed Language File
+# for Czech (default)
+# Contributed by "Poisson"
+
+
+# For QTextBoxBase controls
+msgid "%s is required"
+msgstr "%s je povinný"
+
+msgid "Required"
+msgstr "Povinný"
+
+
+# For QWriteBox controls
+msgid ""
+"Tags &lt;b&gt; &lt;u&gt; &lt;i&gt; &lt;br&gt; &lt;code&gt; and &lt;http://...&gt; are allowed.  "
+"Use ** at the beginning of any line for a bulleted list."
+msgstr ""
+"Tagy &lt;b&gt; &lt;u&gt; &lt;i&gt; &lt;br&gt; &lt;code&gt; a &lt;http://...&gt; jsou povoleny.  "
+"Použijte ** na začátku řádku pro vytvoření nečíslovaného seznamu."
+
+
+# For QPaginatedControl controls
+msgid "item"
+msgstr "položka"
+
+msgid "items"
+msgstr "záznamy"
+
+
+# For QListBox and QCalendar controls
+msgid "Reset"
+msgstr "Reset"
+
+
+# For QIntegerTextBox and QFloatTextBox controls
+msgid "Invalid Integer"
+msgstr "Neplatné celé číslo"
+
+msgid "Invalid Float"
+msgstr "Neplatné desetinné číslo"
+
+msgid "Value must be less than %s"
+msgstr "Hodnota musí být menší než %s"
+
+msgid "Value must be greater than %s"
+msgstr "Hodnota musí být větší než %s"
+
+
+# For QDataGrid controls
+msgid "<b>Results:</b>&nbsp;Viewing&nbsp;%s&nbsp;%s-%s&nbsp;of&nbsp;%s."
+msgstr "<b>Výsledek:</b>&nbsp;Zobrazeny&nbsp;%s&nbsp;%s-%s&nbsp;z&nbsp;%s."
+
+msgid "<b>Results:</b> No %s found."
+msgstr "<b>Výsledek:</b> Nenalezeno %s."
+
+msgid "<b>Results:</b> 1 %s found."
+msgid_plural "<b>Results:</b> %s %s found."
+msgstr[0] "<b>Výsledek:</b> Nalezen 1 %s ."
+msgstr[1] "<b>Results:</b> Nalezeno %s %s ."
+
+
+# For QPaginator controls
+msgid "Previous"
+msgstr "Předchozí"
+
+msgid "Next"
+msgstr "Následující"
+
+
+# For the List FormDraft Include template
+msgid "List All"
+msgstr "Zobrazit vše"
+
+msgid "Create a New"
+msgstr "Vytvořit nový"
+
+msgid "Go to \"Form Drafts\""
+msgstr "Přejít na \"Form Drafts\""
+
+
+# For the Edit FormBase class template
+msgid "Create"
+msgstr "Vytvořit"
+
+msgid "Edit"
+msgstr "Editovat"
+
+msgid "Save"
+msgstr "Uložit"
+
+msgid "Cancel"
+msgstr "Zrušit"
+
+msgid "Delete"
+msgstr "Odstranit"
+
+msgid "Are you SURE you want to DELETE this %s?"
+msgstr "Opravdu odstranit %s?"
+
+
+# For the form_drafts/index.php page
+msgid "List of Form Drafts"
+msgstr "Seznam návrhů formulářů"
+
+msgid "View List"
+msgstr "Zobrazit seznam"
+
+msgid "Create New"
+msgstr "Vytvořit nový"

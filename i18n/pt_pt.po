@@ -1,0 +1,125 @@
+# QCubed Distributed Language File
+# for Portuguese (Portugal)
+# Contributed by "cmpscabral"
+
+
+
+# For QTextBoxBase controls
+msgid "%s is required"
+msgstr "%s é obrigatório"
+
+msgid "Required"
+msgstr "Obrigatório"
+
+msgid "%s must have at least %s characters"
+msgstr "%s deverá ter no mínimo %s caracteres"
+
+msgid "Must have at least %s characters"
+msgstr "Deverá ter no mínimom %s caracteres"
+
+
+# For QWriteBox controls
+msgid ""
+"Tags &lt;b&gt; &lt;u&gt; &lt;i&gt; &lt;br&gt; &lt;code&gt; and &lt;http://...&gt; are allowed.  "
+"Use ** at the beginning of any line for a bulleted list."
+msgstr ""
+"Tags &lt;b&gt; &lt;u&gt; &lt;i&gt; &lt;br&gt; &lt;code&gt; and &lt;http://...&gt; are allowed.  "
+"Use ** no início de cada linha para escrever uma lista de marcadores."
+
+
+# For QPaginatedControl controls
+msgid "item"
+msgstr "item"
+
+msgid "items"
+msgstr "items"
+
+
+# For QListBox and QCalendar controls
+msgid "Reset"
+msgstr "Reiniciar"
+
+
+# For ListBoxes in Generated Forms
+msgid "- Select One -"
+msgstr "- Seleccionar uma opção -"
+
+
+# For QIntegerTextBox and QFloatTextBox controls
+msgid "Invalid Integer"
+msgstr "Número inteiro inválido"
+
+msgid "Invalid Float"
+msgstr "Número decimal inválido"
+
+msgid "Value must be less than %s"
+msgstr "Valor deve ser inferior a %s"
+
+msgid "Value must be greater than %s"
+msgstr "Valor deve ser superior a %s"
+
+
+# For QDataGrid controls
+msgid "<b>Results:</b>&nbsp;Viewing&nbsp;%s&nbsp;%s-%s&nbsp;of&nbsp;%s."
+msgstr "<b>Resultados:</b>&nbsp;A ver&nbsp;%s&nbsp;%s-%s&nbsp;de&nbsp;%s."
+
+msgid "<b>Results:</b> No %s found."
+msgstr "<b>Resultados:</b> %s não encontrados."
+
+msgid "<b>Results:</b> 1 %s found."
+msgid_plural "<b>Resultados:</b> %s %s encontrados."
+msgstr[0] "<b>Resultados:</b> 1 %s encontrado."
+msgstr[1] "<b>Resultados:</b> %s %s encontrado."
+
+msgid "Filter"
+msgstr "Filtrar"
+
+
+# For QPaginator controls
+msgid "Previous"
+msgstr "Anterior"
+
+msgid "Next"
+msgstr "Próximo"
+
+
+# For the List FormDraft Include template
+msgid "List All"
+msgstr "Ver Todos"
+
+msgid "Create a New"
+msgstr "Criar Novo"
+
+msgid "Go to \"Form Drafts\""
+msgstr "Ir para \"Form Drafts\""
+
+
+# For the Edit FormBase class template
+msgid "Create"
+msgstr "Criar"
+
+msgid "Edit"
+msgstr "Alterar"
+
+msgid "Save"
+msgstr "Guardar"
+
+msgid "Cancel"
+msgstr "Cancelar"
+
+msgid "Delete"
+msgstr "Apagar"
+
+msgid "Are you SURE you want to DELETE this %s?"
+msgstr "Tem a certeza que pretende apagar este %s?"
+
+
+# For the form_drafts/index.php page
+msgid "List of Form Drafts"
+msgstr "Listagem de Form Drafts"
+
+msgid "View List"
+msgstr "Ver Lista"
+
+msgid "Create New"
+msgstr "Criar Novo"
