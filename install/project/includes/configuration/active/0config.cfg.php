@@ -63,7 +63,7 @@ switch (SERVER_INSTANCE) {
         // to various development tools that are browser based. In a production environment, this would be the parent directory
         // of the various assets directories for files provided by framework.
         // @was __VIRTUAL_DIRECTORY__ . __SUBDIRECTORY __
-        define ('QCUBED_BASE_URL', QCUBED_URL_PREFIX . '/vendor/qcubed');
+        define ('QCUBED_BASE_URL', QCUBED_URL_PREFIX . '/vendor/qcubed-4');
 
         // This is the project assets directory where we put files that are designed to be altered by the developer.
         // js, css, etc. directories should be under this directory.
