@@ -11,11 +11,11 @@
       "source": "https://github.com/qcubed-4/common"
   },
   "require": {
-      "php": ">=7.0",
-    "qcubed-4/cache": "dev-master",
-    "qcubed-4/i18n": "dev-master",
-    "qcubed-4/orm":"dev-master",
-    "qcubed-4/common":"dev-master"
+    "php": ">=7.0",
+    "qcubed/cache": "dev-master",
+    "qcubed/i18n": "dev-master",
+    "qcubed/orm":"dev-master",
+    "qcubed/common":"dev-master"
   },
   "minimum-stability": "dev",
   "require-dev" : {
