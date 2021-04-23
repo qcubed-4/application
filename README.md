@@ -33,7 +33,7 @@ Some Controls include:
 - Tabs
 - Accordion
 
-The easiest way to learn QCubed-4 is to see the examples tutorial at <https://qcubed.eu/ />
+The easiest way to learn QCubed-4 is to see the examples tutorial at https://qcubed.eu/
 
 ### Plugins
 
