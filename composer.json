@@ -12,7 +12,6 @@
   },
   "require": {
     "php": ">=7.0",
-    "qcubed-4/composer": "dev-qcubed44",
     "qcubed-4/cache": "dev-master",
     "qcubed-4/i18n": "dev-master",
     "qcubed-4/orm":"dev-master",
