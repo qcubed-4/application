@@ -1,6 +1,6 @@
 # About `project` directory
 
-When you initialize your project for the first time with [app-starter](https://github.com/qcubed/app-starter), this folder is placed at the root of your project home. Almost all the work that you do with the application moving forward will be done inside this directory. It hosts:
+When you initialize your project for the first time with [app-starter](https://github.com/qcubed-4/app-starter), this folder is placed at the root of your project home. Almost all the work that you do with the application moving forward will be done inside this directory. It hosts:
 
   1. `assets`: Your JS, CSS, Images, Fonts etc. which make your application look and behave well on the front-end (client's browser).
   2. `forms`: This folder will have the generated forms which you can use for manual CRUD operations on your application's database(s).
