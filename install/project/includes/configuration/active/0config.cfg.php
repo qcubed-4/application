@@ -44,7 +44,7 @@ switch (SERVER_INSTANCE) {
         // Often during development, it is convenient to put this in your document root directory,
         // but we highly recommend for deployments that it NOT be in docroot. 3rd party libraries would be siblings
         // to this dir, and the default autoloader is a sibling too.
-        define ('QCUBED_BASE_DIR',  dirname(QCUBED_PROJECT_DIR) . '/vendor/qcubed'); // default to having project dir be a sibling of vendor
+        define ('QCUBED_BASE_DIR',  dirname(QCUBED_PROJECT_DIR) . '/vendor/qcubed-4'); // default to having project dir be a sibling of vendor
 
 
         /** The following are paths relative to DOCROOT that are inserted in front of file names so the browser can get to them. **/
@@ -63,7 +63,7 @@ switch (SERVER_INSTANCE) {
         // to various development tools that are browser based. In a production environment, this would be the parent directory
         // of the various assets directories for files provided by framework.
         // @was __VIRTUAL_DIRECTORY__ . __SUBDIRECTORY __
-        define ('QCUBED_BASE_URL', QCUBED_URL_PREFIX . '/vendor/qcubed');
+        define ('QCUBED_BASE_URL', QCUBED_URL_PREFIX . '/vendor/qcubed-4');
 
         // This is the project assets directory where we put files that are designed to be altered by the developer.
         // js, css, etc. directories should be under this directory.
