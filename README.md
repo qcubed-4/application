@@ -86,8 +86,5 @@ As such, the following files are no longer supported in the core, and are curren
 
 Also, the JQuery UI framework has been put in its own directory to prepare for moving it to a separate library in a later version.
 
-## Install
-See the dev-master branch of the qcubed-4/app-starter repository for information on how to install v4 of QCubed quickly using Composer.
-
 ## Credits
 QCubed was branched out of QCodo, a project by Michael Ho. QCubed-4v was branched out of QCubed project, which @spekary (Shannon Pekary) has been instrumental in redesigning.
