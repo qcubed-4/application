@@ -143,11 +143,11 @@ abstract class ControlBase extends Q\Project\HtmlAttributeManager
     const CAUSES_VALIDATION_SIBLINGS_AND_CHILDREN = 2;
     const CAUSES_VALIDATION_SIBLINGS_ONLY = 3;
 
-    const ACTION_PARAM = 'param';
-    const ACTION_ORIGINAL_PARAM = 'originalParam';
-    const ACTION_OBJ = 'action';
-    const ACTION_CONTROL_ID = 'controlId';
-    const ACTION_FORM_ID = 'formId'; // This not really used. Its here in the event we ever support more than one form on a page.
+    const ACTION_PARAM = 'Param';
+    const ACTION_ORIGINAL_PARAM = 'OriginalParam';
+    const ACTION_OBJ = 'Action';
+    const ACTION_CONTROL_ID = 'ControlId';
+    const ACTION_FORM_ID = 'FormId'; // This not really used. Its here in the event we ever support more than one form on a page.
 
     /**
      * Protected members

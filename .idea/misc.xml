@@ -15,15 +15,6 @@
     </phpunit_settings>
   </component>
   <component name="PhpXdebugProxy" ide_key="PHPSTORM" host="http://localhost/SITE-3.1" port="9000" />
-  <component name="ProjectCodeStyleSettingsManager">
-    <option name="PER_PROJECT_SETTINGS">
-      <value>
-        <XML>
-          <option name="XML_LEGACY_SETTINGS_IMPORTED" value="true" />
-        </XML>
-      </value>
-    </option>
-  </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
       <profile-state>

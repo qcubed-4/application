@@ -1,23 +1,65 @@
 /* Basic elements */
-body { color: #333; font-family: 'Titillium Web', sans-serif; font-size: 1em; line-height: 1.22; margin:0; padding: 0; }
-a, a:visited, a:link { color: #780000; }
-a:hover, a:active { color: #d90d0d; }
-button { cursor: pointer; }
-
-h1 { font-family: 'Brawler', serif; font-weight: 400; }
-h2, h3, h4, h5, h6 { font-weight: 700; }
-
-form { margin:0; padding: 0; position: relative; }
-
-.disabled {color: #dedede}
-
-section { padding: 10px; }
-footer { background: #333; color: #fff; padding: 10px; }
-
-pre code { background: #f6f6f6; border: 1px solid #dedede; border-radius: 3px; display: block; padding: 10px; margin:10px auto; white-space: pre-wrap; }
-
-#logo { float: left; height: 30px; }
-#tagline a { color: #fff; font-weight: 700; line-height: 30px; margin-left: 10px; text-decoration: none; }
+body {
+  color: #333;
+  font-family: sans-serif;
+  font-size: 15px;
+  line-height: 1.22;
+  margin:0;
+  padding: 0;
+}
+a, a:visited, a:link {
+  color: #780000;
+}
+a:hover, a:active {
+  color: #d90d0d;
+}
+h1 {
+  font-weight: 500;
+}
+h2, h3, h4, h5, h6 {
+  font-weight: 500;
+}
+form { margin:0;
+  padding: 0;
+  position: relative;
+}
+.disabled {
+  color: #dedede
+}
+section {
+  padding: 10px;
+}
+footer {
+  background: #333;
+  color: #fff;
+  padding: 10px;
+}
+pre code, code {
+  font-family: sans-serif;
+  font-size: 15px;
+  background: #f6f6f6;
+  border: 1px solid #dedede;
+  border-radius: 3px;
+  display: block;
+  padding: 10px;
+  margin:10px auto;
+  white-space: pre-wrap;
+}
+pre code ul li {
+  font-family: sans-serif;
+  font-size: 14px;
+}
+#logo {
+  float: left;
+  height: 30px;
+}
+#tagline a {
+  color: #fff;
+  font-weight: 700;
+  line-height: 30px;
+  margin-left: 10px;
+  text-decoration: none;
+}
 
 /**
  * This is the bare-bones css file needed to use QCubed in your application. If you need to modify an item, simply
