@@ -3,7 +3,7 @@
   "description": "The common files used by many of the components of the QCubed-4 framework",
   "keywords": ["php", "framework", "jquery"],
   "homepage": "https://qcubed.eu/",
-  "type": "library",
+  "type": "qcubed-library",
   "license": "MIT",
   "support": {
       "issues": "https://github.com/qcubed-4/application/issues",
