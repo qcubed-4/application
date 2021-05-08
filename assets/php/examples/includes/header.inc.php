@@ -4,8 +4,9 @@
 	<head>
 		<meta charset="<?php _p(\QCubed\Project\Application::encodingType()); ?>" />
 		<title><?php _p(Examples::PageName(), false); ?> - QCubed PHP 5 Development Framework - Examples</title>
-		<link rel="stylesheet" type="text/css" href="<?php _p(QCUBED_CSS_URL . '/qcubed.css', false); ?>"></link>
-		<link rel="stylesheet" type="text/css" href="<?php _p(QCUBED_EXAMPLES_URL . '/includes/examples.css', false); ?>"></link>
+		<link rel="stylesheet" type="text/css" href="<?php _p(QCUBED_CSS_URL . '/qcubed.css', false); ?>" />
+		<link rel="stylesheet" type="text/css" href="<?php _p(QCUBED_CSS_URL . '/jquery-ui.min.css', false); ?>" />
+		<link rel="stylesheet" type="text/css" href="<?php _p(QCUBED_EXAMPLES_URL . '/includes/examples.css', false); ?>" />
 	</head>
 	<body>
 		<header>
