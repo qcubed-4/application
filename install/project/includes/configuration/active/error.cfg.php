@@ -13,5 +13,5 @@ define('QCUBED_ERROR_PAGE_PHP', QCUBED_BASE_DIR . '/common/src/Error/error_page.
 //define('ERROR_LOG_FLAG', true);
 
 // To enable the display of "Friendly" error pages and messages, define them here (path MUST be relative from the DOCROOT)
-//			define('ERROR_FRIENDLY_PAGE_PATH', QCUBED_BASE_DIR . '/application/src/Error/friendly_error_page.php');
-//			define('ERROR_FRIENDLY_AJAX_MESSAGE', 'Oops!  An error has occurred.\r\n\r\nThe error was logged, and we will take a look into this right away.');
+//define('ERROR_FRIENDLY_PAGE_PATH', QCUBED_BASE_DIR . '/application/src/Error/friendly_error_page.php');
+//define('ERROR_FRIENDLY_AJAX_MESSAGE', 'Oops!  An error has occurred.\r\n\r\nThe error was logged, and we will take a look into this right away.');

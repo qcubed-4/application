@@ -18,16 +18,11 @@ if (!defined('__PREPEND_INCLUDED__')) {
     }
     else {
         // The minimal constants set to work
-        define ('__DOCROOT__', dirname(__FILE__) . '/../../..');
         define ('QCUBED_PROJECT_DIR', dirname(__FILE__) . '/../..');
         define ('QCUBED_PROJECT_INCLUDES_DIR', dirname(__FILE__) . '/..');
-        define ('__QCUBED__', QCUBED_PROJECT_INCLUDES_DIR); // needs to be reconfigured
-        define ('__PLUGINS__', QCUBED_PROJECT_DIR . '/generated/plugins');
-        define ('__QCUBED_CORE__', __DOCROOT__ . '/vendor/qcubed/qcubed/includes');
         define ('QCUBED_APP_INCLUDES_DIR', QCUBED_PROJECT_INCLUDES_DIR . '/app_includes');
         define ('QCUBED_PROJECT_MODEL_DIR', QCUBED_PROJECT_INCLUDES_DIR . '/model' );
         define ('QCUBED_PROJECT_MODELCONNECTOR_DIR', QCUBED_PROJECT_INCLUDES_DIR . '/meta_controls');
-        define ('__META_CONTROLS_GEN__', QCUBED_PROJECT_DIR . '/generated/meta_base');
         define ('QCUBED_PROJECT_MODEL_GEN_DIR', QCUBED_PROJECT_DIR . '/generated/model_base' );
     }
 

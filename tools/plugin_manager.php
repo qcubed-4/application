@@ -75,21 +75,7 @@ class PluginManagerForm extends FormBase
         $this->dtgPlugins->DataSource = $itemArray;
     }
 
-    /*
-    public function renderDescription($objItem) {
-        $exampleSnippet = "";
 
-        if (sizeof($objItem->objExamplesArray) > 0) {
-            $exampleSnippet .= "<br />";
-            foreach ($objItem->objExamplesArray as $example) {
-                $exampleSnippet .= "Example: <a href='" .
-                    __PLUGIN_ASSETS__ . '/' . $objItem->strName . '/' .
-                    $example->strFilename . "'>" . $example->strDescription . "</a><br>";
-            }
-        }
-
-        return $objItem->strDescription . $exampleSnippet;
-    }*/
 
     public function renderExampleLink($item)
     {
@@ -103,38 +89,6 @@ class PluginManagerForm extends FormBase
         }
         return null;
     }
-    /*
-    private function dlgUpload_Create() {
-        $this->dlgUpload = new QFileAssetDialog($this, 'dlgUpload_done');
-        $this->dlgUpload->Title = "Install a New Plugin";
-        $this->dlgUpload->Width = null; // auto width
-        $this->dlgUpload->lblMessage->Text = "<p>Please upload a plugin .zip file.</p>" .
-            "<p>You can get the latest plugins from the " .
-            "<a target='_blank' href='" . QPluginInstaller::ONLINE_PLUGIN_REPOSITORY .
-            "'>online repository</a>.</p>";
-        $this->dlgUpload->btnUpload->Text = "Upload";
-        $this->dlgUpload->btnCancel->Text = "Cancel";
-    }
-
-    public function dlgUpload_done($strFormId, $strControlId, $strParameter) {
-        $this->dlgUpload->hideDialogBox();
-
-        $originalFileName = $this->dlgUpload->flcFileAsset->FileName;
-        if (strtolower(substr($originalFileName, -3)) != "zip") {
-            QApplication::displayAlert("Invalid uploaded plugin file - only ZIP allowed: " . $originalFileName);
-            return;
-        }
-
-        $pluginFolder = QPluginInstaller::installPluginFromZip($this->dlgUpload->flcFileAsset->File);
-
-        if ($pluginFolder == null) {
-            QApplication::displayAlert(QPluginInstaller::getLastError());
-            return;
-        }
-
-        QApplication::redirect('plugin_edit.php?strType=new&strName=' . $pluginFolder);
-    }
-    */
 }
 
 PluginManagerForm::run('PluginManagerForm');

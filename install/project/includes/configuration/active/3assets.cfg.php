@@ -57,8 +57,6 @@ define ('QCUBED_CSS', QCUBED_CSS_URL . '/qcubed.css');
 define ('QCUBED_JQUERY_JS', QCUBED_JS_URL . '/jquery3.js');
 define ('QCUBED_JQUI_JS', QCUBED_JS_URL . '/jquery-ui.js');
 
-
-
 /** Specific files */
 
 // The core qcubed javascript file to be used.
@@ -73,32 +71,5 @@ define ('QCUBED_JQUI_CSS', QCUBED_CSS_URL . '/jquery-ui.css');
 define('QCUBED_FONT_AWESOME_CSS', 'https://opensource.keycdn.com/fontawesome/4.6.3/font-awesome.min.css');
 
 
-// The following defines are deprecated for various reasons
-
-// Plugins are going away. Everything is just a "qcubed-library" type.
-//define ('__PLUGIN_ASSETS__',  __SUBDIRECTORY__ . '/vendor/qcubed/plugin');
-
-// The following defines are for unsupported controls
-/*
-define ('__IMAGE_CACHE__', __APP_IMAGE_ASSETS__ . '/cache');
-
-define ('__APP_CACHE_ASSETS__', __PROJECT_ASSETS__ . '/cache');
-define ('__APP_CACHE__', __DOCROOT__ . __APP_CACHE_ASSETS__);
-
-define ('__APP_IMAGE_CACHE_ASSETS__', __APP_CACHE_ASSETS__ . '/images');
-define ('__APP_IMAGE_CACHE__', __DOCROOT__ . __APP_IMAGE_CACHE_ASSETS__);
-
-define ('__APP_UPLOAD_ASSETS__', __PROJECT_ASSETS__ . '/upload');
-define ('__APP_UPLOAD__', __DOCROOT__ . __APP_UPLOAD_ASSETS__);
-*/
-
-
 // Location of the QCubed-specific web-based development tools, like start_page.php
 define ('QCUBED_APP_TOOLS_URL', QCUBED_BASE_URL . '/application/tools');
-
-
-
-// Location of .po translation files
-// this is now handled by the qcubed i18n library
-// define ('__QI18N_PO_PATH__', QCUBED_PROJECT_INCLUDES_DIR . '/i18n');
-

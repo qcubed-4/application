@@ -21,21 +21,3 @@ define ('QCUBED_CACHE_DIR', QCUBED_TMP_DIR . '/cache');
 define ('QCUBED_FILE_CACHE_DIR', QCUBED_TMP_DIR . '/cache');
 define ('QCUBED_PLUGIN_TMP_DIR', QCUBED_TMP_DIR . '/plugin');
 define ('QCUBED_PURIFIER_CACHE_DIR', QCUBED_CACHE_DIR . '/purifier');
-
-/*
-define ('__PLUGINS__', __DOCROOT__ . __SUBDIRECTORY__ . '/vendor/qcubed/plugin');
-define ('QCUBED_CACHE_DIR', QCUBED_TMP_DIR . '/cache');
-define ('QCUBED_FILE_CACHE_DIR', QCUBED_TMP_DIR . '/cache');
-
-define ('__PLUGIN_TMP__', QCUBED_TMP_DIR . '/plugin.tmp/');
-
-define ('__PLUGINS__', __DOCROOT__ . __SUBDIRECTORY__ . '/vendor/qcubed/plugin');
-
-// The QCubed Core
-//define ('__QCUBED_CORE__', __DOCROOT__ . __SUBDIRECTORY__ . '/vendor/qcubed/qcubed/includes');
-//define ('__QCUBED_CORE__', __DOCROOT__ . __SUBDIRECTORY__ . '/vendor/qcubed/qcubed/includes/qcubed/_core');
-
-
-// If using HTML Purifier, the location of the writeable cache directory.
-define ('__PURIFIER_CACHE__', QCUBED_CACHE_DIR . '/purifier');
-*/

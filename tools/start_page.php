@@ -6,26 +6,20 @@ require_once('../qcubed.inc.php');
  */
 
 if (!defined('QCUBED_URL_PREFIX')) {
-    echo "Cannot find the configuration file. Make sure your qcubed.inc.php file is installed correctly."; exit;
+    echo "<span class='error' style='font-weight: 500;'>Cannot find the configuration file. Make sure your qcubed.inc.php file is installed correctly.</span>"; exit;
 }
 if (QCUBED_URL_PREFIX == '{ url_prefix }') {
     // config file has not been set up correctly
     // what should it be?
     $uri = $_SERVER['REQUEST_URI'];
     $offset = strrpos ($uri, '/vendor');
-    echo "Your config file is not set up correcly. In particular, look in the project/includes/configuration/active/config.cfg.php file and change the '{ url_prefix }' to '";
+    echo "<span class='error' style='font-weight: 500;'>Your config file is not set up correcly. In particular, look in the project/includes/configuration/active/config.cfg.php file and change the '{ url_prefix }' to '</span>";
     echo substr($uri, 0, $offset);
     echo "'";
     exit;
 }
 
-// Create an installation status message.
-/*$arrInstallationMessages = QInstallationValidator::Validate();
-$strConfigStatus = ($arrInstallationMessages) ?
-    '<span class="warning">' . count($arrInstallationMessages).' problem(s) found. <a href="' . QCUBED_APP_TOOLS_URL . '/config_checker.php">Click here</a> to view details.</span>' :
-    '<span class="success">all OK.</span>';
-*/
-$strPageTitle = 'QCubed Development Framework - Start Page';
+$strPageTitle = 'QCubed-4 Development Framework - Start Page';
 require(QCUBED_CONFIG_DIR . '/header.inc.php');
 ?>
     <h1 class="page-title">Welcome to QCubed!</h1>
