@@ -68,7 +68,12 @@ define ('QCUBED_JS',  QCUBED_JS_URL . '/qcubed.js');
 define ('QCUBED_JQUI_CSS', QCUBED_CSS_URL . '/jquery-ui.css');
 
 // A wonderful, free, library of scalable icons as fonts. We use it in DataGrid. Point to a local copy for offline development if needed.
-define('QCUBED_FONT_AWESOME_CSS', 'https://opensource.keycdn.com/fontawesome/4.6.3/font-awesome.min.css');
+//define('QCUBED_FONT_AWESOME_CSS', QCUBED_PROJECT_CSS_URL . '/font-awesome.css');
+//define('QCUBED_FONT_AWESOME_CSS', 'https://opensource.keycdn.com/fontawesome/4.7.0/font-awesome.min.css');
+define('QCUBED_FONT_AWESOME_CSS', QCUBED_PROJECT_CSS_URL . '/font-awesome.min.css');
+
+define ('APP_UPLOADS_DIR', QCUBED_PROJECT_DIR  . '/upload/');
+define ('APP_UPLOADS_URL', QCUBED_URL_PREFIX  . '/project/upload/');
 
 
 // Location of the QCubed-specific web-based development tools, like start_page.php
