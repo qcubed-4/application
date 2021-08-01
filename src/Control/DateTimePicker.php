@@ -57,7 +57,7 @@ class DateTimePicker extends Q\Project\Control\ControlBase
     protected $strDateTimePickerFormat = self::MONTH_DAY_YEAR;
 
     protected $intMinimumYear = 1970;
-    protected $intMaximumYear = 2020;
+    protected $intMaximumYear = 2030;
 
     protected $intSelectedMonth = null;
     protected $intSelectedDay = null;

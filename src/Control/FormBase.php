@@ -1847,7 +1847,7 @@ abstract class FormBase extends ObjectBase
                 throw new Caller('$this->renderBegin() was never called');
             case self::FORM_STATUS_RENDER_BEGUN:
                 break;
-            case sself::FORM_STATUS_RENDER_ENDED:
+            case self::FORM_STATUS_RENDER_ENDED:
                 throw new Caller('$this->renderEnd() has already been called');
                 break;
             default:

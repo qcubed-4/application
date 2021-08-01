@@ -19,7 +19,7 @@
 <?php	} ?>
 		</section>
 		<footer>
-			<div id="tagline"><a href="http://qcubed.github.com/" title="QCubed Homepage"><img id="logo" src="<?php _p(QCUBED_IMAGE_URL . '/qcubed_logo_footer.png', false); ?>" alt="QCubed Framework" /> <span class="version"><?php _p(QCUBED_VERSION); ?></span></a></div>
+			<div id="tagline"><a href="https://github.com/qcubed-4" title="QCubed-4 Homepage" target="_blank"><img id="logo" src="<?php _p(QCUBED_IMAGE_URL . '/qcubed-4_logo_footer.png', false); ?>" alt="QCubed-4 Framework" /> <span class="version"><?php _p(QCUBED_VERSION); ?></span></a></div>
 		</footer>
 		
 		<script type="text/javascript">
@@ -31,13 +31,13 @@
 					return false;
 				};
 			}			
-			window.gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-			document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-
-			try {
-				window.pageTracker = _gat._getTracker("UA-7231795-1");
-				pageTracker._trackPageview();
-			} catch(err) {}
+//			window.gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+//			document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+//
+//			try {
+//				window.pageTracker = _gat._getTracker("UA-7231795-1");
+//				pageTracker._trackPageview();
+//			} catch(err) {}
 		</script>
 	</body>
 </html>

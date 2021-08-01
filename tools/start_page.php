@@ -22,7 +22,8 @@ if (QCUBED_URL_PREFIX == '{ url_prefix }') {
 $strPageTitle = 'QCubed-4 Development Framework - Start Page';
 require(QCUBED_CONFIG_DIR . '/header.inc.php');
 ?>
-    <h1 class="page-title">Welcome to QCubed-4!</h1>
+    <h1 class="page-title">
+        <img id="qcubed-4_logo" src="<?= (QCUBED_IMAGE_URL . '/qcubed-4_logo.png'); ?>" alt="QCubed-4 Framework" />Welcome to QCubed-4!</h1>
     <div class="install-status">
         <p><strong>If you are seeing this, the framework has been successfully installed.</strong></p>
     </div>

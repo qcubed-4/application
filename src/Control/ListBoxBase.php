@@ -111,8 +111,17 @@ abstract class ListBoxBase extends ListControl
         }
 
         $objStyler->setHtmlAttribute('value', ($objItem->Empty) ? '' : $objItem->Id);
+
+        if ($objItem->Mark) {
+            $objStyler->setHtmlAttribute('class', $objItem->Mark);
+        }
+
         if ($objItem->Selected) {
             $objStyler->setHtmlAttribute('selected', 'selected');
+        }
+
+        if ($objItem->Disabled) {
+            $objStyler->setHtmlAttribute('disabled', 'disabled');
         }
 
         $strHtml = Html::renderTag('option', $objStyler->renderHtmlAttributes(),

@@ -8,7 +8,7 @@ body {
   padding: 0;
 }
 a, a:visited, a:link {
-  color: #780000;
+  color: #1d7596;
 }
 a:hover, a:active {
   color: #d90d0d;
@@ -51,7 +51,13 @@ pre code ul li {
 }
 #logo {
   float: left;
-  height: 30px;
+  height: 25px;
+}
+#qcubed-4_logo {
+  float: left;
+  height: 50px;
+  margin-top: -15px;
+  margin-right: 10px;
 }
 #tagline a {
   color: #fff;
@@ -139,8 +145,8 @@ form {
   padding: 0 5px;
 }
 .paginator .selected {
-  background: #780000;
-  border: 1px solid #d90d0d;
+  background: #1d7596;
+  border: 1px solid #3a6d93;
   border-radius: 3px;
   display: inline-block;
   color: #fff;

@@ -12,10 +12,10 @@
 .main-navigator { background-color: #333; border: 1px solid #333; border-bottom: none; border-radius: 3px 3px 0 0; color: #FFF; margin: 10px auto 0; padding: 10px 20px; text-align: center; }
 .main-navigator a { color: #FFF; font-weight: normal; text-decoration: none; }
 .main-navigator .selected { color: #FFF; font-weight: 700; text-transform: uppercase; text-decoration: underline; }
-.main-info { padding: 10px 20px; background-color: #F6F6F6; margin:0 auto 10px; border:1px solid #dedede; border-radius: 0 0 3px 3px; }
+.main-info { padding: 10px 20px; background-color: #f6f6f6; margin:0 auto 10px; border:1px solid #dedede; border-radius: 0 0 3px 3px; }
 
 /* The "View Source" button */
-#viewSource { border: 1px solid #d90d0d; border-radius: 3px; background: #780000; color: #FFF; line-height: 2; }
+#viewSource { border: 1px solid #3a6d93; border-radius: 3px; background: #1d7596; color: #FFF; line-height: 2; }
 
 #demoZone { border: 1px solid #f6f6f6; border-radius: 3px; min-height: 400px; overflow: auto; position: relative; padding: 10px; }
 #demoZone.full { float: none; width: auto; min-height: 0px; }

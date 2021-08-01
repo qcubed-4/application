@@ -200,7 +200,7 @@ class ListItemBase extends ObjectBase
                 }
             case "ItemStyle":
                 try {
-                    $this->objItemStyle = Type::cast($mixValue, "\QCubed\Control\ListItemStyle");
+                    $this->objItemStyle = Type::cast($mixValue, "\\QCubed\\Control\\ListItemStyle");
                     break;
                 } catch (InvalidCast $objExc) {
                     $objExc->incrementOffset();

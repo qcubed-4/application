@@ -24,8 +24,12 @@ use QCubed\Type;
  * for the options in each item. Note that not all the options are used by every control, and we don't do any drawing here.
  *
  * @property boolean $Selected  is a boolean of whether or not this item is selected or not (do only! use during initialization, otherwise this should be set by the {@link QListControl}!)
- * @property string $ItemGroup is the group (if any) in which the Item should be displayed
+ * @property boolean $Disabled is a boolean of whether or not this item is disabled or not.
+ * @property string $Mark is string (if it is needed for a special solution) in which the Item should be displayed.
+ *                  This is additional option, zero by default.
+ * @property string $ItemGroup is the group (if any) in which the Item should be displayed.
  * @property string $Label     is optional text to display instead of the Name for certain controls.
+ *
  * @was QListItem
  * @package QCubed\Control
  */
@@ -37,11 +41,14 @@ class ListItem extends ListItemBase implements \JsonSerializable
     ///////////////////////////
     /** @var bool Is the item selected? */
     protected $blnSelected = false;
+    /** @var bool Is the item disabled? */
+    protected $blnDisabled = false;
+    /** @var string text for the item. */
+    protected $strMark = null;
     /** @var null|string Group to which the item belongs, if control supports groups. */
     protected $strItemGroup = null;
     /** @var string Label text for the item. */
     protected $strLabel = null;
-
 
     /////////////////////////
     // Methods
@@ -52,7 +59,10 @@ class ListItem extends ListItemBase implements \JsonSerializable
      * @param string $strName is the displayed Name of the Item
      * @param string $strValue is any text that represents the value of the ListItem (e.g. maybe a DB Id)
      * @param boolean $blnSelected is a boolean of whether or not this item is selected or not (optional)
+     * @param boolean $blnDisabled is a boolean of whether or not this item is disabled or not (optional)
+     * @param string $strMark is the displayed Mark of the Item
      * @param string $strItemGroup is the group (if any) in which the Item should be displayed
+     *
      * @param array|string $mixOverrideParameters
      *                              allows you to override item styles.  It is either a string formatted as Property=Value
      *                              or an array of the format array(property => value)
@@ -63,11 +73,15 @@ class ListItem extends ListItemBase implements \JsonSerializable
         $strName,
         $strValue = null,
         $blnSelected = false,
+        $blnDisabled = false,
+        $strMark = null,
         $strItemGroup = null,
         $mixOverrideParameters = null
     ) {
         parent::__construct($strName, $strValue);
         $this->blnSelected = $blnSelected;
+        $this->blnDisabled = $blnDisabled;
+        $this->strMark = $strMark;
         $this->strItemGroup = $strItemGroup;
 
         // Override parameters get applied here
@@ -124,9 +138,6 @@ class ListItem extends ListItemBase implements \JsonSerializable
         return $a;
     }
 
-
-
-
     /////////////////////////
     // Public Properties: GET
     /////////////////////////
@@ -142,11 +153,14 @@ class ListItem extends ListItemBase implements \JsonSerializable
         switch ($strName) {
             case "Selected":
                 return $this->blnSelected;
+            case "Disabled":
+                return $this->blnDisabled;
+            case "Mark":
+                return $this->strMark;
             case "ItemGroup":
                 return $this->strItemGroup;
             case "Label":
                 return $this->strLabel;
-
             default:
                 try {
                     return parent::__get($strName);
@@ -174,6 +188,22 @@ class ListItem extends ListItemBase implements \JsonSerializable
             case "Selected":
                 try {
                     $this->blnSelected = Type::cast($mixValue, Type::BOOLEAN);
+                    break;
+                } catch (InvalidCast $objExc) {
+                    $objExc->incrementOffset();
+                    throw $objExc;
+                }
+            case "Disabled":
+                try {
+                    $this->blnDisabled = Type::cast($mixValue, Type::BOOLEAN);
+                    break;
+                } catch (InvalidCast $objExc) {
+                    $objExc->incrementOffset();
+                    throw $objExc;
+                }
+            case "Mark":
+                try {
+                    $this->strMark = Type::cast($mixValue, Type::STRING);
                     break;
                 } catch (InvalidCast $objExc) {
                     $objExc->incrementOffset();

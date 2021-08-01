@@ -135,7 +135,7 @@
 		protected function lstProjectsAsTeamMember_Create() {
 			$this->lstProjectsAsTeamMember = new \QCubed\Project\Control\ListBox($this);
 			$this->lstProjectsAsTeamMember->Name = t('Projects As Team Member');
-			$this->lstProjectsAsTeamMember->SelectionMode = \QCubed\ListBoxBase::SELECTION_MODE_MULTIPLE;
+			$this->lstProjectsAsTeamMember->SelectionMode = \QCubed\Control\ListBoxBase::SELECTION_MODE_MULTIPLE;
 			$objAssociatedArray = $this->objPerson->GetProjectAsTeamMemberArray();
 			$objProjectArray = Project::LoadAll();
 			if ($objProjectArray) foreach ($objProjectArray as $objProject) {

@@ -43,10 +43,10 @@ class ExampleForm extends FormBase
         $col->CellStyler->Width = 200;
         $col = $this->dtgPersons->createCallableColumn('Edit', [$this, 'EditColumn_Render']);
         $col->HtmlEntities = false;
-        $col->CellStyler->Width = 120;
+        $col->CellStyler->Width = 200;
 
         // Let's pre-default the sorting by id (column index #0) and use AJAX
-        $this->dtgPersons->SortColumnIndex = 0;
+        $this->dtgPersons->SortColumnIndex = 2;
         $this->dtgPersons->UseAjax = true;
 
         // Specify the DataBinder method for the DataGrid
