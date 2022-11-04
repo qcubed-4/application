@@ -3,7 +3,7 @@
 
 <div id="instructions">
 	<h1>Internationalization and Translation</h1>
-    <p><QCubed offers internationalization support via its I18n library.</p>
+    <p>QCubed offers internationalization support via its I18n library.</p>
 	<p>
         See the I18N library ReadMe for details on how to set it up, but it basically involves creating a
         translator, pointing the translator to the translation files, and setting the language settings.
@@ -33,12 +33,18 @@
 <div id="demoZone">
 	<h2><?php _t('Internationalization Example'); ?></h2>
 	<p>
-		<?php _t('Current Language'); ?>: 
+		<?php _t('Current Language'); ?>:
 		<strong><?php _p(\QCubed\I18n\TranslationService::instance()->translator()->getLocale() ? \QCubed\I18n\TranslationService::instance()->translator()->getLocale() : 'none'); ?></strong>
 	</p>
 
-	<?php $this->btnEn->render('Text="' . t('Switch to') . ' en"'); ?>
-	<?php $this->btnEs->render('Text="' . t('Switch to') . ' es"'); ?>
+    <?php // $this->btnEn->render(); ?>
+    <?php // $this->btnEs->render(); ?>
+
+    <?= _r($this->btnEn); ?>
+    <?= _r($this->btnEs); ?>
+
+	<?php // $this->btnEn->render('Text="' . t('Switch to') . ' en"'); ?>
+	<?php // $this->btnEs->render('Text="' . t('Switch to') . ' es"'); ?>
 </div>
 
 <?php $this->renderEnd(); ?>

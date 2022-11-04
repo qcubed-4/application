@@ -11,7 +11,7 @@ use QCubed\Project\Control\JsTimer;
 
 include ('../qcubed.inc.php');
 
-include ('./unit/QTestControl.php');
+include ('./unit/TestControl.php');
 
 // Run these tests within the context of a form
 class QTestForm extends \QCubed\Project\Control\FormBase
@@ -25,7 +25,7 @@ class QTestForm extends \QCubed\Project\Control\FormBase
     protected function formCreate() {
         $_SESSION['HtmlReporterOutput'] = '';   // erase previous test results
 
-        $this->ctlTest = new QTestControl($this);
+        $this->ctlTest = new TestControl($this);
         $this->pnlOutput = new Panel($this, 'outputPanel');
         $this->pnlOutput->Template = __DIR__ . "/unit/TestOutput.tpl.php";
         $this->btnRunTests = new Button($this);
@@ -67,9 +67,9 @@ class QTestForm extends \QCubed\Project\Control\FormBase
         $cliOptions = [ 'phpunit'];	// first entry is the command
         array_push($cliOptions, '-c', __DIR__ . '/phpunit-local.xml');	// the config file is here
 
-        //require dirname(dirname(dirname(dirname(__FILE__)))) . '/autoload.php'; // Find PHPUnit_TextUI_Command
+        //require dirname(dirname(dirname(dirname(__FILE__)))) . '/autoload.php'; // Find PHPUnit\TextUI\Command
 
-        $tester = new PHPUnit_TextUI_Command();
+        $tester = new PHPUnit\TextUI\Command();
 
         $tester->run($cliOptions, false);
 

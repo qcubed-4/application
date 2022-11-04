@@ -58,6 +58,10 @@ class FileControl extends Q\Project\Control\ControlBase
             $this->intSize = Type::cast($_FILES[$this->strControlId]['size'], Type::INTEGER);
             $this->strFile = $_FILES[$this->strControlId]['tmp_name'];
         }
+
+        print $this->strFileName;
+        print '<br>';
+        print $this->strFile;
     }
 
     /**

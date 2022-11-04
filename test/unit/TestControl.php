@@ -6,7 +6,9 @@
 /*
  * This is used by control tests. Must be here so it can be unserialized, since tests are dynamically loaded.
  */
-class QTestControl extends \QCubed\Project\Control\ControlBase
+
+
+class TestControl extends \QCubed\Project\Control\ControlBase
 {
 	public $savedValue1 = 1;
 	public $savedValue2 = 0;

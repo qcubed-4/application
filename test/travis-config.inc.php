@@ -12,8 +12,7 @@ require( __WORKING_DIR__ . '/project/includes/configuration/prepend.inc.php');
 
 \QCubed\AutoloaderService::instance()
     ->addPsr4('QCubed\\', __WORKING_DIR__ . '/src')    // Add in our own code
-    ->addPsr4("QCubed\\Codegen\\Generator\\", __WORKING_DIR__ . '/codegen/generator/')
-;
+    ->addPsr4("QCubed\\Codegen\\Generator\\", __WORKING_DIR__ . '/codegen/generator/');
 
 //codegen
 $db = getenv("DB");
@@ -23,6 +22,8 @@ if (!$db) {
 require_once (__DIR__ . '/travis/' . $db . '.inc.php');
 require_once(QCUBED_PROJECT_DIR . '/qcubed/Codegen/CodegenBase.php');
 require( QCUBED_ORM_TOOLS_DIR . '/codegen.cli.php');
+
+
 
 // Add in the built files that were missed from prepend.inc.php because they didn't exist before codegen
 

@@ -4,7 +4,7 @@
  * 
  * @package Tests
  */
-class QControlBaseTests extends \QCubed\Test\UnitTestCaseBase {
+class ControlBaseTests extends \QCubed\Test\UnitTestCaseBase {
 	/**
 	 *
 	 * @var QControl 

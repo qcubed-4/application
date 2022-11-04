@@ -1,15 +1,17 @@
 <?php
 
+use QCubed\Action\Ajax;
 use QCubed\Action\Server;
 use QCubed\Event\Click;
 use QCubed\I18n\TranslationService;
 use QCubed\Project\Control\Button;
+use QCubed\Project\Application;
 
 require_once('../qcubed.inc.php');
 
 // NOTE: IF YOU ARE RUNNING THIS EXAMPLE FROM YOUR OWN DEVELOPMENT ENVIRONMENT
 // you **MUST** remember to copy the custom es.po file from this directory and
-// place it into /project/includes/qcubed/i18n
+// place it into /project/i18n
 
 class ExamplesForm extends \QCubed\Project\Control\FormBase
 {
@@ -22,9 +24,13 @@ class ExamplesForm extends \QCubed\Project\Control\FormBase
         $translator = new \QCubed\I18n\SimpleCacheTranslator();
         $translator->bindDomain('app', QCUBED_PROJECT_DIR . "/i18n")  // set to application's i18n directory
             ->setDefaultDomain('app')
-            //->setTempDir(QCUBED_TMP_DIR)
+            ->setTempDir(QCUBED_TMP_DIR)
         ;
         TranslationService::instance()->setTranslator($translator);
+
+        /*print '<pre>';
+        print_r($translator);
+        print '</pre>';*/
     }
 
     // Initialize our Controls during the Form Creation process
@@ -35,10 +41,12 @@ class ExamplesForm extends \QCubed\Project\Control\FormBase
         // even after this form is created
         $this->btnEs = new Button($this);
         $this->btnEs->ActionParameter = 'es';
+        $this->btnEs->Text = t('Switch to es');
         $this->btnEs->addAction(new Click(), new Server('button_Click'));
 
         $this->btnEn = new Button($this);
         $this->btnEn->ActionParameter = 'en';
+        $this->btnEn->Text = t('Switch to en');
         $this->btnEn->addAction(new Click(), new Server('button_Click'));
     }
 
@@ -48,9 +56,17 @@ class ExamplesForm extends \QCubed\Project\Control\FormBase
         // NORMALLY -- these settings are setup in prepend.inc
         // But it is pulled out here to illustrate
 
+//        print '<pre>';
+//        print_r($params);
+//        print '</pre>';
+
         $language = $params->ActionParameter;
 
+        //Application::displayAlert($language);
+
         TranslationService::instance()->translator()->setLanguage($language, null);
+
+        //print_r($language);
     }
 
 }

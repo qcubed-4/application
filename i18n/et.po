@@ -5,7 +5,7 @@
 
 
 # For QTextBoxBase controls
-msgid "%s on nõutav"
+msgid "%s is required"
 msgstr "%s on nõutav"
 
 msgid "Required"

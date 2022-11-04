@@ -46,15 +46,16 @@ define ('QCUBED_CSS', QCUBED_CSS_URL . '/qcubed.css');
 //define ('QCUBED_JQUERY_JS', 'https://code.jquery.com/jquery-3.2.1.min.js');
 //define ('QCUBED_JQUI_JS', ' http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js');
 
-
 // The original, non-minified jQuery for debugging purposes.
 //define ('QCUBED_JQUERY_JS', 'https://code.jquery.com/jquery-1.12.4.js');
 //define ('QCUBED_JQUERY_JS', 'https://code.jquery.com/jquery-3.2.1.js');
 //define ('QCUBED_JQUI_JS', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js');
 
+define ('QCUBED_JQUERY_JS', 'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer');
+
 // The local versions. Useful for doing development when you don't have internet connectivity
 //define ('QCUBED_JQUERY_JS', QCUBED_JS_URL . '/jquery.js');
-define ('QCUBED_JQUERY_JS', QCUBED_JS_URL . '/jquery3.js');
+//define ('QCUBED_JQUERY_JS', QCUBED_JS_URL . '/jquery3.js');
 define ('QCUBED_JQUI_JS', QCUBED_JS_URL . '/jquery-ui.js');
 
 /** Specific files */
@@ -71,10 +72,6 @@ define ('QCUBED_JQUI_CSS', QCUBED_CSS_URL . '/jquery-ui.css');
 //define('QCUBED_FONT_AWESOME_CSS', QCUBED_PROJECT_CSS_URL . '/font-awesome.css');
 //define('QCUBED_FONT_AWESOME_CSS', 'https://opensource.keycdn.com/fontawesome/4.7.0/font-awesome.min.css');
 define('QCUBED_FONT_AWESOME_CSS', QCUBED_PROJECT_CSS_URL . '/font-awesome.min.css');
-
-define ('APP_UPLOADS_DIR', QCUBED_PROJECT_DIR  . '/upload/');
-define ('APP_UPLOADS_URL', QCUBED_URL_PREFIX  . '/project/upload/');
-
 
 // Location of the QCubed-specific web-based development tools, like start_page.php
 define ('QCUBED_APP_TOOLS_URL', QCUBED_BASE_URL . '/application/tools');
