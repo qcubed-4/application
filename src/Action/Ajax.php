@@ -14,6 +14,7 @@ use QCubed\Database\PostgreSql\Exception;
 use QCubed\Exception\Caller;
 use QCubed\Js\Closure;
 use QCubed\Control\ControlBase;
+use QCubed\Project\Application;
 
 /**
  * Class Ajax
@@ -174,6 +175,11 @@ class Ajax extends ActionBase
         $objActionParameter = $objControl->ActionParameter;
         if ($objActionParameter instanceof Closure) {
             return '(' . $objActionParameter->toJsObject() . ').call(this)';
+        }
+
+        // Check if $objActionParameter is null and replace with an empty string if it is
+        if ($objActionParameter === null) {
+            $objActionParameter = '';
         }
 
         return "'" . addslashes($objActionParameter) . "'";

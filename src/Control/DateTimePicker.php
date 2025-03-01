@@ -142,7 +142,7 @@ class DateTimePicker extends Q\Project\Control\ControlBase
                 $this->intSelectedDay = $intDay;
                 $this->intSelectedYear = $intYear;
 
-                if (strlen($intYear) && strlen($intMonth) && strlen($intDay)) {
+                if (!empty($intYear) && !empty($intMonth) && !empty($intDay)) {
                     $dttNewDateTime->setDate($intYear, $intMonth, $intDay);
                 } else {
                     $dttNewDateTime->Year = null;
@@ -203,7 +203,7 @@ class DateTimePicker extends Q\Project\Control\ControlBase
                     }
                 }
 
-                if (strlen($intHour) && strlen($intMinute) && strlen($intSecond)) {
+                if (!empty($intHour) && !empty($intMinute) && !empty($intSecond)) {
                     $dttNewDateTime->setTime($intHour, $intMinute, $intSecond);
                 } else {
                     $dttNewDateTime->Hour = null;
@@ -249,34 +249,53 @@ class DateTimePicker extends Q\Project\Control\ControlBase
             case self::SHOW_DATE_TIME:
             case self::SHOW_DATE_TIME_SECONDS:
                 // Month
-                $strMonthListbox = sprintf('<select name="%s_lstMonth" id="%s_lstMonth" class="month" %s%s>',
-                    $this->strControlId, $this->strControlId, $strAttributes, $strCommand);
+                $strMonthListbox = sprintf(
+                    '<select name="%s_lstMonth" id="%s_lstMonth" class="month" %s%s>',
+                    $this->strControlId,
+                    $this->strControlId,
+                    $strAttributes,
+                    $strCommand
+                );
+
                 if (!$this->blnRequired || $dttDateTime->isDateNull()) {
                     if ($this->blnAllowBlankDate) {
                         $strMonthListbox .= '<option value="">--</option>';
                     }
                 }
+
                 for ($intMonth = 1; $intMonth <= 12; $intMonth++) {
                     if ((!$dttDateTime->isDateNull() && ($dttDateTime->Month == $intMonth)) || ($this->intSelectedMonth == $intMonth)) {
                         $strSelected = ' selected="selected"';
                     } else {
                         $strSelected = '';
                     }
-                    $strMonthListbox .= sprintf('<option value="%s"%s>%s</option>',
+
+                    $dateObj = new QDateTime("2000-$intMonth-01");
+                    $strMonthListbox .= sprintf(
+                        '<option value="%s"%s>%s</option>',
                         $intMonth,
                         $strSelected,
-                        strftime("%b", mktime(0, 0, 0, $intMonth, 1, 2000)));
+                        $dateObj->format('M')  // Kasuta DateTime objekti, et saada lühike kuu nimi
+                    );
                 }
+
                 $strMonthListbox .= '</select>';
 
                 // Day
-                $strDayListbox = sprintf('<select name="%s_lstDay" id="%s_lstDay" class="day" %s%s>',
-                    $this->strControlId, $this->strControlId, $strAttributes, $strCommand);
+                $strDayListbox = sprintf(
+                    '<select name="%s_lstDay" id="%s_lstDay" class="day" %s%s>',
+                    $this->strControlId,
+                    $this->strControlId,
+                    $strAttributes,
+                    $strCommand
+                );
+
                 if (!$this->blnRequired || $dttDateTime->isDateNull()) {
                     if ($this->blnAllowBlankDate) {
                         $strDayListbox .= '<option value="">--</option>';
                     }
                 }
+
                 if ($dttDateTime->isDateNull()) {
                     if ($this->blnRequired) {
                         // New DateTime, but we are required -- therefore, let's assume January is preselected
@@ -285,7 +304,6 @@ class DateTimePicker extends Q\Project\Control\ControlBase
                         }
                     } else {
                         // New DateTime -- but we are NOT required
-
                         // See if a month has been selected yet.
                         if ($this->intSelectedMonth) {
                             $intSelectedYear = ($this->intSelectedYear) ? $this->intSelectedYear : 2000;
@@ -320,26 +338,35 @@ class DateTimePicker extends Q\Project\Control\ControlBase
                             $intDay);
                     }
                 }
+
                 $strDayListbox .= '</select>';
 
                 // Year
-                $strYearListbox = sprintf('<select name="%s_lstYear" id="%s_lstYear" class="year" %s%s>',
-                    $this->strControlId, $this->strControlId, $strAttributes, $strCommand);
+                $strYearListbox = sprintf(
+                    '<select name="%s_lstYear" id="%s_lstYear" class="year" %s%s>',
+                    $this->strControlId,
+                    $this->strControlId,
+                    $strAttributes,
+                    $strCommand
+                );
+
                 if (!$this->blnRequired || $dttDateTime->isDateNull()) {
                     if ($this->blnAllowBlankDate) {
                         $strYearListbox .= '<option value="">--</option>';
                     }
                 }
+
                 for ($intYear = $this->intMinimumYear; $intYear <= $this->intMaximumYear; $intYear++) {
                     if (/*!$dttDateTime->isDateNull() && */
-                    (($dttDateTime->Year == $intYear) || ($this->intSelectedYear == $intYear))
-                    ) {
+                    (($dttDateTime->Year == $intYear) || ($this->intSelectedYear == $intYear))) {
                         $strSelected = ' selected="selected"';
                     } else {
                         $strSelected = '';
                     }
+
                     $strYearListbox .= sprintf('<option value="%s"%s>%s</option>', $intYear, $strSelected, $intYear);
                 }
+
                 $strYearListbox .= '</select>';
 
                 // Put it all together
@@ -354,6 +381,7 @@ class DateTimePicker extends Q\Project\Control\ControlBase
                         $strToReturn .= $strYearListbox . $strMonthListbox . $strDayListbox;
                         break;
                 }
+                break;
         }
 
         switch ($this->strDateTimePickerType) {

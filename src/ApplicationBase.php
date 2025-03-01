@@ -614,13 +614,24 @@ abstract class ApplicationBase extends ObjectBase
     public static function sendAjaxResponse(array $strResponseArray)
     {
         header('Content-Type: text/json'); // not application/json, as IE reportedly blows up on that, but jQuery knows what to do.
+        array_walk_recursive($strResponseArray, function (&$item) {
+            if (is_string($item) && !mb_check_encoding($item, 'UTF-8')) {
+                $item = mb_convert_encoding($item, 'UTF-8', 'auto');
+            }
+        });
+
         $strJSON = Js\Helper::toJSON($strResponseArray);
-        if (Application::encodingType() && Application::encodingType() != 'UTF-8') {
-            $strJSON = iconv(Application::encodingType(), 'UTF-8', $strJSON); // json must be UTF-8 encoded
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \Exception("JSON encoding error: " . json_last_error_msg());
         }
+
+        if (Application::encodingType() && Application::encodingType() != 'UTF-8') {
+            $strJSON = iconv(Application::encodingType(), 'UTF-8', $strJSON); // JSON peab olema UTF-8 kodeeritud
+        }
+
         print($strJSON);
     }
-
 
     /**
      * Utility function to get the JS file URI, given a string input

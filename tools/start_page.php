@@ -5,19 +5,19 @@ require_once('../qcubed.inc.php');
  * Make sure user has at least set up the url pointer.
  */
 
-if (!defined('QCUBED_URL_PREFIX')) {
-    echo "<span class='error' style='font-weight: 500;'>Cannot find the configuration file. Make sure your qcubed.inc.php file is installed correctly.</span>"; exit;
-}
-if (QCUBED_URL_PREFIX == '{ url_prefix }') {
-    // config file has not been set up correctly
-    // what should it be?
-    $uri = $_SERVER['REQUEST_URI'];
-    $offset = strrpos ($uri, '/vendor');
-    echo "<span class='error' style='font-weight: 500;'>Your config file is not set up correcly. In particular, look in the project/includes/configuration/active/config.cfg.php file and change the '{ url_prefix }' to '</span>";
-    echo substr($uri, 0, $offset);
-    echo "'";
-    exit;
-}
+//if (!defined('QCUBED_URL_PREFIX')) {
+//    echo "<span class='error' style='font-weight: 500;'>Cannot find the configuration file. Make sure your qcubed.inc.php file is installed correctly.</span>"; exit;
+//}
+//if (QCUBED_URL_PREFIX == '{ url_prefix }') {
+//    // config file has not been set up correctly
+//    // what should it be?
+//    $uri = $_SERVER['REQUEST_URI'];
+//    $offset = strrpos ($uri, '/vendor');
+//    echo "<span class='error' style='font-weight: 500;'>Your config file is not set up correcly. In particular, look in the project/includes/configuration/active/config.cfg.php file and change the '{ url_prefix }' to '</span>";
+//    echo substr($uri, 0, $offset);
+//    echo "'";
+//    exit;
+//}
 
 $strPageTitle = 'QCubed-4 Development Framework - Start Page';
 require(QCUBED_CONFIG_DIR . '/header.inc.php');

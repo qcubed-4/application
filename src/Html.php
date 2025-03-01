@@ -102,6 +102,7 @@ abstract class Html {
     public static function renderTag($strTag, $mixAttributes, $strInnerHtml = null, $blnIsVoidElement = false, $blnNoSpace = false) {
         assert (!empty($strTag));
         $strToReturn = '<' . $strTag;
+
         if ($mixAttributes) {
             if (is_string($mixAttributes)) {
                 $strToReturn .=  ' ' . trim($mixAttributes);
@@ -109,17 +110,23 @@ abstract class Html {
                 // assume array
                 $strToReturn .=  self::renderHtmlAttributes($mixAttributes);
             }
-        };
+        }
+
         if ($blnIsVoidElement) {
             $strToReturn .= ' />'; // conforms to both XHTML and HTML5 for both normal and foreign elements
         }
-        elseif ($blnNoSpace || substr (trim($strInnerHtml), 0, 1) !== '<') {
-            $strToReturn .= '>' . $strInnerHtml . '</' . $strTag . '>';
-        }
         else {
-            // the hardcoded newlines below are important to prevent different drawing behavior in MINIMIZE mode
-            $strToReturn .= '>' . "\n" . _indent(trim($strInnerHtml)) .  "\n" . '</' . $strTag . '>' . _nl();
+            // Kontrollime, kas $strInnerHtml on null ja asendame tühja stringiga kui on
+            $strInnerHtml = $strInnerHtml === null ? '' : $strInnerHtml;
+
+            if ($blnNoSpace || substr(trim($strInnerHtml), 0, 1) !== '<') {
+                $strToReturn .= '>' . $strInnerHtml . '</' . $strTag . '>';
+            } else {
+                // the hardcoded newlines below are important to prevent different drawing behavior in MINIMIZE mode
+                $strToReturn .= '>' . "\n" . _indent(trim($strInnerHtml)) .  "\n" . '</' . $strTag . '>' . _nl();
+            }
         }
+
         return $strToReturn;
     }
 

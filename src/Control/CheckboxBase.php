@@ -106,6 +106,10 @@ class CheckboxBase extends Q\Project\Control\ControlBase
             $attrOverride['checked'] = 'checked';
         }
 
+        if ($this->strText === null) {
+            $this->strText = '';
+        }
+
         if (strlen($this->strText)) {
             $strText = ($this->blnHtmlEntities) ? QString::htmlEntities($this->strText) : $this->strText;
             if (!$this->blnWrapLabel) {

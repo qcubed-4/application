@@ -128,6 +128,11 @@ class Server extends ActionBase
             return '(' . $objActionParameter->toJsObject() . ').call(this)';
         }
 
+        // Check if $objActionParameter is null and replace with an empty string if it is
+        if ($objActionParameter === null) {
+            $objActionParameter = '';
+        }
+
         return "'" . addslashes($objActionParameter) . "'";
     }
 

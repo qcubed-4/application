@@ -16,6 +16,11 @@
 		return \QCubed\Query\QQ::all();
 <?php } else { ?>
 		$strSearchValue = $this->txtFilter->Text;
+
+        if ($strSearchValue === null) {
+            $strSearchValue = '';
+        }
+
 		$strSearchValue = trim($strSearchValue);
 
 		if (is_null($strSearchValue) || $strSearchValue === '') {

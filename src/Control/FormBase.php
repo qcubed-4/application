@@ -807,7 +807,7 @@ abstract class FormBase extends ObjectBase
 
         foreach ($this->objGroupingArray as $objGrouping) {
             $strRender = $objGrouping->render();
-            if (trim($strRender)) {
+            if (trim($strRender) ?? '') {
                 Application::executeJavaScript($strRender, Application::PRIORITY_HIGH);
             }
         }
@@ -1658,7 +1658,7 @@ abstract class FormBase extends ObjectBase
 
         // Iterate through the list of JavaScriptFiles to Include...
         foreach ($strJavaScriptFileList as $strScript) {
-            if ($strScript = trim($strScript)) {
+            if ($strScript = trim($strScript) ?? '') {
 
                 // Include it if we're NOT ignoring it and it has NOT already been included
                 if ((array_search($strScript, $this->strIgnoreJavaScriptFileArray) === false) &&
@@ -1692,12 +1692,12 @@ abstract class FormBase extends ObjectBase
         $strArrayToReturn = array();
 
         // Is there a comma-delimited list of StyleSheet files to include?
-        if ($strStyleSheetFileList = trim($strStyleSheetFileList)) {
+        if ($strStyleSheetFileList) {
             $strScriptArray = explode(',', $strStyleSheetFileList);
 
             // Iterate through the list of StyleSheetFiles to Include...
             foreach ($strScriptArray as $strScript) {
-                if ($strScript = trim($strScript)) // Include it if we're NOT ignoring it and it has NOT already been included
+                if ($strScript = trim($strScript) ?? '') // Include it if we're NOT ignoring it and it has NOT already been included
                 {
                     if ((array_search($strScript, $this->strIgnoreStyleSheetFileArray) === false) &&
                         !array_key_exists($strScript, $this->strIncludedStyleSheetFileArray)

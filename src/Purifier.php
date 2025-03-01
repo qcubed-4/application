@@ -17,8 +17,9 @@ require_once(dirname(QCUBED_BASE_DIR) . '/ezyang/htmlpurifier/library/HTMLPurifi
  */
 
 class Purifier {
-    public static $default_xss_setting;
+    public static $default_xss_setting; // ???
 
+    protected $objConfig;
     protected $objPurifier;
 
     public function __construct()
@@ -33,8 +34,8 @@ class Purifier {
         $objHTMLPurifierConfig->set('HTML.ForbiddenAttributes',
             '*@onfocus,*@onblur,*@onkeydown,*@onkeyup,*@onkeypress,*@onmousedown,*@onmouseup,*@onmouseover,*@onmouseout,*@onmousemove,*@onclick');
 
-        if (defined('__PURIFIER_CACHE__') && is_dir(__PURIFIER_CACHE__)) {
-            $objHTMLPurifierConfig->set('Cache.SerializerPath', __PURIFIER_CACHE__);
+        if (defined('QCUBED_PURIFIER_CACHE_DIR') && is_dir(QCUBED_PURIFIER_CACHE_DIR)) {
+            $objHTMLPurifierConfig->set('Cache.SerializerPath', QCUBED_PURIFIER_CACHE_DIR);
         } else {
             # Disable the cache entirely
             $objHTMLPurifierConfig->set('Cache.DefinitionImpl', null);

@@ -4,7 +4,9 @@ use QCubed\Control\Calendar;
 use QCubed\Control\DateTimePicker;
 use QCubed\Control\DateTimeTextBox;
 use QCubed\Event\Click;
+use QCubed\Project\Application;
 use QCubed\Project\Control\Button;
+use QCubed\QDateTime;
 
 require_once('../qcubed.inc.php');
 
@@ -73,7 +75,7 @@ class ExampleForm extends \QCubed\Project\Control\FormBase
         if ($dttDateTime) {
             $this->lblResult->Text = 'QDateTime object:<br/>';
             if (!$dttDateTime->isDateNull()) {
-                $this->lblResult->Text .= 'Date: <strong>' . $dttDateTime->qFormat('DDD MMM D YYYY') . '</strong><br/>';
+                $this->lblResult->Text .= 'Date: <strong>' . $dttDateTime->qFormat('MMM D, YYYY') . '</strong><br/>';
             } else {
                 $this->lblResult->Text .= 'Date: <strong>Null</strong><br/>';
             }

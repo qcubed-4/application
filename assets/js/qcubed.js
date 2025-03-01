@@ -34,12 +34,12 @@ qcubed = {
         if (typeof $j.ajaxq === "undefined" || blnAsync) {
             $j.ajax(o()); // fallback in case ajaxq is not here
         } else {
-            $j.ajaxq("qcu.be", o);
+            $j.ajaxq("qcubed.eu", o);
         }
     },
     ajaxQueueIsRunning: function() {
         if ($j.ajaxq) {
-            return $j.ajaxq.isRunning("qcu.be");
+            return $j.ajaxq.isRunning("qcubed.eu");
         }
         return false;
     },

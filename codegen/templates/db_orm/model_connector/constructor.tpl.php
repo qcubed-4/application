@@ -46,7 +46,7 @@
     public static function create($objParentObject, <?php foreach ($objTable->PrimaryKeyColumnArray as $objColumn) { ?>$<?= $objColumn->VariableName ?> = null, <?php } ?>$intCreateType = Q\ModelConnector\Options::CREATE_OR_EDIT)
     {
         // Attempt to Load from PK Arguments
-        if (<?php foreach ($objTable->PrimaryKeyColumnArray as $objColumn) { ?>strlen($<?= $objColumn->VariableName ?>) && <?php } ?><?php GO_BACK(4); ?>) {
+        if (<?php foreach ($objTable->PrimaryKeyColumnArray as $objColumn) { ?>!empty($<?= $objColumn->VariableName ?>) && <?php } ?><?php GO_BACK(4); ?>) {
             $<?= $objCodeGen->modelVariableName($objTable->Name); ?> = <?= $objTable->ClassName ?>::load(<?php foreach ($objTable->PrimaryKeyColumnArray as $objColumn) { ?>$<?= $objColumn->VariableName ?>, <?php } ?><?php GO_BACK(2); ?>);
 
             // <?= $objTable->ClassName ?> was found -- return it!

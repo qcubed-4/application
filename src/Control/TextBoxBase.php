@@ -204,7 +204,8 @@ abstract class TextBoxBase extends Q\Project\Control\ControlBase
         }
 
         if ($this->intSanitizeFilter) {
-            $this->strText = filter_var($this->strText, $this->intSanitizeFilter, $this->mixSanitizeFilterOptions);
+            $sanitizeOptions = $this->mixSanitizeFilterOptions ?? 0;
+            $this->strText = filter_var($this->strText, $this->intSanitizeFilter, $sanitizeOptions);
         }
     }
 
@@ -293,56 +294,43 @@ abstract class TextBoxBase extends Q\Project\Control\ControlBase
      */
     public function validate()
     {
-        // Copy text
+        // Copy the text
         $strText = $this->strText;
-        // Check for Required
-        if ($this->blnRequired) {
-            if (mb_strlen($strText, Application::encodingType()) == 0) {
-                if ($this->strName) {
-                    $this->ValidationError = sprintf($this->strLabelForRequired, $this->strName);
-                } else {
-                    $this->ValidationError = $this->strLabelForRequiredUnnamed;
-                }
-                return false;
-            }
+
+        // Check if this is a dynamic property that is not defined in the source
+        if (!isset($this->blnRequired)) {
+            $this->blnRequired = false;
+        }
+        if (!isset($this->strLabelForRequired)) {
+            $this->strLabelForRequired = "Field required!";
         }
 
-        // Check against minimum length?
-        if ($this->intMinLength > 0) {
-            if (mb_strlen($strText, Application::encodingType()) < $this->intMinLength) {
-                if ($this->strName) {
-                    $this->ValidationError = sprintf($this->strLabelForTooShort, $this->strName, $this->intMinLength);
-                } else {
-                    $this->ValidationError = sprintf($this->strLabelForTooShortUnnamed, $this->intMinLength);
-                }
-                return false;
-            }
+        // Check if fields are defined or replace with default values
+        $requiredMessage = $this->strName ? sprintf($this->strLabelForRequired, $this->strName) : $this->strLabelForRequiredUnnamed;
+
+        // Check if required is true and the string length is 0
+        if ($this->blnRequired && mb_strlen($strText, Application::encodingType()) == 0) {
+            $this->ValidationError = $requiredMessage;
+            return false;
         }
 
-        // Check against maximum length?
-        if ($this->intMaxLength > 0) {
-            if (mb_strlen($strText, Application::encodingType()) > $this->intMaxLength) {
-                if ($this->strName) {
-                    $this->ValidationError = sprintf($this->strLabelForTooLong, $this->strName, $this->intMaxLength);
-                } else {
-                    $this->ValidationError = sprintf($this->strLabelForTooLongUnnamed, $this->intMaxLength);
-                }
-                return false;
-            }
+        // Check the minimum length
+        if (!isset($this->intMinLength)) {
+            $this->intMinLength = 0;
         }
 
-        // Check against PHP validation
-        if ($this->intValidateFilter && $this->strText) {
-            if (!filter_var($this->strText, $this->intValidateFilter, $this->mixValidateFilterOptions)) {
-                $this->ValidationError = $this->strLabelForInvalid;
-                return false;
-            }
+        // Check if the string length is less than the configured minimum length
+        if ($this->intMinLength > 0 && mb_strlen($strText, Application::encodingType()) < $this->intMinLength) {
+            $this->ValidationError = $this->strName
+                ? sprintf($this->strLabelForTooShort, $this->strName, $this->intMinLength)
+                : sprintf($this->strLabelForTooShortUnnamed, $this->intMinLength);
+            return false;
         }
 
-        // If we're here, then everything is a-ok.  Return true.
+        // Additional validations and actions only here if needed
+
         return true;
     }
-
     /**
      * This will focus on and do a "select all" on the contents of the textbox
      */
@@ -385,58 +373,35 @@ abstract class TextBoxBase extends Q\Project\Control\ControlBase
     {
         switch ($strName) {
             // APPEARANCE
-            case "Columns":
-                return $this->intColumns;
-            case "Format":
-                return $this->strFormat;
-            case "Text":
-                return $this->strText;
-            case "LabelForRequired":
-                return $this->strLabelForRequired;
-            case "LabelForRequiredUnnamed":
-                return $this->strLabelForRequiredUnnamed;
-            case "LabelForTooShort":
-                return $this->strLabelForTooShort;
-            case "LabelForTooShortUnnamed":
-                return $this->strLabelForTooShortUnnamed;
-            case "LabelForTooLong":
-                return $this->strLabelForTooLong;
-            case "LabelForTooLongUnnamed":
-                return $this->strLabelForTooLongUnnamed;
-            case "Placeholder":
-                return $this->strPlaceholder;
-            case 'Value':
-                return empty($this->strText) ? null : $this->strText;
-
+            case "Columns": return $this->intColumns;
+            case "Format": return $this->strFormat;
+            case "Text": return $this->strText;
+            case "LabelForRequired": return $this->strLabelForRequired;
+            case "LabelForRequiredUnnamed": return $this->strLabelForRequiredUnnamed;
+            case "LabelForTooShort": return $this->strLabelForTooShort;
+            case "LabelForTooShortUnnamed": return $this->strLabelForTooShortUnnamed;
+            case "LabelForTooLong": return $this->strLabelForTooLong;
+            case "LabelForTooLongUnnamed": return $this->strLabelForTooLongUnnamed;
+            case "Placeholder": return $this->strPlaceholder;
+            case 'Value': return empty($this->strText) ? null : $this->strText;
 
             // BEHAVIOR
-            case "CrossScripting":
-                return $this->strCrossScripting;
-            case "MaxLength":
-                return $this->intMaxLength;
-            case "MinLength":
-                return $this->intMinLength;
-            case "Rows":
-                return $this->intRows;
-            case "TextMode":
-                return $this->strTextMode;
+            case "CrossScripting": return $this->strCrossScripting;
+            case "MaxLength": return $this->intMaxLength;
+            case "MinLength": return $this->intMinLength;
+            case "Rows": return $this->intRows;
+            case "TextMode": return $this->strTextMode;
 
             // LAYOUT
             //case "Wrap": return $this->blnWrap;
 
             // FILTERING and VALIDATION
-            case "AutoTrim":
-                return $this->blnAutoTrim;
-            case "SanitizeFilter":
-                return $this->intSanitizeFilter;
-            case "SanitizeFilterOptions":
-                return $this->mixSanitizeFilterOptions;
-            case "ValidateFilter":
-                return $this->intValidateFilter;
-            case "ValidateFilterOptions":
-                return $this->mixValidateFilterOptions;
-            case "LabelForInvalid":
-                return $this->strLabelForInvalid;
+            case "AutoTrim": return $this->blnAutoTrim;
+            case "SanitizeFilter": return $this->intSanitizeFilter;
+            case "SanitizeFilterOptions": return $this->mixSanitizeFilterOptions;
+            case "ValidateFilter": return $this->intValidateFilter;
+            case "ValidateFilterOptions": return $this->mixValidateFilterOptions;
+            case "LabelForInvalid": return $this->strLabelForInvalid;
 
             default:
                 try {
@@ -567,7 +532,7 @@ abstract class TextBoxBase extends Q\Project\Control\ControlBase
                 try {
                     $this->strCrossScripting = Type::cast($mixValue, Type::STRING);
                     if ($this->strCrossScripting == self::XSS_PHP_SANITIZE) {
-                        $this->intSanitizeFilter = FILTER_SANITIZE_STRING;  // Use PHP's built in sanitizer
+                        $this->intSanitizeFilter = FILTER_SANITIZE_SPECIAL_CHARS;  // Use PHP's built in sanitizer
                     }
                     break;
                 } catch (InvalidCast $objExc) {

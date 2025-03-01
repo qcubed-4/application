@@ -116,18 +116,23 @@ function _nl($strText = null) {
  * @return string
  */
 function _indent($strText, $intCount = 1) {
-	if (!defined('__CODE_GENERATING__') && Application::instance()->minimize()) {
-		return $strText;
-	} else {
-		if (defined ('__CODE_GENERATING__')) {
-			$strRepeat = '    ';
-		} else {
-			$strRepeat = '  ';
-		}
-		$strTabs = str_repeat($strRepeat, $intCount);
-		$strRet = preg_replace ( '/^/m', $strTabs , $strText);
-		return $strRet;
-	}
+    if (!defined('__CODE_GENERATING__') && Application::instance()->minimize()) {
+        return $strText;
+    } else {
+        if (defined ('__CODE_GENERATING__')) {
+            $strRepeat = '    ';
+        } else {
+            $strRepeat = '  ';
+        }
+        $strTabs = str_repeat($strRepeat, $intCount);
+
+        if ($strText === null) {
+            $strText = '';
+        }
+
+        $strRet = preg_replace('/^/m', $strTabs, $strText);
+        return $strRet;
+    }
 }
 
 /**

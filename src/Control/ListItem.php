@@ -121,7 +121,7 @@ class ListItem extends ListItemBase implements \JsonSerializable
      * widget requires something else, you will need to subclass and override this.
      * @return string
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         $strId = $this->strValue;
         if (!$strId) {

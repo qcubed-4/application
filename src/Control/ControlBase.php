@@ -303,7 +303,7 @@ abstract class ControlBase extends Q\Project\HtmlAttributeManager
             }
         }
 
-        if (strlen($strControlId) == 0) {
+        if ($strControlId === null || strlen($strControlId) == 0) {
             $this->strControlId = $this->objForm->generateControlId();
         } else {
             // Verify ControlId is only AlphaNumeric Characters

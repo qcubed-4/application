@@ -64,7 +64,7 @@ class DateTimeTextBox extends TextBox
         while (strpos($strText, '  ') !== false) {
             $strText = str_replace('  ', ' ', $strText);
         }
-        $strText = str_replace('.', '', $strText);
+        //$strText = str_replace('.', '', $strText);
         $strText = str_replace('@', ' ', $strText);
 
         // Are we ATTEMPTING to parse a Time value?
