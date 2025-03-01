@@ -94,7 +94,7 @@ TMPL;
 		 * @param QQClause[] \$objClauses additional QQClause object or array of QQClause objects for the query
 		 * @return ListBox
 		 */
-		public function {$strControlVarName}_Create(\$strControlId = null, QQCondition \$objCondition = null, \$objClauses = null) {
+		public function {$strControlVarName}_Create(\$strControlId = null, ?QQCondition \$objCondition = null, \$objClauses = null) {
 			\$this->obj{$strPropName}Condition = \$objCondition;
 			\$this->obj{$strPropName}Clauses = \$objClauses;
 

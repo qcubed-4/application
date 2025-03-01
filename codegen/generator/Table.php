@@ -308,7 +308,7 @@ TMPL;
 	* @param QQCondition|null \$objAdditionalCondition
     * @param null|array \$objAdditionalClauses
 	*/
-	public function bindData(QQCondition \$objAdditionalCondition = null, \$objAdditionalClauses = null) 
+	public function bindData(?QQCondition \$objAdditionalCondition = null, \$objAdditionalClauses = null) 
 	{
 		\$objCondition = \$this->getCondition(\$objAdditionalCondition);
 		\$objClauses = \$this->getClauses(\$objAdditionalClauses);
@@ -355,7 +355,7 @@ TMPL;
 	 * @param QQCondition|null \$objAdditionalCondition
 	 * @return QQCondition
 	 */
-	protected function getCondition(QQCondition \$objAdditionalCondition = null) 
+	protected function getCondition(?QQCondition \$objAdditionalCondition = null) 
 	{
 		// Get passed in condition, possibly coming from subclass or enclosing control or form
 		\$objCondition = \$objAdditionalCondition;

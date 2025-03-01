@@ -140,9 +140,9 @@ class ExampleForm extends FormBase
 1999,Chevy,"Venture ""Extended Edition""","",4900.00
 1999,Chevy,"Venture ""Extended Edition, Very Large""","",5000.00
 1996,Jeep,Grand Cherokee,"MUST SELL!';
-        $data = str_getcsv($csv, "\n");
+        $data = str_getcsv($csv, "\n", '"', "\\");
         foreach ($data as &$row) {
-            $row = str_getcsv($row, ",");
+            $row = str_getcsv($row, ",", '"', "\\");
             $row["#count"] = count($row);
         }
         $this->tblReport->DataSource = $data;
