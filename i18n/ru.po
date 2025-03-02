@@ -2,7 +2,8 @@
 # for Russian (default)
 # Contributed by "olegabr"
 
-
+msgid ""
+msgstr ""
 
 # For QTextBoxBase controls
 msgid "%s is required"

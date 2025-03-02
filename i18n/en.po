@@ -1,7 +1,8 @@
 # QCubed Distributed Language File
 # for English (default)
 
-
+msgid ""
+msgstr ""
 
 # For QTextBoxBase controls
 msgid "%s is required"

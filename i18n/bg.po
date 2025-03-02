@@ -2,6 +2,8 @@
 # for Bulgarian (default)
 # Contributed by Delian Angelov
 
+msgid ""
+msgstr ""
 
 # For QTextBoxBase controls
 msgid "%s is required"

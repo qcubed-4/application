@@ -2,6 +2,8 @@
 # for French (default) [ &eacute; -> � | &egrave; -> � | &ecirc; -> � | &agrave; -> � | &oacute; -> � ]
 # Contributed by Christophe Damour and "gibran"
 
+msgid ""
+msgstr ""
 
 # For QTextBoxBase controls
 msgid "%s is required"

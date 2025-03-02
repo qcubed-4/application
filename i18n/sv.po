@@ -2,6 +2,8 @@
 # for Swedish (default)
 # Contributed by "mickis"
 
+msgid ""
+msgstr ""
 
 # For QTextBoxBase controls
 msgid "%s is required"

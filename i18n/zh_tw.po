@@ -2,6 +2,8 @@
 # for Traditional Chinese (Taiwan), using BIG5 encoding
 # Contributed by Edward Chou
 
+msgid ""
+msgstr ""
 
 # For QTextBoxBase controls
 msgid "%s is required"

@@ -2,6 +2,8 @@
 # for Czech (default)
 # Contributed by "Poisson"
 
+msgid ""
+msgstr ""
 
 # For QTextBoxBase controls
 msgid "%s is required"

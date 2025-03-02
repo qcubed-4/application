@@ -2,6 +2,8 @@
 # for Portuguese (Brazil)
 # Contributed by "Netino"
 
+msgid ""
+msgstr ""
 
 # For QTextBoxBase controls
 msgid "%s is required"

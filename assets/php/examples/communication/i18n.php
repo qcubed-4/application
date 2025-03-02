@@ -1,11 +1,9 @@
 <?php
 
-use QCubed\Action\Ajax;
 use QCubed\Action\Server;
 use QCubed\Event\Click;
 use QCubed\I18n\TranslationService;
 use QCubed\Project\Control\Button;
-use QCubed\Project\Application;
 
 require_once('../qcubed.inc.php');
 
@@ -24,13 +22,8 @@ class ExamplesForm extends \QCubed\Project\Control\FormBase
         $translator = new \QCubed\I18n\SimpleCacheTranslator();
         $translator->bindDomain('app', QCUBED_PROJECT_DIR . "/i18n")  // set to application's i18n directory
             ->setDefaultDomain('app')
-            ->setTempDir(QCUBED_TMP_DIR)
-        ;
+            ->setTempDir(QCUBED_TMP_DIR . '/cache');
         TranslationService::instance()->setTranslator($translator);
-
-        /*print '<pre>';
-        print_r($translator);
-        print '</pre>';*/
     }
 
     // Initialize our Controls during the Form Creation process
@@ -41,12 +34,10 @@ class ExamplesForm extends \QCubed\Project\Control\FormBase
         // even after this form is created
         $this->btnEs = new Button($this);
         $this->btnEs->ActionParameter = 'es';
-        $this->btnEs->Text = t('Switch to es');
         $this->btnEs->addAction(new Click(), new Server('button_Click'));
 
         $this->btnEn = new Button($this);
         $this->btnEn->ActionParameter = 'en';
-        $this->btnEn->Text = t('Switch to en');
         $this->btnEn->addAction(new Click(), new Server('button_Click'));
     }
 
@@ -56,19 +47,10 @@ class ExamplesForm extends \QCubed\Project\Control\FormBase
         // NORMALLY -- these settings are setup in prepend.inc
         // But it is pulled out here to illustrate
 
-//        print '<pre>';
-//        print_r($params);
-//        print '</pre>';
-
         $language = $params->ActionParameter;
 
-        //Application::displayAlert($language);
-
         TranslationService::instance()->translator()->setLanguage($language, null);
-
-        //print_r($language);
     }
-
 }
 
 // Run the Form we have defined

@@ -2,6 +2,8 @@
 # for Spanish (Generic)
 # Contributed by Nino Dafonte <nino.dafonte@gmail.com>
 
+msgid ""
+msgstr ""
 
 # For QTextBoxBase controls
 msgid "%s is required"

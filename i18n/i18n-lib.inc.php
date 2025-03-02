@@ -6,7 +6,7 @@
 namespace QCubed\Application;	// include this file in your namespace so that the functions defined below are unique to your library
 
 use QCubed\I18n\TranslationService;
-const I18N_DOMAIN = 'qcubed/application'; // replace this with your package name
+const I18N_DOMAIN = 'qcubed-4/application'; // replace this with your package name
 
 /**
  * Translation function specific to your package.

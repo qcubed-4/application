@@ -2,7 +2,8 @@
 # for Estonian (default)
 # Contributed by "kukrik"
 
-
+msgid ""
+msgstr ""
 
 # For QTextBoxBase controls
 msgid "%s is required"

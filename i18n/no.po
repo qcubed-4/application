@@ -2,6 +2,8 @@
 # for Norwegian (default)
 # Contributed by Martin Kronstad
 
+msgid ""
+msgstr ""
 
 # For QTextBoxBase controls
 msgid "%s is required"

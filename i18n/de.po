@@ -2,6 +2,8 @@
 # for German (default)
 # Contributed by Wolfgang Reinhardt
 
+msgid ""
+msgstr ""
 
 # For QTextBoxBase controls
 msgid "%s is required"
