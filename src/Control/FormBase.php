@@ -1994,7 +1994,7 @@ abstract class FormBase extends ObjectBase
         $strHtml .= sprintf('<input type="hidden" name="Qform__FormParameter" id="Qform__FormParameter" value="" />') . _nl();
         $strHtml .= Html::renderTag('input',
             ['type' => 'hidden', 'name' => self::POST_CALL_TYPE, 'id' => self::POST_CALL_TYPE, 'value' => ''], null,
-            true);
+            true) . _nl();
         $strHtml .= sprintf('<input type="hidden" name="Qform__FormUpdates" id="Qform__FormUpdates" value="" />') . _nl();
         $strHtml .= sprintf('<input type="hidden" name="Qform__FormCheckableControls" id="Qform__FormCheckableControls" value="" />') . _nl();
 
@@ -2002,8 +2002,13 @@ abstract class FormBase extends ObjectBase
         $strHtml .= sprintf('<input type="hidden" name="' . self::POST_FORM_STATE . '" id="Qform__FormState" value="%s" />',
                 QForm::serialize(clone($this))) . _nl();
 
+        if (!empty($GLOBALS['_csrf_token'])) {
+            $strHtml .= sprintf('<input type="hidden" name="Qform__FormCsrfToken" id="Qform__FormCsrfToken" value="%s" />',
+                    $GLOBALS['_csrf_token']) . _nl();
+        }
+
         // close the form tag
-        $strHtml .= "</form>";
+        $strHtml .= "</form>" . _nl();
 
         // Add the JavaScripts rendered above
         $strHtml .= $strEndScript;
