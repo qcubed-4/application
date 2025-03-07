@@ -44,10 +44,14 @@ class Application extends QCubed\ApplicationBase
      */
     public function initializeServices()
     {
+        error_log("Services initialized");
+
         $this->startSession();  // make sure we start the session first in case other services need it.
+        $this->initCsrfProtection();
         $this->initTranslator();
         $this->initWatcher();
-        $this->initCsrfProtection();
+
+        //$this->verifyCsrfToken();
 
         //$this->authService = new \Project\Service\Auth();
     }
@@ -103,13 +107,13 @@ class Application extends QCubed\ApplicationBase
      * @return void
      */
     protected function initCsrfProtection() {
-        // If a valid token is missing, generate a new session CSRF token
-        if (!isset($_SESSION['csrf_token'])) {
-            $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // Persistent session CSRF token
+        // If there is no CSRF token in the session, generate and store a persistent token
+        if (empty($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // Initial persistent token
         }
 
-        // Update dynamic CSRF token (for the current request only)
-        $GLOBALS['_csrf_token'] = bin2hex(random_bytes(32)); // Fresh token for each form
+        // Generate a dynamic CSRF token for each request
+        $GLOBALS['_csrf_token'] = bin2hex(random_bytes(32)); // Dynamic token for every request
     }
 
     /**
@@ -142,12 +146,20 @@ class Application extends QCubed\ApplicationBase
      *
      * @return bool Returns true if the CSRF token is valid, false otherwise.
      */
+
+    /**
+     * Verifies the CSRF token by comparing the token from the POST request
+     * with the token stored in the session.
+     *
+     * @return bool Returns true if the tokens match, otherwise false.
+     */
     public static function verifyCsrfToken(): bool {
-        // Check if the CSRF token from the POST request matches the session value
-        if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-            return false; // Token does not match
+        // Check if the CSRF token from the POST request is missing or does not match the session token
+        if (empty($_POST['Qform__FormCsrfToken']) || $_POST['Qform__FormCsrfToken'] !== $_SESSION['csrf_token']) {
+            return false; // Token is invalid or missing, return false
         }
-        return true; // Token is valid
+
+        return true; // Token is valid, return true
     }
 
     /**
