@@ -50,9 +50,7 @@ class Application extends QCubed\ApplicationBase
         $this->initCsrfProtection();
         $this->initTranslator();
         $this->initWatcher();
-
-        //$this->verifyCsrfToken();
-
+        
         //$this->authService = new \Project\Service\Auth();
     }
     /**
