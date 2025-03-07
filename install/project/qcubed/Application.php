@@ -44,8 +44,6 @@ class Application extends QCubed\ApplicationBase
      */
     public function initializeServices()
     {
-        error_log("Services initialized");
-
         $this->startSession();  // make sure we start the session first in case other services need it.
         $this->initCsrfProtection();
         $this->initTranslator();
