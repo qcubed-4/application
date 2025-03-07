@@ -1253,15 +1253,6 @@ abstract class FormBase extends ObjectBase
         return $objControl->validateControlAndChildren();
     }
 
-    /**
-     * Runs/Triggers any and all event handling functions for the control on which an event took place
-     * Depending on the control's CausesValidation value, it also calls for validation of the control or
-     * control and children or entire QForm.
-     *
-     * @param null|string $strControlIdOverride If supplied, the control with the supplied ID is selected
-     *
-     * @throws \Exception|Caller
-     */
     protected function triggerActions($strControlIdOverride = null)
     {
         if (array_key_exists('Qform__FormControl', $_POST)) {
@@ -2001,6 +1992,9 @@ abstract class FormBase extends ObjectBase
         // Serialize and write out the formstate
         $strHtml .= sprintf('<input type="hidden" name="' . self::POST_FORM_STATE . '" id="Qform__FormState" value="%s" />',
                 QForm::serialize(clone($this))) . _nl();
+
+        $GLOBALS['_csrf_token'] = bin2hex(random_bytes(32));
+        $_SESSION['csrf_token'] = $GLOBALS['_csrf_token']; // Ajaxi uued tokenid
 
         if (!empty($GLOBALS['_csrf_token'])) {
             $strHtml .= sprintf('<input type="hidden" name="Qform__FormCsrfToken" id="Qform__FormCsrfToken" value="%s" />',
