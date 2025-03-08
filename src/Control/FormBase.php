@@ -1994,7 +1994,7 @@ abstract class FormBase extends ObjectBase
                 QForm::serialize(clone($this))) . _nl();
 
         $GLOBALS['_csrf_token'] = bin2hex(random_bytes(32));
-        $_SESSION['csrf_token'] = $GLOBALS['_csrf_token']; // Ajaxi uued tokenid
+        $_SESSION['csrf_token'] = $GLOBALS['_csrf_token']; // Ajax's new tokens 
 
         if (!empty($GLOBALS['_csrf_token'])) {
             $strHtml .= sprintf('<input type="hidden" name="Qform__FormCsrfToken" id="Qform__FormCsrfToken" value="%s" />',
