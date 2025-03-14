@@ -22,7 +22,7 @@ define ('QCUBED_FILE_CACHE_DIR', QCUBED_TMP_DIR . '/cache');
 define ('QCUBED_PLUGIN_TMP_DIR', QCUBED_TMP_DIR . '/plugin');
 define ('QCUBED_PURIFIER_CACHE_DIR', QCUBED_CACHE_DIR . '/purifier');
 
-s/**
+/**
  * The absolute paths of the "upload" and "_files" folders as well as their URL paths are also added here.
  */
 
