@@ -2,7 +2,7 @@
 This is the application part of the QCubed-4 framework, and includes forms, controls, actions, events and code to tie them all together.
 
 ## What is QCubed-4?
-QCubed (pronounced 'Q' - cubed) is a PHP Model-View-Controller Rapid Application Development framework with support for PHP7 and above. The goal of the framework is to save development time around mundane, repetitive tasks - allowing you to concentrate on things that are useful AND fun. QCubed excels in situations where you have a large database structure that you quickly want to make available to users.
+QCubed (pronounced 'Q' - cubed) is a PHP Model-View-Controller Rapid Application Development framework with support for PHP8 and above. The goal of the framework is to save development time around mundane, repetitive tasks - allowing you to concentrate on things that are useful AND fun. QCubed excels in situations where you have a large database structure that you quickly want to make available to users.
 
 ## Stateful architecture
 With QCubed-4, you don't have to deal with POSTs and GETs coming from the browser. QCubed automatically handles that for you and packages the information into object oriented forms and controls. Programming with QCubed feels very much like programming a desktop application. If you are familiar with ASP, it is similar.
@@ -40,7 +40,7 @@ Through its plugin system, QCubed-4 makes it easy to package and deliver enhance
 
 ## System Requirements
 * A development computer that you can set up so that the browser can write to a directory in your file system.
-* v4.0.x, requires PHP 7.0 and above. HHVM are supported as well.
+* v4.0.x, requires PHP 8.0 and above. HHVM are supported as well.
 * All html code is html5 compliant.
 * QCubed-4 relies on jQuery for some of its ajax interactions. Also, many of the built-in controls beyond basic html controls require JQuery UI.
 * A SQL database engine. MySQL, SqlServer, Postgres, Oracle, PDO, SqlLite, Informix adapters are included. Creating another adapter is not hard if you have a different SQL.

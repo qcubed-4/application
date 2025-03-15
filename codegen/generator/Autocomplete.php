@@ -96,7 +96,7 @@ TMPL;
 		 * @return {$strControlType}
 		 */
 
-		public function {$strControlVarName}_Create(\$strControlId = null, QQCondition \$objCondition = null, \$objClauses = null) {
+		public function {$strControlVarName}_Create(\$strControlId = null, ?QQCondition \$objCondition = null, \$objClauses = null) {
 			\$this->obj{$strPropName}Condition = \$objCondition;
 			\$this->obj{$strPropName}Clauses = \$objClauses;
 
