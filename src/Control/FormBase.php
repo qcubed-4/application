@@ -1467,76 +1467,89 @@ abstract class FormBase extends ObjectBase
     }
 
     /**
-     * Renders the tags to include the css style sheets. Call this in your head tag if you want to
-     * put these there. Otherwise, the styles will automatically be included just after the form.
+     * Renders the required stylesheets for the application and optionally displays the output directly.
      *
-     * @param bool $blnDisplayOutput
-     * @return null|string
+     * This method collects all necessary stylesheets from controls and form-specific styles.
+     * It ensures that stylesheets are ordered correctly, including moving any jQuery UI CSS file
+     * to the end of the list to allow theme overrides. It generates HTML `<link>` tags for inclusion
+     * of these stylesheets, optionally handling additional attributes like CORS or integrity.
+     * The output can either be printed to the browser or returned as a string depending on the parameter.
+     *
+     * @param bool $blnDisplayOutput Determines whether the generated styles should be directly outputted.
+     *                               If true, styles are printed; otherwise, the method returns the
+     *                               generated HTML string.
+     * @return string|null The generated HTML string containing the `<link>` tags for stylesheets if
+     *                     `$blnDisplayOutput` is false, or null if `$blnDisplayOutput` is true.
      */
-    public function renderStyles($blnDisplayOutput = true, $blnInHead = true)
+    public function renderStyles($blnDisplayOutput = true)
     {
         $strToReturn = '';
         $this->strIncludedStyleSheetFileArray = array();
 
         $strStyleSheetArray = [];
 
+        // Collect all stylesheets from controls
         foreach ($this->getAllControls() as $objControl) {
-            // Include any StyleSheets?  The control would have a
-            // comma-delimited list of stylesheet files to include (if applicable)
             if ($strScriptArray = $this->processStyleSheetList($objControl->StyleSheets)) {
                 $strStyleSheetArray = array_merge($strStyleSheetArray, $strScriptArray);
             }
         }
 
-        // In order to make ui-themes workable, move the jquery.css to the end of list.
-        // It should override any rules that it can override.
+        // Move the jQuery UI CSS file to the end of the list to ensure theme overrides are applied
         foreach ($strStyleSheetArray as $strScript) {
-            if (QCUBED_JQUI_CSS == $strScript) {
+            if (QCUBED_JQUI_CSS === $strScript) {
                 unset($strStyleSheetArray[$strScript]);
                 $strStyleSheetArray[$strScript] = $strScript;
                 break;
             }
         }
 
+        // Add any form-specific styles
         foreach ($this->getFormStyles() as $strScript) {
             $strStyleSheetArray[$strScript] = $strScript;
         }
 
+        // Prepare indentation
+        $indent = "    "; // 4 spaces
+        $totalFiles = count($strStyleSheetArray); // Get the total count of stylesheets
+        $currentIndex = 0; // Start index tracker
 
-        // Include styles that need to be included
+        // Generate <link> elements for all stylesheets
         foreach ($strStyleSheetArray as $strScript) {
-            if (is_array($strScript)) { // use CORS options
-                if ($blnInHead) {
-                    $href = $strScript["file"];
-                    unset($strScript["file"]);
-                    $attributes = ["href"=>$this->getCssFileUri($href),
-                            "rel"=>"stylesheet"];
-                    $attributes = array_merge($attributes, $strScript); // should have integrity and crossorigin defined
-                    $strToReturn .= Html::renderTag("link", $attributes);
-                } else {
-                    // for now it appears @import ignores CORS restrictions
-                    $strToReturn .= '<style type="text/css" media="all">@import "' . $this->getCssFileUri($strScript["file"]) . '"</style>';
-                }
+            $currentIndex++; // Increment current index
+
+            if (is_array($strScript)) { // Handle additional attributes like CORS or integrity
+                $href = $strScript["file"];
+                unset($strScript["file"]);
+                $attributes = [
+                    "href" => $this->getCssFileUri($href),
+                    "rel" => "stylesheet",
+                ];
+                $attributes = array_merge($attributes, $strScript);
+                $strToReturn .= Html::renderTag("link", $attributes);
             } else {
-                if ($blnInHead) {
-                    $strToReturn .= '<link href="' . $this->getCssFileUri($strScript) . '" rel="stylesheet" />';
-                } else {
-                    $strToReturn .= '<style type="text/css" media="all">@import "' . $this->getCssFileUri($strScript) . '"</style>';
-                }
+                $strToReturn .= '<link href="' . $this->getCssFileUri($strScript) . '" rel="stylesheet" />';
             }
+
+            // Add newline after each file, including the last one
             $strToReturn .= "\n";
+
+            // Add indentation only if it is NOT the last file
+            if ($currentIndex < $totalFiles) {
+                $strToReturn .= $indent;
+            }
         }
 
         self::$blnStylesRendered = true;
 
-        // Return or Display
+        // Output or return the generated styles
         if ($blnDisplayOutput) {
-            if (Application::instance()->context()->requestMode() != Context::REQUEST_MODE_CLI) {
+            if (Application::instance()->context()->requestMode() !== Context::REQUEST_MODE_CLI) {
                 print($strToReturn);
             }
             return null;
         } else {
-            if (Application::instance()->context()->requestMode() != Context::REQUEST_MODE_CLI) {
+            if (Application::instance()->context()->requestMode() !== Context::REQUEST_MODE_CLI) {
                 return $strToReturn;
             } else {
                 return '';
