@@ -147,11 +147,21 @@ class Context
     public function pathInfo()
     {
         if ($this->strPathInfo === null) {
-            if (isset($_SERVER['PATH_INFO'])) {
-                $this->strPathInfo = urlencode(trim($_SERVER['PATH_INFO']));
+            // PATH_INFO not available - we use REQUEST_URI
+            if (isset($_SERVER['REQUEST_URI'])) {
+                // Clean up the REQUEST_URI by removing the script name and query string
+                $requestUri = $_SERVER['REQUEST_URI'];
+                $scriptName = $_SERVER['SCRIPT_NAME']; // For example '/index.php'
+
+                // Remove script name and query string to get only the PATH part
+                $path = strtok($requestUri, '?'); // Remove query string
+                $pathInfo = str_replace($scriptName, '', $path); // Remove script name
+
+                // If PATH_INFO is empty or starts with false, follow the clean path part
+                $this->strPathInfo = urlencode(trim($pathInfo));
                 $this->strPathInfo = str_ireplace('%2f', '/', $this->strPathInfo);
             } else {
-                $this->strPathInfo = '';    // no path info given
+                $this->strPathInfo = ''; // If REQUEST_URI is not available, leave blank.
             }
         }
         return $this->strPathInfo;
@@ -180,23 +190,11 @@ class Context
     public function requestUri()
     {
         if (!$this->strRequestUri) {
-            // Setup RequestUri
-            if (defined('QCUBED_URL_REWRITE')) {
-                switch (strtolower(QCUBED_URL_REWRITE)) {
-                    case 'apache':
-                        $this->strRequestUri = $_SERVER['REQUEST_URI'];
-                        break;
-
-                    case 'none':
-                        $this->strRequestUri = sprintf('%s%s%s',
-                            $this->scriptName(), $this->pathInfo(),
-                            ($this->queryString()) ? sprintf('?%s', $this->queryString()) : null);
-                        break;
-
-                    default:
-                        throw new Exception('Invalid URL Rewrite type: ' . QCUBED_URL_REWRITE);
-                }
+            // We use REQUEST_URI whenever available
+            if (isset($_SERVER['REQUEST_URI'])) {
+                $this->strRequestUri = $_SERVER['REQUEST_URI'];
             } else {
+                // If REQUEST_URI is not available, combine alternative
                 $this->strRequestUri = sprintf('%s%s%s',
                     $this->scriptName(), $this->pathInfo(),
                     ($this->queryString()) ? sprintf('?%s', $this->queryString()) : null);
