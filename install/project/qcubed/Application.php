@@ -51,6 +51,7 @@ class Application extends QCubed\ApplicationBase
 
         //$this->authService = new \Project\Service\Auth();
     }
+    
     /**
      * If you want to use a custom session handler, set it up here. The commented example below uses a QCubed handler that
      * puts sessions in a database.

@@ -6,21 +6,22 @@ require_once('../qcubed.inc.php');
  */
 
 if (!defined('QCUBED_URL_PREFIX')) {
-    echo "<span class='error' style='font-weight: 500;'>Cannot find the configuration file. Make sure your qcubed.inc.php file is installed correctly.</span>"; 
+    echo "<span class='error' style='color: darkred; font-weight: 500;'>Cannot find the configuration file. Make sure your qcubed.inc.php file is installed correctly.</span>";
     exit;
 }
+
+$composerFile = dirname(__DIR__) . '/composer.json';
+$composer = is_file($composerFile) ? json_decode(file_get_contents($composerFile), true) : [];
+$vendorDir = sprintf('/%s/', $composer['config']['vendor-dir'] ?? 'vendor');
+$prefixPos = strpos($_SERVER['PHP_SELF'], $vendorDir);
+$suggestedPrefix = ($prefixPos !== false) ? substr($_SERVER['PHP_SELF'], 0, $prefixPos) : '';
 if (QCUBED_URL_PREFIX == '{ url_prefix }') {
-    // config file has not been set up correctly
-    // Suggest a recommended value based on vendor-dir in composer.json
-    $composerFile = dirname(__DIR__) . '/composer.json';
-    $composer   = is_file($composerFile) ? json_decode(file_get_contents($composerFile), true) : [];
-    $vendorDir = sprintf('/%s/', $composer['config']['vendor-dir'] ?? 'vendor');
-    $prefixPos = strpos($_SERVER['PHP_SELF'], $vendorDir);
-    $suggestedPrefix = ($prefixPos !== false) ? substr($_SERVER['PHP_SELF'], 0, $prefixPos) : '';
-    echo "<span class='error' style='font-weight: 500;'>Your config file is not set up correctly. 
-        Please edit <code>install/project/includes/configuration/active/0config.cfg.php</code> 
+    echo "<span class='error' style='color: darkred; font-weight: 500;'>Your config file is not set up correctly. 
+        Please edit <code>project/includes/configuration/active/0config.cfg.php</code> 
         and replace <code>{ url_prefix }</code> with '<strong>" . htmlspecialchars($suggestedPrefix) . "</strong>'.</span>";
     exit;
+} else if($suggestedPrefix !== QCUBED_URL_PREFIX){
+    echo "<span class='error' style='color: darkred; font-weight: 500'>Potential QCUBED_URL_PREFIX misconfiguration detected (suggested prefix is: \"$suggestedPrefix\", current value is: \"".QCUBED_URL_PREFIX."\"). If logo images are displayed correctly then this message can most likely be ignored.</span>";
 }
 
 $strPageTitle = 'QCubed-4 Development Framework - Start Page';
