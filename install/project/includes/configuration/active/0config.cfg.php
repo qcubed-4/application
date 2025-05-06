@@ -52,7 +52,7 @@ switch (SERVER_INSTANCE) {
 		// Before QCubed can do anything, it needs to know the URL to use for development purposes. This would be a local
 		// url on your development computer. The prefix below is only used within this config file to help with the url
 		// pointers below. It would be whatever needs to go after "http:/" and before the "/vendor" or "/project" directory
-		define ('QCUBED_URL_PREFIX', '{ url_prefix }');
+        define ('QCUBED_URL_PREFIX', '{ url_prefix }');
 
         // The files need to be in DOC_ROOT, or somehow (perhaps a rewrite rule), be browser accessible.
         // Default values point inside of the project and QCubed base directories. A production environment should
