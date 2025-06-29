@@ -13,17 +13,19 @@ use QCubed\Codegen\ColumnInterface;
 use QCubed\Codegen\DatabaseCodeGen;
 use QCubed\Codegen\SqlTable;
 use QCubed\Database\FieldType;
+use QCubed\Exception\Caller;
+use QCubed\Exception\InvalidCast;
 use QCubed\Type;
+use QCubed\QString;
 
 /**
  * Class TextBox
  *
  * @package QCubed\Codegen\Generator
- * @was QTextBoxBase_CodeGenerator
  */
 class TextBox extends Control
 {
-    public function __construct($strControlClassName = 'QCubed\\Project\\Control\\TextBox')
+    public function __construct(string $strControlClassName = 'QCubed\\Project\\Control\\TextBox')
     {
         parent::__construct($strControlClassName);
     }
@@ -32,7 +34,7 @@ class TextBox extends Control
      * @param string $strPropName
      * @return string
      */
-    public function varName($strPropName)
+    public function varName(string $strPropName): string
     {
         return 'txt' . $strPropName;
     }
@@ -46,8 +48,10 @@ class TextBox extends Control
      * @param SqlTable $objTable
      * @param ColumnInterface $objColumn
      * @return string
+     * @throws Caller
+     * @throws InvalidCast
      */
-    public function connectorCreate(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn)
+    public function connectorCreate(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn): string
     {
         //$strObjectName = $objCodeGen->modelVariableName($objTable->Name);
         $strClassName = $objTable->ClassName;
@@ -57,55 +61,72 @@ class TextBox extends Control
         // Read the control type in case we are generating code for a subclass of QTextBox
         $strControlType = $objCodeGen->getControlCodeGenerator($objColumn)->getControlClass();
 
+        $displayType = $strControlType;
+        if ($displayType === 'QCubed\Project\Control\TextBox') {
+            $displayType = 'TextBox';
+        }
+        if ($displayType === 'QCubed\Control\IntegerTextBox') {
+            $displayType = 'IntegerTextBox';
+        }
+
+        if ($displayType === 'QCubed\Control\FloatTextBox') {
+            $displayType = 'FloatTextBox';
+        }
+        // add more else-ifs if necessary!
+
         $strRet = <<<TMPL
-		/**
-		 * Create and setup a $strControlType $strControlVarName
-		 * @param string \$strControlId optional ControlId to use
-		 * @return $strControlType
-		 */
-		public function {$strControlVarName}_Create(\$strControlId = null) {
+    /**
+     * Create and set up a $displayType
+     * @param string|null \$strControlId optional ControlId to use
+     * @return $displayType
+     * @throws Caller
+     */
+    public function {$strControlVarName}_Create(?string \$strControlId = null): $displayType
+    {
 
 TMPL;
         $strControlIdOverride = $objCodeGen->generateControlId($objTable, $objColumn);
 
         if ($strControlIdOverride) {
             $strRet .= <<<TMPL
-			if (!\$strControlId) {
-				\$strControlId = '$strControlIdOverride';
-			}
+        if (!\$strControlId) {
+            \$strControlId = '$strControlIdOverride';
+        }
 
 TMPL;
         }
         $strRet .= <<<TMPL
-			\$this->{$strControlVarName} = new \\{$strControlType}(\$this->objParentObject, \$strControlId);
-			\$this->{$strControlVarName}->Name = t('$strLabelName');
+        \$this->{$strControlVarName} = new {$displayType}(\$this->objParentObject, \$strControlId);
+        \$this->{$strControlVarName}->Name = t('$strLabelName');
 
 TMPL;
 
         if ($objColumn->NotNull) {
             $strRet .= <<<TMPL
-			\$this->{$strControlVarName}->Required = true;
+        \$this->{$strControlVarName}->Required = true;
 
 TMPL;
         }
 
         if ($objColumn->DbType == FieldType::BLOB) {
             $strRet .= <<<TMPL
-			\$this->{$strControlVarName}->TextMode = TextBox::MULTI_LINE;
+        \$this->{$strControlVarName}->TextMode = TextBox::MULTI_LINE;
 
 TMPL;
         }
 
         if (($objColumn->VariableType == Type::STRING) && (is_numeric($objColumn->Length))) {
+
+            $strConstName = strtoupper(QString::underscoreFromCamelCase($objColumn->PropertyName));
             $strRet .= <<<TMPL
-			\$this->{$strControlVarName}->MaxLength = {$strClassName}::{$objColumn->PropertyName}MaxLength;
+        \$this->{$strControlVarName}->MaxLength = {$strClassName}::{$strConstName}_MAX_LENGTH;
 
 TMPL;
         }
 
         if ($strMethod = DatabaseCodeGen::$PreferredRenderMethod) {
             $strRet .= <<<TMPL
-			\$this->{$strControlVarName}->PreferredRenderMethod = '$strMethod';
+        \$this->{$strControlVarName}->PreferredRenderMethod = '$strMethod';
 
 TMPL;
         }
@@ -114,8 +135,8 @@ TMPL;
         $strRet .= $this->connectorRefresh($objCodeGen, $objTable, $objColumn, true);
 
         $strRet .= <<<TMPL
-			return \$this->{$strControlVarName};
-		}
+        return \$this->{$strControlVarName};
+    }
 
 
 TMPL;
@@ -136,35 +157,36 @@ TMPL;
         DatabaseCodeGen $objCodeGen,
         SqlTable $objTable,
         ColumnInterface $objColumn,
-        $blnInit = false
-    ) {
+        ?bool $blnInit = false
+    ): string
+    {
         $strObjectName = $objCodeGen->modelVariableName($objTable->Name);
         $strPropName = $objColumn->Reference ? $objColumn->Reference->PropertyName : $objColumn->PropertyName;
         $strControlVarName = $this->varName($strPropName);
 
         if ($blnInit) {
-            $strRet = "\t\t\t\$this->{$strControlVarName}->Text = \$this->{$strObjectName}->{$strPropName};";
+            $strRet = "        \$this->{$strControlVarName}->Text = \$this->{$strObjectName}->{$strPropName};";
         } else {
-            $strRet = "\t\t\tif (\$this->{$strControlVarName}) \$this->{$strControlVarName}->Text = \$this->{$strObjectName}->{$strPropName};";
+            $strRet = "        \$this->{$strControlVarName}->Text = \$this->{$strObjectName}->{$strPropName};";
         }
         return $strRet . "\n";
     }
 
     /**
-     * @param DatabaseCodeGen $objCodeGen
-     * @param SqlTable $objTable
-     * @param ColumnInterface $objColumn
-     * @return string
+     * Generates code to update the object property from the control's value.
+     *
+     * @param DatabaseCodeGen $objCodeGen The code generator instance.
+     * @param SqlTable $objTable The SQL table associated with the object.
+     * @param ColumnInterface $objColumn The column interface representing the property to update.
+     * @return string The generated code for updating the object property.
      */
-    public function connectorUpdate(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn)
+    public function connectorUpdate(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn): string
     {
         $strObjectName = $objCodeGen->modelVariableName($objTable->Name);
         $strPropName = $objColumn->Reference ? $objColumn->Reference->PropertyName : $objColumn->PropertyName;
         $strControlVarName = $this->varName($strPropName);
-        $strRet = <<<TMPL
-				if (\$this->{$strControlVarName}) \$this->{$strObjectName}->{$strPropName} = \$this->{$strControlVarName}->Text;
-
+        return <<<TMPL
+            \$this->{$strObjectName}->{$strPropName} = \$this->{$strControlVarName}->Text;
 TMPL;
-        return $strRet;
     }
 }

@@ -10,6 +10,7 @@
 namespace QCubed\Jqui\Action;
 
 use QCubed\Control\ControlBase;
+use QCubed\Exception\Caller;
 
 /**
  * Class Show
@@ -17,7 +18,6 @@ use QCubed\Control\ControlBase;
  * Show a control (if it's hidden)
  *
  * @package QCubed\Jqui\Action
- * @was QJQShowAction
  */
 class Show extends ActionBase
 {
@@ -25,8 +25,9 @@ class Show extends ActionBase
      * Show constructor.
      * @param ControlBase $objControl
      * @param string $strMethod
+     * @throws Caller
      */
-    public function __construct(ControlBase $objControl, $strMethod = "slow")
+    public function __construct(ControlBase $objControl, string $strMethod = "slow")
     {
         parent::__construct($objControl, $strMethod);
     }
@@ -35,7 +36,7 @@ class Show extends ActionBase
      * @param ControlBase $objControl
      * @return string
      */
-    public function renderScript(ControlBase $objControl)
+    public function renderScript(ControlBase $objControl): string
     {
         return sprintf('$j("#%s").show("%s");', $this->strControlId, $this->strMethod);
     }

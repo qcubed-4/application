@@ -10,6 +10,7 @@
 namespace QCubed\Control;
 
 use QCubed\Exception\Caller;
+use QCubed\Exception\DataBind;
 
 
 /**
@@ -19,7 +20,7 @@ use QCubed\Exception\Caller;
  * use of it. Data binding lets you only recall data during draw time, thus saving space, because the data is not
  * saved with the formstate. Controls that use this will have to be sure to unload the data after drawing as needed.
  *
- * There are a couple of modes of this. A legacy mode use strings to record the function names. The more modern way uses
+ * There are a couple of modes of this. A legacy mode uses strings to record the function names. The more modern way uses
  * an array as a callable.
  *
  * @was QDataBinder
@@ -27,16 +28,19 @@ use QCubed\Exception\Caller;
  */
 trait DataBinderTrait
 {
-    protected $objDataBinder;
+    /**
+     * @var callable|array|null $objDataBinder
+     */
+    protected $objDataBinder = null;
 
     /**
-     * Sets the data binder. Allows it to be sent in a couple of different ways:
-     * - legacy mode: method name followed by optional control to call the method on. If not specified, will call on the form.
-     * - modern mode: a php callable.
-     * @param callable|string $mixMethodName
-     * @param null|FormBase|ControlBase $objParentControl
+     * Sets the data binder method for the control.
+     *
+     * @param callable|string $mixMethodName A callable function or a method name (as a string) used for data binding.
+     * @param object|null $objParentControl Optional. The parent control object, required if $mixMethodName is a string and references a method.
+     * @return void
      */
-    public function setDataBinder($mixMethodName, $objParentControl = null)
+    public function setDataBinder(callable|string $mixMethodName, ?object $objParentControl = null): void
     {
         if (is_callable($mixMethodName)) {
             $this->objDataBinder = $mixMethodName;
@@ -51,20 +55,25 @@ trait DataBinderTrait
     }
 
     /**
-     * Bind the data by calling the data binder. Will pass the current control as the parameter to the data binder.
+     * Executes the data binder callback associated with the control or delegates it
+     * to the form if necessary. Supports various forms of data binder invocation,
+     * including array-style callbacks and error handling for invalid calls.
+     *
+     * @return void
+     * @throws DataBind
      * @throws Caller
      */
-    public function callDataBinder()
+    public function callDataBinder(): void
     {
         if ($this->objDataBinder) {
             if (is_array($this->objDataBinder)) {
                 if ($this->objDataBinder[0] === $this) {
-                    call_user_func($this->objDataBinder); // assume data binder is in a qcontrol, or is public
+                    call_user_func($this->objDataBinder); // assume the data binder is in control or is public
                 } elseif ($this->objDataBinder[0] instanceof FormBase) {
                     $this->objDataBinder[0]->callDataBinder($this->objDataBinder,
                         $this); // Let form call the data binder, so that binder can be private to form
                 } else {
-                    call_user_func($this->objDataBinder, $this); // assume data binder is in a qcontrol, or is public
+                    call_user_func($this->objDataBinder, $this); // assume the data binder is in control or is public
                 }
             } else {
                 try {
@@ -80,32 +89,53 @@ trait DataBinderTrait
     /**
      * Check the binder for a reference to the form.
      */
-    public function sleep()
+    public function sleep(): array
     {
+
         $this->objDataBinder = ControlBase::sleepHelper($this->objDataBinder);
-        parent::sleep();
+
+        return [];
+
+//        $this->objDataBinder = ControlBase::sleepHelper($this->objDataBinder);
+//
+//        of (is_callable([get_parent_class($this), 'sleep'])) {
+//            $parentSleepResult = parent::sleep();
+//            return is_array($parentSleepResult) ? $parentSleepResult : [];
+//        }
+//
+//        return [];
+
+//        $this->objDataBinder = ControlBase::sleepHelper($this->objDataBinder);
+//
+//        $parentSleepResult = parent::sleep();
+//
+//        return is_array($parentSleepResult) ? $parentSleepResult : [];
     }
 
     /**
-     * @param FormBase $objForm
+     * Restores the object state by reinitializing the binder with a reference to the form.
+     *
+     * @param FormBase $objForm The form instance to be used for reinitializing the binder.
+     * @return void
      */
-    public function wakeup(FormBase $objForm)
+    public function wakeup(FormBase $objForm): void
     {
-        parent::wakeup($objForm);
         $this->objDataBinder = ControlBase::wakeupHelper($objForm, $this->objDataBinder);
+
+//        parent::wakeup($objForm);
+//        $this->objDataBinder = ControlBase::wakeupHelper($objForm, $this->objDataBinder);
     }
 
     /**
      * @return bool
      */
-    public function hasDataBinder()
+    public function hasDataBinder(): bool
     {
-        return $this->objDataBinder ? true : false;
+        return $this->objDataBinder !== null;
     }
 
     /**
      * Returns the FormBase. All ControlBases implement this.
-     * @return FormBase
      */
-    abstract function getForm();
+    abstract function getForm(): FormBase;
 }

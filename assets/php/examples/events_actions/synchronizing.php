@@ -10,18 +10,18 @@ require_once('../qcubed.inc.php');
 	class ExampleForm extends FormBase
 	{
 		/** @var  Button */
-		protected $btnRegular;
+		protected Button $btnRegular;
 		/** @var  Button */
-		protected $btnBlocking;
-		protected $intRegularCount = 0;
-		protected $intBlockingCount = 0;
+		protected Button $btnBlocking;
+		protected int $intRegularCount = 0;
+		protected int $intBlockingCount = 0;
 
 
-		protected $lblRegular;
-		protected $lblBlocking;
+		protected Label $lblRegular;
+		protected Label $lblBlocking;
 
-		protected function formCreate()
-		{
+		protected function formCreate(): void
+        {
 			$this->btnRegular = new Button($this);
 			$this->btnRegular->Text = "Regular Button";
 			$this->btnRegular->addAction(new Click(), new Ajax('btnRegular_Click'));
@@ -36,13 +36,15 @@ require_once('../qcubed.inc.php');
 			$this->lblBlocking->Text = '0';
 		}
 
-		protected function btnRegular_Click() {
+		protected function btnRegular_Click(): void
+        {
 			$this->intRegularCount += 1;
 			$this->lblRegular->Text = $this->intRegularCount;
 			$this->btnRegular->Enabled = false;
 		}
 
-		protected function btnBlocking_Click() {
+		protected function btnBlocking_Click(): void
+        {
 			$this->intBlockingCount += 1;
 			$this->lblBlocking->Text = $this->intBlockingCount;
 			$this->btnBlocking->Enabled = false;

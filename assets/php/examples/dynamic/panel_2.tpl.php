@@ -1,6 +1,18 @@
 <?php require('../includes/header.inc.php'); ?>
 <?php $this->renderBegin(); ?>
 
+<style>
+    table {
+        border-collapse: collapse;
+        border-spacing: 0; /* cellspacing */
+        border: none;
+    }
+    th, td {
+        padding: 15px;  /* cellpadding */
+        vertical-align: top;
+    }
+</style>
+
 <div id="instructions">
 	<h1>Moving Controls Between Panels</h1>
 
@@ -9,7 +21,7 @@
 	change a control's parent, to essentially "move" a control from one panel to the next.</p>
 
 	<p>The example below has two <strong>Panel</strong> controls, as well as ten <strong>TextBox</strong> controls
-	who's parents are one of the panels.  The buttons have <strong>Ajax</strong> actions which will
+	whose parents are one of the panels.  The buttons have <strong>Ajax</strong> actions which will
 	move the textboxes back and forth between the panels, or remove the textbox altogether.</p>
 
 	<p>Again, note that we are not hard coding a <strong>$objTextBox->render()</strong> <em>anywhere</em> in our code.  We
@@ -22,16 +34,16 @@
 </div>
 
 <div id="demoZone">
-	<table cellspacing="0" cellpadding="5" border="0">
+	<table>
 		<tr>
-			<td valign="top"><?php $this->pnlLeft->Render(); ?></td>
-			<td valign="top"><?php $this->pnlRight->Render(); ?></td>
+			<td><?php $this->pnlLeft->render(); ?></td>
+			<td><?php $this->pnlRight->render(); ?></td>
 		</tr>
 		<tr>
-			<td colspan="2" align="center">
-				<?php $this->btnMoveLeft->Render(); ?>
-				<?php $this->btnMoveRight->Render(); ?><br/>
-				<?php $this->btnDeleteLeft->Render(); ?>
+			<td colspan="2"><br/>
+				<?php $this->btnMoveLeft->render(); ?>
+				<?php $this->btnMoveRight->render(); ?><br/><br/>
+				<?php $this->btnDeleteLeft->render(); ?>
 			</td>
 		</tr>
 	</table>

@@ -9,8 +9,7 @@
 
 namespace QCubed\Control;
 
-require_once(dirname(dirname(__DIR__)) . '/i18n/i18n-lib.inc.php');
-use QCubed\Application\t;
+require_once(dirname(__DIR__, 2) . '/i18n/i18n-lib.inc.php');
 
 use QCubed\Exception\Caller;
 use QCubed\Exception\InvalidCast;
@@ -18,24 +17,6 @@ use QCubed\Type;
 use QCubed as Q;
 
 /**
- * This file contains the QWaitIcon class.
- *
- * @package Controls
- * @filesource
- */
-
-/**
- * @package Controls
- *
- * @property string $Text
- * @property string $TagName
- * @property string $Padding
- * @property string $HorizontalAlign
- * @property string $VerticalAlign
- */
-
-/**
- * @was QWaitIcon
  * @package QCubed\Control
  */
 class WaitIcon extends Q\Project\Control\ControlBase
@@ -46,19 +27,27 @@ class WaitIcon extends Q\Project\Control\ControlBase
 
     // APPEARANCE
     /** @var string String to be displayed as alt text (e.g. "Please wait")  */
-    protected $strText;
+    protected string $strText;
     /** @var string HTML tag name to be used for rendering the text */
-    protected $strTagName = 'span';
+    protected string $strTagName = 'span';
     /** @var bool */
-    protected $blnDisplay = false;
+    protected bool $blnDisplay = false;
 
-    public function __construct($objParentObject, $strControlId = null)
+    /**
+     * Constructor for the class.
+     *
+     * @param mixed $objParentObject The parent object to which this control belongs.
+     * @param string|null $strControlId Optional control ID. If null, an ID will be generated automatically.
+     * @return void
+     * @throws Caller
+     */
+    public function __construct(FormBase|ControlBase $objParentObject, ?string $strControlId = null)
     {
         parent::__construct($objParentObject, $strControlId);
         $this->strText = t('Please wait...');
     }
 
-    public function parsePostData()
+    public function parsePostData(): void
     {
     }
 
@@ -67,7 +56,7 @@ class WaitIcon extends Q\Project\Control\ControlBase
      *
      * @return bool
      */
-    public function validate()
+    public function validate(): bool
     {
         return true;
     }
@@ -76,7 +65,7 @@ class WaitIcon extends Q\Project\Control\ControlBase
      * Returns the HTML we have to send to the browser to render this wait icon
      * @return string HTML to be returned
      */
-    protected function getControlHtml()
+    protected function getControlHtml(): string
     {
         $strImg = Q\Html::renderTag('img',
             [
@@ -94,14 +83,13 @@ class WaitIcon extends Q\Project\Control\ControlBase
     // Public Properties: GET
     /////////////////////////
     /**
-     * PHP magic method
+     * Magic method to get the value of a property by its name.
      *
-     * @param string $strName Property name
-     *
-     * @return mixed|null|string
-     * @throws Caller
+     * @param string $strName The name of the property to retrieve.
+     * @return mixed The value of the requested property.
+     * @throws Caller If the property does not exist or an error occurs during retrieval.
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             // APPEARANCE
@@ -110,7 +98,7 @@ class WaitIcon extends Q\Project\Control\ControlBase
             case "TagName":
                 return $this->strTagName;
 
-            /** uses HtmlAttributeManager now
+            /** Uses HtmlAttributeManager now
              * case "HorizontalAlign":
              * return $this->strHorizontalAlign;
              * case "VerticalAlign":
@@ -130,15 +118,15 @@ class WaitIcon extends Q\Project\Control\ControlBase
     // Public Properties: SET
     /////////////////////////
     /**
-     * PHP magic method
+     * Magic method to set the value of a property dynamically.
      *
-     * @param string $strName Property name
-     * @param string $mixValue Property value
-     *
-     * @return mixed|void
-     * @throws Caller|InvalidCast
+     * @param string $strName The name of the property to be set.
+     * @param mixed $mixValue The value to assign to the property.
+     * @return void
+     * @throws InvalidCast If the value cannot be cast to the required type.
+     * @throws Caller If the property does not exist or cannot be set.
      */
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         $this->blnModified = true;
 

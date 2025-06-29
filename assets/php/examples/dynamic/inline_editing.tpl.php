@@ -5,7 +5,7 @@
 	<h1>Creating a DataGrid with Inline Editing</h1>
 	
 	<p>Using the techniques for dynamically creating controls and utilizing the AJAX
-	features in QCubed, we update our <strong>Person</strong> datagrid to include functionality for
+	features in QCubed-4, we update our <strong>Person</strong> datagrid to include functionality for
 	inline editing.</p>
 
 	<p>We must first add a <strong>$intEditPersonId</strong> in the FormBase to keep track of which
@@ -27,9 +27,9 @@
 </div>
 
 <div id="demoZone">
-	<?php $this->dtgPersons->Render(); ?>
+	<?php $this->dtgPersons->render(); ?>
 	<div style="text-align: center; width: 670px; margin-top: 16px;">
-		<?php $this->btnNew->Render(); ?>
+		<?php $this->btnNew->render(); ?>
 	</div>
 </div>
 

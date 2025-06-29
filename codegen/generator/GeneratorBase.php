@@ -17,18 +17,17 @@ use QCubed\Codegen\SqlTable;
 /**
  * Class GeneratorBase
  * @package QCubed\Codegen\Generator
- * @was AbstractControl_CodeGenerator
  */
 abstract class GeneratorBase
 {
-    protected $strControlClassName;
+    protected string $strControlClassName;
 
-    public function __construct($strControlClassName)
+    public function __construct(string $strControlClassName)
     {
         $this->strControlClassName = $strControlClassName;
     }
 
-    public function getControlClass()
+    public function getControlClass(): string
     {
         return $this->strControlClassName;
     }
@@ -37,7 +36,7 @@ abstract class GeneratorBase
      * @param string $strPropName
      * @return string
      */
-    abstract public function varName($strPropName);
+    abstract public function varName(string $strPropName): string;
 
     /**
      * Generate code that will be inserted into the ModelConnector to connect a database object with this control.
@@ -49,14 +48,14 @@ abstract class GeneratorBase
      * @param ColumnInterface $objColumn
      * @return mixed
      */
-    abstract public function connectorCreate(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn);
+    abstract public function connectorCreate(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn): mixed;
 
     /**
      * @param DatabaseCodeGen $objCodeGen
      * @param SqlColumn $objColumn
      * @return string
      */
-    abstract public function connectorVariableDeclaration(DatabaseCodeGen $objCodeGen, ColumnInterface $objColumn);
+    abstract public function connectorVariableDeclaration(DatabaseCodeGen $objCodeGen, ColumnInterface $objColumn): string;
 
     /**
      * Reads the options from the special data file, and possibly the column
@@ -67,11 +66,11 @@ abstract class GeneratorBase
      * @return string
      */
     abstract public function connectorCreateOptions(
-        DatabaseCodeGen $objCodeGen,
-        SqlTable $objTable,
-        $objColumn,
-        $strControlVarName
-    );
+        DatabaseCodeGen  $objCodeGen,
+        SqlTable         $objTable,
+        ?ColumnInterface $objColumn,
+        string $strControlVarName
+    ): string;
 
     /**
      * Returns code to refresh the control from the saved object.
@@ -86,8 +85,8 @@ abstract class GeneratorBase
         DatabaseCodeGen $objCodeGen,
         SqlTable $objTable,
         ColumnInterface $objColumn,
-        $blnInit = false
-    );
+        ?bool $blnInit = false
+    ): string;
 
     /**
      * @param DatabaseCodeGen $objCodeGen
@@ -95,7 +94,7 @@ abstract class GeneratorBase
      * @param ColumnInterface $objColumn
      * @return string
      */
-    abstract public function connectorUpdate(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn);
+    abstract public function connectorUpdate(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn): string;
 
     /**
      * Generate helper functions for the update process.
@@ -106,5 +105,5 @@ abstract class GeneratorBase
      *
      * @return string
      */
-    abstract public function connectorUpdateMethod(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn);
+    abstract public function connectorUpdateMethod(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn): string;
 }

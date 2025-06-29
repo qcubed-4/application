@@ -6,18 +6,18 @@
 	<p>The C, U and D in CRUD is handled by the code generated <strong>save()</strong> and <strong>delete()</strong> methods in
 		every object.</p>
 
-	<strong>delete()</strong> should hopefully be self-explanatory.  <strong>save()</strong> will either call a SQL INSERT
+	<p><strong>delete()</strong> should hopefully be self-explanatory.  <strong>save()</strong> will either call a SQL INSERT
 		or a SQL UPDATE, depending on whether the object was created brand new or if it was restored via
         one of the <strong>load*</strong> methods. If you have the need,
         you can call <strong>save()</strong> passing in true for the optional <strong>$blnForceInsert</strong>
-		or <strong>$blnForceUpdate</strong> parameters to force it to do an INSERT or UPDATE.  </p>
+        or <strong>$blnForceUpdate</strong> parameters to force it to do an INSERT or UPDATE.</p>
 </div>
 
 <div id="demoZone">
 	<h2>Load a Person object, modify it, and save</h2>
 <?php
 	// Let's load a Person object -- let's select the Person with ID #3
-	$objPerson = Person::Load(3);
+	$objPerson = Person::load(3);
 ?>
 	<h3><em>Before the save</em></h3>
 	<ul>

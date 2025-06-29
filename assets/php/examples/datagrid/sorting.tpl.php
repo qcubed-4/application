@@ -4,7 +4,7 @@
 <div id="instructions">
 	<h1>The DataGrid Class and Sorting by Columns</h1>
 
-	<p><strong>Table</strong>, is great for drawing basic HTML tables, but can overload a web page
+	<p><strong>Table</strong>, is great for drawing basic HTML tables but can overload a web page
 		when trying to display a large amount of information.</p>
 
 	<p>The <strong>DataGrid</strong> class is a subclass of Table and has features that allow the table
@@ -21,7 +21,7 @@
 		to also just define <strong>OrderByClause</strong>, and to leave <strong>ReverseOrderByClause</strong> undefined).  The <strong>QQ Clause</strong>
 		you specify is given back to you when you call the <strong>OrderByClause</strong> property on the <strong>DataGrid</strong>
 		when you query the database in the data binder. You then pass this clause to your class's <strong>loadAll()</strong> or <strong>loadArrayBy...()</strong>
-		method as one of the optional <strong>QQ Clause</strong> parameters.  Note that all QCubed code generated <strong>loadAll()</strong> and <strong>loadArrayBy...()</strong>
+		method as one of the optional <strong>QQ Clause</strong> parameters.  Note that all QCubed-4 code generated <strong>loadAll()</strong> and <strong>loadArrayBy...()</strong>
 		methods take in an optional <strong>$objOptionalClauses</strong> parameter which conveniently uses the clause returned by the <strong>DataGrid</strong>'s
 		<strong>OrderByClause</strong> method.</p>
 
@@ -31,7 +31,7 @@
 </div>
 
 <div id="demoZone">
-	<?php $this->dtgPersons->Render(); ?>
+	<?php $this->dtgPersons->render(); ?>
 </div>
 
 <?php $this->renderEnd(); ?>

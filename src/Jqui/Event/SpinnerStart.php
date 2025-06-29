@@ -14,13 +14,13 @@ namespace QCubed\Jqui\Event;
  *
  * The abstract SpinnerStart class defined here is
  * code-generated. The code to generate this file is
- * in the /tools/jquery_ui_gen/jq_control_gen.php file
+ * in the /tools/jquery_ui_gen/jq_control_gen.php file,
  * and you can regenerate the files if you need to.
  *
  * The comments in this file are taken from the api reference site, so they do
  * not always make sense with regard to QCubed. They are simply provided
  * as reference.
- * Triggered before a spin. Can be canceled, preventing the spin from
+ * Triggered before a spin. It Can be canceled, preventing the spin from
  * occurring.
  * 
  * 	* event Type: Event 
@@ -29,7 +29,6 @@ namespace QCubed\Jqui\Event;
  * _Note: The ui object is empty but included for consistency with other
  * events._
  *
- * @was QSpinner_StartEvent
  */
 class SpinnerStart extends EventBase
 {

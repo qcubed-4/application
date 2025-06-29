@@ -31,16 +31,15 @@ use QCubed\ObjectBase;
 class ActionParams extends ObjectBase
 {
     /** @var  ActionBase Action that triggered the method */
-    protected $objAction;
-    /** @var  mixed Parameters coming from javascript. If a javascript object is sent, this will be an indexed array */
-    protected $mixParam;
-    /** @var  mixed Controls can alter the parameters coming from javascript. This is the original parameter. */
-    protected $mixOriginalParam;
+    protected ActionBase $objAction;
+    /** @var  mixed Parameters coming from JavaScript. If a JavaScript object is sent, this will be an indexed array */
+    protected mixed $mixParam;
+    /** @var  mixed Controls can alter the parameters coming from JavaScript. This is the original parameter. */
+    protected mixed $mixOriginalParam;
     /** @var  ControlBase The control that originated the action. */
-    protected $objControl;
-    /** @var  string The form id of the form triggering the action. Since we only allow one form currently, this is for future expansion. */
-    protected $strFormId;
-
+    protected ControlBase $objControl;
+    /** @var  string The form Id of the form triggering the action. Since we only allow one form currently, this is for future expansion. */
+    protected string $strFormId;
 
     /**
      * ActionParams constructor.
@@ -49,7 +48,7 @@ class ActionParams extends ObjectBase
      * @param string $strControlId
      * @param mixed $mixParam
      */
-    public function __construct(ActionBase $objAction, FormBase $objForm, $strControlId, $mixParam)
+    public function __construct(ActionBase $objAction, FormBase $objForm, string $strControlId, mixed $mixParam)
     {
         $this->objAction = $objAction;
         $this->mixOriginalParam = $mixParam;
@@ -66,7 +65,7 @@ class ActionParams extends ObjectBase
      * @return mixed|null|string
      * @throws Caller
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             case 'Action':
@@ -94,12 +93,12 @@ class ActionParams extends ObjectBase
      * PHP Magic function to set the property values of an object of the class
      *
      * @param string $strName Name of the property
-     * @param string $mixValue Value of the property
+     * @param mixed $mixValue Value of the property
      *
-     * @throws Caller
      * @return void
+     *@throws Caller
      */
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             case 'Param':

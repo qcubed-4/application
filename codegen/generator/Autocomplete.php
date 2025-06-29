@@ -15,16 +15,16 @@ use QCubed\Codegen\ManyToManyReference;
 use QCubed\Codegen\ReverseReference;
 use QCubed\Codegen\SqlColumn;
 use QCubed\Codegen\SqlTable;
+use Exception;
 
 /**
  * Class Autocomplete
  *
  * @package QCubed\Codegen\Generator
- * @was QAutocompleteBase_CodeGenerator
  */
 class Autocomplete extends TextBox
 {
-    public function __construct($strControlClassName = 'QCubed\\Project\\Jqui\\Autocomplete')
+    public function __construct(string $strControlClassName = 'QCubed\\Project\\Jqui\\Autocomplete')
     {
         parent::__construct($strControlClassName);
     }
@@ -33,12 +33,12 @@ class Autocomplete extends TextBox
      * @param string $strPropName
      * @return string
      */
-    public function varName($strPropName)
+    public function varName(string $strPropName): string
     {
         return 'lst' . $strPropName;
     }
 
-    public function connectorImports(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn)
+    public function connectorImports(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn): array
     {
         $a = parent::connectorImports($objCodeGen, $objTable, $objColumn);
         $a[] = ['class'=>'QCubed\\Query\\Condition\\ConditionInterface', 'as'=>'QQCondition'];
@@ -56,10 +56,10 @@ class Autocomplete extends TextBox
      * @param DatabaseCodeGen $objCodeGen
      * @param SqlTable $objTable
      * @param ColumnInterface $objColumn
-     * @throws \Exception
+     * @throws Exception
      * @return string
      */
-    public function connectorCreate(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn)
+    public function connectorCreate(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn): string
     {
         if ($objColumn instanceof ManyToManyReference) {
             throw new Exception("Autocomplete does not support many-to-many references.");
@@ -109,7 +109,7 @@ TMPL;
 
         if ($strControlIdOverride) {
             $strRet .= <<<TMPL
-			if (!\$strControlId) {
+			if (!\c) {
 				\$strControlId = '$strControlIdOverride';
 			}
 
@@ -144,11 +144,9 @@ TMPL;
 TMPL;
 
         if ($objColumn instanceof SqlColumn && $objColumn->Reference->IsType) {
-            if ($objColumn instanceof SqlColumn) {
-                $strVarType = $objColumn->Reference->VariableType;
-            } else {
-                $strVarType = $objColumn->VariableType;
-            }
+
+            $strVarType = $objColumn->Reference->VariableType;
+            $strVarType = $objColumn->VariableType;
             $strRet .= <<<TMPL
 
 		/**
@@ -170,7 +168,7 @@ TMPL;
                 $strRefVarName = $objColumn->VariableName;
                 $strRefTable = $objColumn->Table;
             } else {
-                throw new \Exception("Unprepared to handle this column type.");
+                throw new Exception("Unprepared to handle this column type.");
             }
 
             $strRet .= <<<TMPL
@@ -204,14 +202,15 @@ TMPL;
      * @param DatabaseCodeGen $objCodeGen
      * @param ColumnInterface $objColumn
      * @return string
+     * @throws \QCubed\Exception\InvalidCast
      */
-    public function connectorVariableDeclaration(DatabaseCodeGen $objCodeGen, ColumnInterface $objColumn)
+    public function connectorVariableDeclaration(DatabaseCodeGen $objCodeGen, ColumnInterface $objColumn): string
     {
         $strClassName = $objCodeGen->getControlCodeGenerator($objColumn)->getControlClass();
         $strPropName = $objCodeGen->modelConnectorPropertyName($objColumn);
         $strControlVarName = $this->varName($strPropName);
 
-        $strRet = <<<TMPL
+        return <<<TMPL
     /**
      * @var {$strClassName}
      * @access protected
@@ -231,8 +230,6 @@ TMPL;
     protected \$obj{$strPropName}Clauses;
 
 TMPL;
-
-        return $strRet;
     }
 
     /**
@@ -243,8 +240,10 @@ TMPL;
      * @param ColumnInterface $objColumn
      * @param bool $blnInit
      * @return string
+     * @throws \QCubed\Exception\Caller
+     * @throws \QCubed\Exception\InvalidCast
      */
-    public function connectorRefresh(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn, $blnInit = false)
+    public function connectorRefresh(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn, ?bool $blnInit = false): string
     {
         $strPrimaryKey = $objCodeGen->getTable($objColumn->Reference->Table)->PrimaryKeyColumnArray[0]->PropertyName;
         $strPropName = DatabaseCodeGen::modelConnectorPropertyName($objColumn);
@@ -295,8 +294,9 @@ TMPL;
      * @param SqlTable $objTable
      * @param ColumnInterface $objColumn
      * @return string
+     * @throws \QCubed\Exception\InvalidCast
      */
-    public function connectorUpdate(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn)
+    public function connectorUpdate(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn): string
     {
         $strObjectName = $objCodeGen->modelVariableName($objTable->Name);
         $strPropName = DatabaseCodeGen::modelConnectorPropertyName($objColumn);

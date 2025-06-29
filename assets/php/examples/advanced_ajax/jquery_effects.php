@@ -20,19 +20,19 @@ require_once('../qcubed.inc.php');
 
 class ExampleForm extends FormBase
 {
-    protected $txtTextbox;
+    protected TextBox $txtTextbox;
 
-    protected $btnToggle;
-    protected $btnHide;
-    protected $btnShow;
-    protected $btnBounce;
-    protected $btnHighlight;
-    protected $btnShake;
-    protected $btnPulsate;
-    protected $btnSize;
-    protected $btnTransfer;
+    protected Button $btnToggle;
+    protected Button $btnHide;
+    protected Button $btnShow;
+    protected Button $btnBounce;
+    protected Button $btnHighlight;
+    protected Button $btnShake;
+    protected Button $btnPulsate;
+    protected Button $btnSize;
+    protected Button $btnTransfer;
 
-    protected function formCreate()
+    protected function formCreate(): void
     {
         $this->txtTextbox = new TextBox($this);
         $this->txtTextbox->TextMode = TextBoxBase::MULTI_LINE;

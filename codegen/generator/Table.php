@@ -11,39 +11,44 @@ namespace QCubed\Codegen\Generator;
 
 use QCubed\Codegen\SqlTable;
 use QCubed\Codegen\DatabaseCodeGen;
+use Exception;
 use QCubed as Q;
+use QCubed\Exception\Caller;
+use QCubed\Exception\InvalidCast;
 
 /**
- * Class QHtmlTable_CodeGenerator
+ * Class Table CodeGenerator
  *
- * This is a base class to support classes that are derived from QHtmlTable. The methods here support the use
- * of QHtmlTable derived classes as a list connector, something that displays a list of records from a database,
+ * This is a base class to support classes that are derived from Table. The methods here support the use
+ * of Table-derived classes as a list connector, something that displays a list of records from a database
  * and optionally allows the user to do CRUD operations on individual records.
  *
  * @package QCubed\Codegen\Generator
- * @was QHtmlTable_CodeGenerator
  */
 class Table extends Control implements DataListInterface
 {
-
     /**
      * dtg stands for "DataGrid", a QCubed historical name for tables displaying data. Override if you want something else.
      * @param string $strPropName
      * @return string
      */
-    public function varName($strPropName)
+    public function varName(string $strPropName): string
     {
         return 'dtg' . $strPropName;
     }
 
-    
-    /****
-     * CONNECTOR GEN
-     * The following functions generate the ListGen code that will go into the generated/connector_base directory
-     *******/
+    /**
+     * Generates a string containing import statements for the datalist code.
+     *
+     * @param mixed $objCodeGen The code generator instance being used.
+     * @param mixed $objTable The table object for which the datalist is being generated.
+     * @return string A string containing the PHP import statements.
+     */
 
-    public function dataListImports($objCodeGen, $objTable) {
-        $strCode = <<<TMPL
+    public function dataListImports(mixed $objCodeGen, mixed $objTable): string
+    {
+        return <<<TMPL
+use QCubed\Project\Control\DataGrid;
 use QCubed\Query\Condition\ConditionInterface as QQCondition;
 use QCubed\Query\Clause\ClauseInterface as QQClause;
 use QCubed\Table\NodeColumn;
@@ -52,11 +57,10 @@ use QCubed\Project\Control\FormBase as QForm;
 use QCubed\Project\Control\Paginator;
 use QCubed\Type;
 use QCubed\Exception\Caller;
+use QCubed\Exception\InvalidCast;
 use QCubed\Query\QQ;
 
-
 TMPL;
-        return $strCode;
     }
 
     /**
@@ -67,16 +71,14 @@ TMPL;
      * @param SqlTable $objTable
      * @return string
      */
-    public function dataListConnectorComments(DatabaseCodeGen $objCodeGen, SqlTable $objTable)
+    public function dataListConnectorComments(DatabaseCodeGen $objCodeGen, SqlTable $objTable): string
     {
-        $strCode = <<<TMPL
- * @property QQCondition 	\$Condition Any condition to use during binding
- * @property QQClause 		\$Clauses Any clauses to use during binding
+        return <<<TMPL
+ * @property QQCondition \$Condition Any condition to use during binding
+ * @property QQClause \$Clauses Any clauses to use during binding
 
 TMPL;
-        return $strCode;
     }
-
 
     /**
      * The main entry point for generating all the "ConnectorGen" code that defines the generated list connector
@@ -85,8 +87,9 @@ TMPL;
      * @param DatabaseCodeGen $objCodeGen
      * @param SqlTable $objTable
      * @return string
+     * @throws Exception
      */
-    public function dataListConnector(DatabaseCodeGen $objCodeGen, SqlTable $objTable)
+    public function dataListConnector(DatabaseCodeGen $objCodeGen, SqlTable $objTable): string
     {
         $strCode = $this->dataListMembers($objCodeGen, $objTable);
         $strCode .= $this->dataListConstructor($objCodeGen, $objTable);
@@ -105,22 +108,22 @@ TMPL;
      * @param DatabaseCodeGen $objCodeGen
      * @param SqlTable $objTable
      * @return string
+     * @throws Exception
      */
-    protected function dataListMembers(DatabaseCodeGen $objCodeGen, SqlTable $objTable)
+    protected function dataListMembers(DatabaseCodeGen $objCodeGen, SqlTable $objTable): string
     {
         $strCode = <<<TMPL
-	/**
-	 * @var null|QQCondition	Condition to use to filter the list.
-	 * @access protected
-	 */
-	protected \$objCondition;
-
-	/**
-	 * @var null|QQClause[]		Clauses to attach to the query.
-	 * @access protected
-	 */
-	protected \$objClauses;
-
+    /**
+     * @var null|QQCondition Condition to use to filter the list.
+     * @access protected
+     */
+    protected ?QQCondition \$objCondition = null;
+    
+    /**
+     * @var null|QQClause[] Clauses to attach to the query.
+     * @access protected
+     */
+    protected ?array \$objClauses = null;
 
 TMPL;
         $strCode .= $this->dataListColumnDeclarations($objCodeGen, $objTable);
@@ -136,12 +139,15 @@ TMPL;
      * @return string
      * @throws Exception
      */
-    protected function dataListColumnDeclarations(DatabaseCodeGen $objCodeGen, SqlTable $objTable)
+    protected function dataListColumnDeclarations(DatabaseCodeGen $objCodeGen, SqlTable $objTable): string
     {
         $strCode = <<<TMPL
-	// Publicly accessible columns that allow parent controls to directly manipulate them after creation.
+
+    // Publicly accessible columns that allow parent controls to directly manipulate them after creation.
+
 
 TMPL;
+
         foreach ($objTable->ColumnArray as $objColumn) {
             if (isset($objColumn->Options['FormGen']) && ($objColumn->Options['FormGen'] == Q\ModelConnector\Options::FORMGEN_NONE)) {
                 continue;
@@ -151,8 +157,9 @@ TMPL;
             }
             $strColVarName = 'col' . $objCodeGen->modelConnectorPropertyName($objColumn);
             $strCode .= <<<TMPL
-	/** @var NodeColumn */
-	public \${$strColVarName};
+    /** @var NodeColumn */
+    public NodeColumn \${$strColVarName};
+    
 
 TMPL;
         }
@@ -162,8 +169,8 @@ TMPL;
 
             if ($objReverseReference->Unique) {
                 $strCode .= <<<TMPL
-	/** @var NodeColumn */
-	public \${$strColVarName};
+    /** @var NodeColumn */
+    public NodeColumn  \${$strColVarName};
 
 TMPL;
             }
@@ -179,30 +186,29 @@ TMPL;
      * @param SqlTable $objTable
      * @return string
      */
-    protected function dataListConstructor(DatabaseCodeGen $objCodeGen, SqlTable $objTable)
+    protected function dataListConstructor(DatabaseCodeGen $objCodeGen, SqlTable $objTable): string
     {
         $strClassName = $this->getControlClass();
 
-        $strCode = <<<TMPL
-
-	/**
-	 * {$strClassName} constructor. The default creates a paginator, sets a default data binder, and sets the grid up
-	 * watch the data. Columns are set up by the parent control. Feel free to override the constructor to do things differently.
-	 *
-	 * @param QControl|QForm \$objParent
-	 * @param null|string \$strControlId
-	 */
-	public function __construct(\$objParent, \$strControlId = null) 
-	{
-		parent::__construct(\$objParent, \$strControlId);
-		\$this->createPaginator();
-		\$this->setDataBinder('bindData', \$this);
-		\$this->watch(QQN::{$objTable->ClassName}());
-	}
+        return <<<TMPL
+    /**
+     * {$strClassName} constructor. The default creates a paginator, sets a default data binder, and sets the grid up
+     * watch the data. Columns are set up by the parent control. Feel free to override the constructor to do things differently.
+     *
+     * @param QControl|QForm \$objParent
+     * @param null|string \$strControlId
+     * @throws Caller
+     */
+    public function __construct(QControl|QForm \$objParent, ?string \$strControlId = null) 
+    {
+        parent::__construct(\$objParent, \$strControlId);
+        \$this->createPaginator();
+        \$this->setDataBinder('bindData', \$this);
+        \$this->watch(QQN::{$objTable->ClassName}());
+    }
 
 
 TMPL;
-        return $strCode;
     }
 
     /**
@@ -210,20 +216,23 @@ TMPL;
      * @param SqlTable $objTable
      * @return string
      */
-    public function dataListCreatePaginator(DatabaseCodeGen $objCodeGen, SqlTable $objTable)
+    public function dataListCreatePaginator(DatabaseCodeGen $objCodeGen, SqlTable $objTable): string
     {
-        $strCode = <<<TMPL
-	/**
-	 * Creates the paginator. Override to add an additional paginator, or to remove it.
-	 */
-	protected function createPaginator() 
-	{
-		\$this->Paginator = new Paginator(\$this);
-		\$this->ItemsPerPage = QCUBED_ITEMS_PER_PAGE;
-	}
+        return <<<TMPL
+     /**
+     * Initializes and sets up the paginator for the control.
+     * Configures the paginator instance and assigns the default number of items per a page.
+     *
+     * @return void
+     * @throws Caller
+     */
+    protected function createPaginator(): void 
+    {
+        \$this->Paginator = new Paginator(\$this);
+        \$this->ItemsPerPage = QCUBED_ITEMS_PER_PAGE;
+    }
 
 TMPL;
-        return $strCode;
     }
 
     /**
@@ -234,17 +243,21 @@ TMPL;
      * @return string
      * @throws Exception
      */
-    public function dataListCreateColumns(DatabaseCodeGen $objCodeGen, SqlTable $objTable)
+    public function dataListCreateColumns(DatabaseCodeGen $objCodeGen, SqlTable $objTable): string
     {
         $strVarName = $objCodeGen->dataListVarName($objTable);
 
         $strCode = <<<TMPL
-	/**
-	 * Creates the columns for the table. Override to customize, or use the ModelConnectorEditor to turn on and off 
-	 * individual columns. This is a public function and called by the parent control.
-	 */
-	public function createColumns() 
-	{
+    /**
+     * Creates and initializes the columns for the data table,
+     * setting up their respective names and associated data nodes.
+     *
+     * @return void
+     * @throws Caller
+     * @throws InvalidCast
+     */
+    public function createColumns(): void 
+    {
 
 TMPL;
 
@@ -257,7 +270,7 @@ TMPL;
             }
 
             $strCode .= <<<TMPL
-		\$this->col{$objCodeGen->modelConnectorPropertyName($objColumn)} = \$this->createNodeColumn("{$objCodeGen->modelConnectorControlName($objColumn)}", QQN::{$objTable->ClassName}()->{$objCodeGen->modelConnectorPropertyName($objColumn)});
+        \$this->col{$objCodeGen->modelConnectorPropertyName($objColumn)} = \$this->createNodeColumn("{$objCodeGen->modelConnectorControlName($objColumn)}", QQN::{$objTable->ClassName}()->{$objCodeGen->modelConnectorPropertyName($objColumn)});
 
 TMPL;
         }
@@ -265,21 +278,20 @@ TMPL;
         foreach ($objTable->ReverseReferenceArray as $objReverseReference) {
             if ($objReverseReference->Unique) {
                 $strCode .= <<<TMPL
-		\$this->col{$objReverseReference->ObjectDescription} = \$this->createNodeColumn("{$objCodeGen->modelConnectorControlName($objReverseReference)}", QQN::{$objTable->ClassName}()->{$objReverseReference->ObjectDescription});
+        \$this->col{$objReverseReference->ObjectDescription} = \$this->createNodeColumn("{$objCodeGen->modelConnectorControlName($objReverseReference)}", QQN::{$objTable->ClassName}()->{$objReverseReference->ObjectDescription});
 
 TMPL;
             }
         }
 
         $strCode .= <<<TMPL
-	}
+    }
 
 
 TMPL;
 
         return $strCode;
     }
-
 
     /**
      * Generates a data binder that can be called from the parent control, or called directly by this control.
@@ -288,48 +300,51 @@ TMPL;
      * @param SqlTable $objTable
      * @return string
      */
-    protected function dataListDataBinder(DatabaseCodeGen $objCodeGen, SqlTable $objTable)
+    protected function dataListDataBinder(DatabaseCodeGen $objCodeGen, SqlTable $objTable): string
     {
         $strObjectType = $objTable->ClassName;
         $strCode = <<<TMPL
    /**
-	* Called by the framework to access the data for the control and load it into the table. By default, this function will be
-	* the data binder for the control, with no additional conditions or clauses. To change what data is displayed in the list,
-	* you have many options:
-	* - Override this method in the Connector.
-	* - Set ->Condition and ->Clauses properties for semi-permanent conditions and clauses
-	* - Override the GetCondition and GetClauses methods in the Connector.
-	* - For situations where the data might change every time you draw, like if the data is filtered by other controls,
-	*   you should call SetDataBinder after the parent creates this control, and in your custom data binder, call this function,
-	*   passing in the conditions and clauses you want this data binder to use.
-	*
-	*	This binder will automatically add the orderby and limit clauses from the paginator, if present.
-	*
-	* @param QQCondition|null \$objAdditionalCondition
+    * Called by the framework to access the data for the control and load it into the table. By default, this function will be
+    * the data binder for the control, with no additional conditions or clauses. To change what data is displayed in the list,
+    * you have many options:
+    * - Override this method in the Connector.
+    * - Set ->Condition and ->Clauses properties for semi-permanent conditions and clauses
+    * - Override the GetCondition and GetClauses methods in the Connector.
+    * - For situations where the data might change every time you draw, like if the data is filtered by other controls,
+    *   you should call SetDataBinder after the parent creates this control, and in your custom data binder, call this function,
+    *   passing in the conditions and clauses you want this data binder to use.
+    *
+    *   This binder will automatically add the order and limit clauses from the paginator, if present.
+    *
+    * @param QQCondition|null \$objAdditionalCondition
     * @param null|array \$objAdditionalClauses
-	*/
-	public function bindData(?QQCondition \$objAdditionalCondition = null, \$objAdditionalClauses = null) 
-	{
-		\$objCondition = \$this->getCondition(\$objAdditionalCondition);
-		\$objClauses = \$this->getClauses(\$objAdditionalClauses);
-
-		if (\$this->Paginator) {
-			\$this->TotalItemCount = {$strObjectType}::queryCount(\$objCondition, \$objClauses);
-		}
-
-		// If a column is selected to be sorted, and if that column has a OrderByClause set on it, then let's add
-		// the OrderByClause to the \$objClauses array
-		if (\$objClause = \$this->OrderByClause) {
-			\$objClauses[] = \$objClause;
-		}
-
-		// Add the LimitClause information, as well
-		if (\$objClause = \$this->LimitClause) {
-			\$objClauses[] = \$objClause;
-		}
-
-		\$this->DataSource = {$strObjectType}::queryArray(\$objCondition, \$objClauses);
-	}
+    * @return void
+    * @throws Caller
+    * @throws InvalidCast
+    */
+    public function bindData(?QQCondition \$objAdditionalCondition = null, ?array \$objAdditionalClauses = null): void 
+    {
+        \$objCondition = \$this->getCondition(\$objAdditionalCondition);
+        \$objClauses = \$this->getClauses(\$objAdditionalClauses);
+    
+        if (\$this->Paginator) {
+            \$this->TotalItemCount = {$strObjectType}::queryCount(\$objCondition, \$objClauses);
+        }
+    
+        // If a column is selected to be sorted, and if that column has an OrderByClause set on it, then let's add
+        // the OrderByClause to the \$objClauses array
+        if (\$objClause = \$this->OrderByClause) {
+            \$objClauses[] = \$objClause;
+        }
+    
+        // Add the LimitClause information, as well
+        if (\$objClause = \$this->LimitClause) {
+            \$objClauses[] = \$objClause;
+        }
+    
+        \$this->DataSource = {$strObjectType}::queryArray(\$objCondition, \$objClauses);
+    }
 
 
 TMPL;
@@ -345,174 +360,164 @@ TMPL;
      * @param SqlTable $objTable
      * @return string
      */
-    protected function dataListGetCondition(DatabaseCodeGen $objCodeGen, SqlTable $objTable)
+    protected function dataListGetCondition(DatabaseCodeGen $objCodeGen, SqlTable $objTable): string
     {
-        $strCode = <<<TMPL
-	/**
-	 * Returns the condition to use when querying the data. Default is to return the condition put in the local
-	 * objCondition member variable. You can also override this to return a condition. 
-	 *
-	 * @param QQCondition|null \$objAdditionalCondition
-	 * @return QQCondition
-	 */
-	protected function getCondition(?QQCondition \$objAdditionalCondition = null) 
-	{
-		// Get passed in condition, possibly coming from subclass or enclosing control or form
-		\$objCondition = \$objAdditionalCondition;
-		if (!\$objCondition) {
-			\$objCondition = QQ::all();
-		}
-		// Get condition more permanently bound
-		if (\$this->objCondition) {
-			\$objCondition = QQ::andCondition(\$objCondition, \$this->objCondition);
-		}
-
-		return \$objCondition;
-	}
-
-
-TMPL;
-        return $strCode;
-    }
-
+        return <<<TMPL
     /**
-     * @param DatabaseCodeGen $objCodeGen
-     * @param SqlTable $objTable
-     * @return string
-     */
-    protected function dataListGetClauses(DatabaseCodeGen $objCodeGen, SqlTable $objTable)
-    {
-        $strCode = <<<TMPL
-	/**
-	 * Returns the clauses to use when querying the data. Default is to return the clauses put in the local
-	 * objClauses member variable. You can also override this to return clauses.
-	 *
-	 * @param array|null \$objAdditionalClauses
-	 * @return QQClause[]
-	 */
-	protected function getClauses(\$objAdditionalClauses = null) 
-	{
-		\$objClauses = \$objAdditionalClauses;
-		if (!\$objClauses) {
-			\$objClauses = [];
-		}
-		if (\$this->objClauses) {
-			\$objClauses = array_merge(\$objClauses, \$this->objClauses);
-		}
-
-		return \$objClauses;
-	}
-
-
-TMPL;
-        return $strCode;
-    }
-
-
-    /**
-     * @param DatabaseCodeGen $objCodeGen
-     * @param SqlTable $objTable
-     * @return string
-     */
-    protected function dataListGet(DatabaseCodeGen $objCodeGen, SqlTable $objTable)
-    {
-        $strCode = <<<TMPL
-	/**
-	 * This will get the value of \$strName
-	 *
-	 * @param string \$strName Name of the property to get
-	 * @return mixed
-	 * @throws Caller
-	 */
-	public function __get(\$strName) 
-	{
-		switch (\$strName) {
-			case 'Condition':
-				return \$this->objCondition;
-			case 'Clauses':
-				return \$this->objClauses;
-			default:
-				try {
-					return parent::__get(\$strName);
-				} catch (Caller \$objExc) {
-					\$objExc->incrementOffset();
-					throw \$objExc;
-				}
-		}
-	}
-
-
-TMPL;
-        return $strCode;
-    }
-
-    /**
-     * @param DatabaseCodeGen $objCodeGen
-     * @param SqlTable $objTable
-     * @return string
-     */
-    protected function dataListSet(DatabaseCodeGen $objCodeGen, SqlTable $objTable)
-    {
-        $strCode = <<<TMPL
-	/**
-	 * This will set the property \$strName to be \$mixValue
-	 *
-	 * @param string \$strName Name of the property to set
-	 * @param string \$mixValue New value of the property
-	 * @return void
-	 * @throws Caller
-	 */
-	public function __set(\$strName, \$mixValue) 
-	{
-		switch (\$strName) {
-			case 'Condition':
-				try {
-					\$this->objCondition = Type::cast(\$mixValue, '\\QCubed\\Query\\Condition\\ConditionInterface');
-					\$this->markAsModified();
-				} catch (Caller \$objExc) {
-					\$objExc->incrementOffset();
-					throw \$objExc;
-				}
-				break;
-			case 'Clauses':
-				try {
-					\$this->objClauses = Type::cast(\$mixValue, Type::ARRAY_TYPE);
-					\$this->markAsModified();
-				} catch (Caller \$objExc) {
-					\$objExc->incrementOffset();
-					throw \$objExc;
-				}
-				break;
-			default:
-				try {
-					parent::__set(\$strName, \$mixValue);
-					break;
-				} catch (Caller \$objExc) {
-					\$objExc->incrementOffset();
-					throw \$objExc;
-				}
-		}
-	}
-
-
-TMPL;
-        return $strCode;
-    }
-
-
-
-    /****
-     * Parent Gen
-     * The following functions generate code that is to be used by the parent object to instantiate and initialize this object.
-     *****/
-
-    /**
-     * Return true if the data list has its own build-in filter. False will mean that a filter field will be created
-     * by default. This is still controllable by the model connector.
+     * Returns the condition to use when querying the data. The default is to return the condition put in the local
+     * objCondition member variable. You can also override this to return a condition. 
      *
-     * @return bool
+     * @param QQCondition|null \$objAdditionalCondition
+     * @return QQCondition|null
+     * @throws Caller
      */
-    public function dataListHasFilter()
+    protected function getCondition(?QQCondition \$objAdditionalCondition = null): ?QQCondition  
+    {
+        // Get passed in condition, possibly coming from a subclass or enclosing control or form
+        \$objCondition = \$objAdditionalCondition;
+        if (!\$objCondition) {
+            \$objCondition = QQ::all();
+        }
+        // Get condition more permanently bound
+        if (\$this->objCondition) {
+            \$objCondition = QQ::andCondition(\$objCondition, \$this->objCondition);
+        }
+    
+        return \$objCondition;
+    }
+
+
+TMPL;
+    }
+
+    /**
+     * @param DatabaseCodeGen $objCodeGen
+     * @param SqlTable $objTable
+     * @return string
+     */
+    protected function dataListGetClauses(DatabaseCodeGen $objCodeGen, SqlTable $objTable): string
+    {
+        return <<<TMPL
+    /**
+     * Returns the clauses to use when querying the data. The default is to return the clauses put in the local
+     * objClauses member variable. You can also override this to return clauses.
+     *
+     * @param array|null \$objAdditionalClauses
+     * @return array|null
+     */
+    protected function getClauses(?array \$objAdditionalClauses = null): ?array 
+    {
+        \$objClauses = \$objAdditionalClauses;
+        if (!\$objClauses) {
+            \$objClauses = [];
+        }
+        if (\$this->objClauses) {
+            \$objClauses = array_merge(\$objClauses, \$this->objClauses);
+        }
+    
+        return \$objClauses;
+    }
+
+
+TMPL;
+    }
+
+    /**
+     * @param DatabaseCodeGen $objCodeGen
+     * @param SqlTable $objTable
+     * @return string
+     */
+    protected function dataListGet(DatabaseCodeGen $objCodeGen, SqlTable $objTable): string
+    {
+        return <<<TMPL
+    /**
+     * This will get the value of \$strName
+     *
+     * @param string \$strName Name of the property to get
+     * @return mixed
+     * @throws Caller
+     */
+    public function __get(string \$strName): mixed 
+    {
+        switch (\$strName) {
+            case 'Condition':
+                return \$this->objCondition;
+            case 'Clauses':
+                return \$this->objClauses;
+            default:
+                try {
+                    return parent::__get(\$strName);
+                } catch (Caller \$objExc) {
+                    \$objExc->incrementOffset();
+                    throw \$objExc;
+                }
+        }
+    }
+
+
+TMPL;
+    }
+
+    /**
+     * @param DatabaseCodeGen $objCodeGen
+     * @param SqlTable $objTable
+     * @return string
+     */
+    protected function dataListSet(DatabaseCodeGen $objCodeGen, SqlTable $objTable): string
+    {
+        return <<<TMPL
+    /**
+     * This will set the property \$strName to be \$mixValue
+     *
+     * @param string \$strName Name of the property to set
+     * @param mixed \$mixValue New value of the property
+     * @throws Caller
+     * @throws InvalidCast
+     * @throws Throwable
+     */
+    public function __set(string \$strName, mixed \$mixValue): void 
+    {
+        switch (\$strName) {
+            case 'Condition':
+                try {
+                    \$this->objCondition = Type::cast(\$mixValue, '\\QCubed\\Query\\Condition\\ConditionInterface');
+                    \$this->markAsModified();
+                } catch (Caller \$objExc) {
+                    \$objExc->incrementOffset();
+                    throw \$objExc;
+                }
+                break;
+            case 'Clauses':
+                try {
+                    \$this->objClauses = Type::cast(\$mixValue, Type::ARRAY_TYPE);
+                    \$this->markAsModified();
+                } catch (Caller \$objExc) {
+                    \$objExc->incrementOffset();
+                    throw \$objExc;
+                }
+                break;
+            default:
+                try {
+                    parent::__set(\$strName, \$mixValue);
+                    break;
+                } catch (Caller \$objExc) {
+                    \$objExc->incrementOffset();
+                    throw \$objExc;
+                }
+        }
+    }
+
+
+TMPL;
+    }
+
+    /**
+     * Determines if the data list has filters applied.
+     *
+     * @return string Returns false indicating no filters are applied.
+     */
+
+    public function dataListHasFilter(): string
     {
         return false;
     }
@@ -521,18 +526,19 @@ TMPL;
      * Returns the code that creates the list object. This would be embedded in the pane
      * or form that is using the list object.
      *
+     * @param \QCubed\Codegen\DatabaseCodeGen $objCodeGen
      * @param SqlTable $objTable
-     * @return mixed
+     * @return string
+     * @throws \QCubed\Exception\Caller
      */
-    public function dataListInstantiate(DatabaseCodeGen $objCodeGen, SqlTable $objTable)
+    public function dataListInstantiate(DatabaseCodeGen $objCodeGen, SqlTable $objTable): string
     {
         $strVarName = $objCodeGen->dataListVarName($objTable);
 
-        $strCode = <<<TMPL
-		\$this->{$strVarName}_Create();
+        return <<<TMPL
+        \$this->{$strVarName}_Create();
 
 TMPL;
-        return $strCode;
     }
 
     /**
@@ -542,15 +548,15 @@ TMPL;
      * @param DatabaseCodeGen $objCodeGen
      * @param SqlTable $objTable
      * @return string
+     * @throws \QCubed\Exception\Caller
      */
-    public function dataListRefresh(DatabaseCodeGen $objCodeGen, SqlTable $objTable)
+    public function dataListRefresh(DatabaseCodeGen $objCodeGen, SqlTable $objTable): string
     {
         $strVarName = $objCodeGen->dataListVarName($objTable);
-        $strCode = <<<TMPL
-		\$this->{$strVarName}->refresh();
+        return <<<TMPL
+        \$this->{$strVarName}->refresh();
 
 TMPL;
-        return $strCode;
     }
 
     /**
@@ -559,8 +565,9 @@ TMPL;
      * @param DatabaseCodeGen $objCodeGen
      * @param SqlTable $objTable
      * @return string
+     * @throws \QCubed\Exception\Caller
      */
-    public function dataListHelperMethods(DatabaseCodeGen $objCodeGen, SqlTable $objTable)
+    public function dataListHelperMethods(DatabaseCodeGen $objCodeGen, SqlTable $objTable): string
     {
         $strCode = $this->dataListParentCreate($objCodeGen, $objTable);
         $strCode .= $this->dataListParentCreateColumns($objCodeGen, $objTable);
@@ -570,35 +577,38 @@ TMPL;
         return $strCode;
     }
 
-
     /**
      * Generates code for the enclosing control to create this control.
      *
      * @param DatabaseCodeGen $objCodeGen
      * @param SqlTable $objTable
      * @return string
+     * @throws \QCubed\Exception\Caller
      */
-    protected function dataListParentCreate(DatabaseCodeGen $objCodeGen, SqlTable $objTable)
+    protected function dataListParentCreate(DatabaseCodeGen $objCodeGen, SqlTable $objTable): string
     {
         $strPropertyName = $objCodeGen->dataListPropertyName($objTable);
         $strVarName = $objCodeGen->dataListVarName($objTable);
 
         $strCode = <<<TMPL
    /**
-	* Creates the data grid and prepares it to be row clickable. Override for additional creation operations.
-	**/
-	protected function {$strVarName}_Create() 
-	{
-		\$this->{$strVarName} = new {$strPropertyName}List(\$this);
-		\$this->{$strVarName}_CreateColumns();
-		\$this->{$strVarName}_MakeEditable();
-		\$this->{$strVarName}->RowParamsCallback = [\$this, "{$strVarName}_GetRowParams"];
+    * Creates the data grid and prepares it to be row-clickable. Override for additional creation operations.
+    *
+    * @return void
+    * @throws Caller
+    **/
+    protected function {$strVarName}_Create(): void 
+    {
+        \$this->{$strVarName} = new {$strPropertyName}List(\$this);
+        \$this->{$strVarName}_CreateColumns();
+        \$this->{$strVarName}_MakeEditable();
+        \$this->{$strVarName}->RowParamsCallback = [\$this, "{$strVarName}_GetRowParams"];
 
 TMPL;
 
         if (($o = $objTable->Options) && isset($o['Name'])) { // Did developer default?
             $strCode .= <<<TMPL
-		\$this->{$strVarName}->Name = "{$o['Name']}";
+        \$this->{$strVarName}->Name = "{$o['Name']}";
 
 TMPL;
         }
@@ -607,7 +617,7 @@ TMPL;
         $strCode .= $this->connectorCreateOptions($objCodeGen, $objTable, null, $strVarName);
 
         $strCode .= <<<TMPL
-	}
+    }
 
 TMPL;
         return $strCode;
@@ -619,24 +629,26 @@ TMPL;
      * @param DatabaseCodeGen $objCodeGen
      * @param SqlTable $objTable
      * @return string
+     * @throws \QCubed\Exception\Caller
      */
-    protected function dataListParentCreateColumns(DatabaseCodeGen $objCodeGen, SqlTable $objTable)
+    protected function dataListParentCreateColumns(DatabaseCodeGen $objCodeGen, SqlTable $objTable): string
     {
         $strVarName = $objCodeGen->dataListVarName($objTable);
 
-        $strCode = <<<TMPL
+        return <<<TMPL
 
    /**
-	* Calls the list connector to add the columns. Override to customize column creation.
-	**/
-	protected function {$strVarName}_CreateColumns() 
-	{
-		\$this->{$strVarName}->createColumns();
-	}
+    * Calls the list connector to add the columns. Override to customize column creation.
+    *
+    * @return void
+    * @throws Caller
+    */
+    protected function {$strVarName}_CreateColumns(): void 
+    {
+        \$this->{$strVarName}->createColumns();
+    }
 
 TMPL;
-
-        return $strCode;
     }
 
     /**
@@ -645,37 +657,43 @@ TMPL;
      * @param DatabaseCodeGen $objCodeGen
      * @param SqlTable $objTable
      * @return string
+     * @throws \QCubed\Exception\Caller
      */
-    protected function dataListParentMakeEditable(DatabaseCodeGen $objCodeGen, SqlTable $objTable)
+    protected function dataListParentMakeEditable(DatabaseCodeGen $objCodeGen, SqlTable $objTable): string
     {
         $strVarName = $objCodeGen->dataListVarName($objTable);
 
-        $strCode = <<<TMPL
+        return <<<TMPL
+
     /**
      * Make the datagrid editable
+     *
+     * @return void
+     * @throws Caller
      */
-	protected function {$strVarName}_MakeEditable() 
-	{
-		\$this->{$strVarName}->addAction(new Q\\Event\\CellClick(0, null, null, true), new Q\\Action\\AjaxControl(\$this, '{$strVarName}_CellClick', null, null, Q\\Event\\CellClick::ROW_VALUE));
-		\$this->{$strVarName}->addCssClass('clickable-rows');
-	}
+    protected function {$strVarName}_MakeEditable(): void 
+    {
+        \$this->{$strVarName}->addAction(new CellClick(0, null, null, true), new AjaxControl(\$this, '{$strVarName}_CellClick', null, null, CellClick::ROW_VALUE));
+        \$this->{$strVarName}->addCssClass('clickable-rows');
+    }
 
     /**
      * Respond to a cell click
      * @param string \$strFormId The form id
      * @param string \$strControlId The control id of the control clicked on.
-     * @param mixed \$param Params coming from the cell click. In this situations, it is a string containing the id of row clicked.
+     * @param string \$param Params coming from the cell click. In this situation, it is a string containing the id of row clicked.
+     *
+     * @return void
+     * @throws Throwable
      */
-	protected function {$strVarName}_CellClick(\$strFormId, \$strControlId, \$param) 
-	{
-		if (\$param) {
-			\$this->editItem(\$param);
-		}
-	}
+    protected function {$strVarName}_CellClick(string \$strFormId, string \$strControlId, string \$param): void 
+    {
+        if (\$param) {
+            \$this->editItem(\$param);
+        }
+    }
 
 TMPL;
-
-        return $strCode;
     }
 
     /**
@@ -684,12 +702,14 @@ TMPL;
      * @param DatabaseCodeGen $objCodeGen
      * @param SqlTable $objTable
      * @return string
+     * @throws \QCubed\Exception\Caller
      */
-    protected function dataListGetRowParams(DatabaseCodeGen $objCodeGen, SqlTable $objTable)
+    protected function dataListGetRowParams(DatabaseCodeGen $objCodeGen, SqlTable $objTable): string
     {
         $strVarName = $objCodeGen->dataListVarName($objTable);
 
-        $strCode = <<<TMPL
+        return <<<TMPL
+
     /**
      * Get row parameters for the row tag
      * 
@@ -697,45 +717,43 @@ TMPL;
      * @param int \$intRowIndex      The row index
      * @return array
      */
-	public function {$strVarName}_GetRowParams(\$objRowObject, \$intRowIndex) 
-	{
-		\$strKey = \$objRowObject->primaryKey();
-		\$params['data-value'] = \$strKey;
-		return \$params;
-	}
-TMPL;
-
-        return $strCode;
+    public function {$strVarName}_GetRowParams(mixed \$objRowObject, int \$intRowIndex): array 
+    {
+        \$strKey = \$objRowObject->primaryKey();
+        \$params['data-value'] = \$strKey;
+        return \$params;
     }
-
+TMPL;
+    }
 
     /***
      * Parent SUBCLASS
      * Generator code for the parent subclass. The subclass is a first-time generation only.
      ****/
 
-    
     /**
      * Generates an alternate create columns function that could be used by the list panel to create the columns directly.
-     * This is designed to be added as commented out code in the list panel override class that the user can choose to use.
+     * This is designed to be added as commented our code in the list panel override class that the user can choose to use.
      *
      * @param DatabaseCodeGen $objCodeGen
      * @param SqlTable $objTable
      * @return string
+     * @throws \QCubed\Exception\Caller
+     * @throws \QCubed\Exception\InvalidCast
      */
-    public function dataListSubclassOverrides(DatabaseCodeGen $objCodeGen, SqlTable $objTable)
+    public function dataListSubclassOverrides(DatabaseCodeGen $objCodeGen, SqlTable $objTable): string
     {
         $strVarName = $objCodeGen->dataListVarName($objTable);
         $strPropertyName = DatabaseCodeGen::dataListPropertyName($objTable);
 
         $strCode = <<<TMPL
 /*
-	 Uncomment this block to directly create the columns here, rather than creating them in the {$strPropertyName}List connector.
-	 You can then modify the column creation process by editing the function below. Or, you can instead call the parent function 
-	 and modify the columns after the {$strPropertyName}List creates the default columns.
-
-	protected function {$strVarName}_CreateColumns() 
-	{
+     Uncomment this block to directly create the columns here, rather than creating them in the {$strPropertyName}List connector.
+     You can then modify the column creation process by editing the function below. Or, you can instead call the parent function 
+     and modify the columns after the {$strPropertyName}List creates the default columns.
+    
+    protected function {$strVarName}_CreateColumns(): void 
+    {
 
 TMPL;
 
@@ -748,7 +766,7 @@ TMPL;
             }
 
             $strCode .= <<<TMPL
-		\$col = \$this->{$strVarName}->createNodeColumn("{$objCodeGen->modelConnectorControlName($objColumn)}", QQN::{$objTable->ClassName}()->{$objCodeGen->modelConnectorPropertyName($objColumn)});
+        \$col = \$this->{$strVarName}->createNodeColumn("{$objCodeGen->modelConnectorControlName($objColumn)}", QQN::{$objTable->ClassName}()->{$objCodeGen->modelConnectorPropertyName($objColumn)});
 
 TMPL;
         }
@@ -756,39 +774,39 @@ TMPL;
         foreach ($objTable->ReverseReferenceArray as $objReverseReference) {
             if ($objReverseReference->Unique) {
                 $strCode .= <<<TMPL
-		\$col = \$this->{$strVarName}->createNodeColumn("{$objCodeGen->modelConnectorControlName($objReverseReference)}", QQN::{$objTable->ClassName}()->{$objReverseReference->ObjectDescription});
+        \$col = \$this->{$strVarName}->createNodeColumn("{$objCodeGen->modelConnectorControlName($objReverseReference)}", QQN::{$objTable->ClassName}()->{$objReverseReference->ObjectDescription});
 
 TMPL;
             }
         }
 
         $strCode .= <<<TMPL
-	}
+    }
 
-*/	
+*/
 
 TMPL;
 
         $strCode .= <<<TMPL
-		
+        
 /*
-	 Uncomment this block to use an Edit column instead of clicking on a highlighted row in order to edit an item.
-
-		protected \$pxyEditRow;
-
-		protected function {$strVarName}_MakeEditable () 
-		{
-			\$this->>pxyEditRow = new \\QCubed\\Control\\Proxy(\$this);
-			\$this->>pxyEditRow->addAction(new \\QCubed\\Event\\Click(), new \\QCubed\\Action\\AjaxControl(\$this, '{$strVarName}_EditClick'));
-			\$this->{$strVarName}->createLinkColumn(t('Edit'), t('Edit'), \$this->>pxyEditRow, QQN::{$objTable->ClassName}()->Id, null, false, 0);
-			\$this->{$strVarName}->removeCssClass('clickable-rows');
-		}
-
-		protected function {$strVarName}_EditClick(\$strFormId, \$strControlId, \$param) 
-		{
-			\$this->editItem(\$param);
-		}
-*/	
+     Uncomment this block to use an Edit column instead of clicking on a highlighted row in order to edit an item.
+    
+        protected \$pxyEditRow;
+    
+        protected function {$strVarName}_MakeEditable(): void 
+        {
+            \$this->>pxyEditRow = new Proxy(\$this);
+            \$this->>pxyEditRow->addAction(new Click(), new AjaxControl(\$this, '{$strVarName}_EditClick'));
+            \$this->{$strVarName}->createLinkColumn(t('Edit'), t('Edit'), \$this->>pxyEditRow, QQN::{$objTable->ClassName}()->Id, null, false, 0);
+            \$this->{$strVarName}->removeCssClass('clickable-rows');
+        }
+    
+        protected function {$strVarName}_EditClick(string \$strFormId, string \$strControlId, string \$param): void 
+        {
+            \$this->editItem(\$param);
+        }
+*/
 
 TMPL;
 

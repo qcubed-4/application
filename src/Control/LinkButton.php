@@ -19,14 +19,13 @@ use QCubed\Type;
  * Class LinkButton
  *
  * This class will render an HTML link <a href>, but will act like a Button or ImageButton.
- * (it is a subclass of actioncontrol)
+ * (it is a subclass of action control)
  * Therefore, you cannot define a "URL/HREF" destination for this LinkButton.  It simply links
  * to "#".  And then if a ClientAction is defined, it will execute that when clicked.  If a ServerAction
  * is defined, it will execute PostBack and execute that when clicked.
  *
  * @property string $Text is the text of the Link
  * @property string $HtmlEntities
- * @was QLinkButton
  * @package QCubed\Control
  */
 class LinkButton extends ActionControl
@@ -37,9 +36,9 @@ class LinkButton extends ActionControl
 
     // APPEARANCE
     /** @var string|null The text on the button */
-    protected $strText = null;
+    protected ?string $strText = null;
     /** @var bool Should htmlentities be used on this control? */
-    protected $blnHtmlEntities = true;
+    protected bool $blnHtmlEntities = true;
 
     //////////
     // Methods
@@ -48,7 +47,7 @@ class LinkButton extends ActionControl
      * Function to return the formatted HTML for the control
      * @return string The control's HTML
      */
-    protected function getControlHtml()
+    protected function getControlHtml(): string
     {
         $strText = $this->strText;
         if ($this->blnHtmlEntities) {
@@ -68,7 +67,7 @@ class LinkButton extends ActionControl
      * @return mixed
      * @throws Caller
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             // APPEARANCE
@@ -90,15 +89,15 @@ class LinkButton extends ActionControl
     // Public Properties: SET
     /////////////////////////
     /**
-     * The PHP __set megic method implementation
+     * The PHP __set magic method implementation
      * @param string $strName Name of the property
-     * @param string $mixValue Value of the property
+     * @param mixed $mixValue Value of the property
      *
-     * @throws Caller
-     * @throws InvalidCast
      * @return void
+     *@throws InvalidCast
+     * @throws Caller
      */
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             // APPEARANCE

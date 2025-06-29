@@ -15,25 +15,25 @@ require_once('../qcubed.inc.php');
 
 class ExampleForm extends FormBase
 {
-    protected $lstListbox;
-    protected $txtItem;
-    protected $btnAdd;
+    protected ListBox $lstListbox;
+    protected TextBox $txtItem;
+    protected Button $btnAdd;
 
-    protected $lblSelected;
+    protected Label $lblSelected;
 
-    protected function formCreate()
+    protected function formCreate(): void
     {
         // Define the Controls
         $this->lstListbox = new ListBox($this);
         $this->lstListbox->Name = 'Items to Choose From';
         $this->lstListbox->Rows = 6;
 
-        // When the the user changes the selection on the listbox, we'll call lstListbox_Change
+        // When the user changes the selection on the listbox, we'll call lstListbox_Change
         $this->lstListbox->AddAction(new Change(), new Ajax('lstListbox_Change'));
         $this->lstListbox->AddItem('Sample Item', 'Sample Item');
 
         // Note: we need to explicitly define the textbox's ControlId so that we can write
-        // javascript code to access it.  This is done by passing in the specific ControlId we want
+        // JavaScript code to access it.  This is done by passing in the specific ControlId we want
         // as the optional second parameter into the QControl's constructor.
         $this->txtItem = new TextBox($this, 'txtItem');
         $this->txtItem->Name = 'Item to Add';
@@ -57,8 +57,8 @@ class ExampleForm extends FormBase
 
         // Let's add this set of actions to the Add Button
         // Note: we are adding a conditional, specifying that txtItem must have
-        // text in it, before performing the actions.  We can call out 'txtItem' in our
-        // javascript call because we explicitly set $this->txtItem's ControlId to 'txtItem'
+        // a text in it before performing the actions.  We can call out 'txtItem' in our
+        // JavaScript call because we explicitly set $this->txtItem's ControlId to 'txtItem'
         // when we constructed it (see line 23)
         $this->btnAdd->AddActionArray(new Click(0, "qcubed.getControl('txtItem').value != ''"),
             $objSubmitListItemActions);
@@ -69,19 +69,19 @@ class ExampleForm extends FormBase
             $objSubmitListItemActions);
 
         // Because the enter key will also call form.submit() on some browsers, which we
-        // absolutely DON'T want to have happen, let's be sure to terminate any additional
+        // absolutely DON'T want to have happened, let's be sure to terminate any additional
         // actions on EnterKey
         $this->txtItem->AddAction(new EnterKey(), new Terminate());
     }
 
-    protected function lstListbox_Change()
+    protected function lstListbox_Change(): void
     {
         // Whenever the user changes the selected listbox item, let's
         // update the label to reflect the selected item
         $this->lblSelected->Text = $this->lstListbox->SelectedValue;
     }
 
-    protected function AddListItem()
+    protected function AddListItem(): void
     {
         // First off, let's make sure that data was typed in
         // Note that even though we are doing javascript-based validation, we still want to do it on

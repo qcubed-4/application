@@ -6,6 +6,8 @@ use QCubed\Control\FloatTextBox;
 use QCubed\Control\Panel;
 use QCubed\Event\Click;
 use QCubed\Event\DialogButton;
+use QCubed\Exception\Caller;
+use QCubed\Jqui\DialogBase;
 use QCubed\Project\Control\Button;
 use QCubed\Project\Control\Dialog;
 use QCubed\Project\Control\FormBase;
@@ -14,31 +16,31 @@ use QCubed\Project\Control\TextBox;
 require_once('../qcubed.inc.php');
 require('CalculatorWidget.class.php');
 
-// Define the \QCubed\Project\Control\FormBase with all our Qcontrols
+// Define the \QCubed\Project\Control\FormBase with all our Controls
 class ExamplesForm extends FormBase
 {
-    // Local declarations of our Qcontrols
-    protected $dlgSimpleMessage;
-    protected $btnDisplaySimpleMessage;
-    protected $btnDisplaySimpleMessageJsOnly;
+    // Local declarations of our Controls
+    protected Dialog $dlgSimpleMessage;
+    protected Button $btnDisplaySimpleMessage;
+    protected Button $btnDisplaySimpleMessageJsOnly;
 
-    protected $dlgCalculatorWidget;
-    protected $txtValue;
-    protected $btnCalculator;
+    protected CalculatorWidget $dlgCalculatorWidget;
+    protected TextBox $txtValue;
+    protected Button $btnCalculator;
 
-    protected $pnlAnswer;
-    protected $btnDisplayYesNo;
+    protected Panel $pnlAnswer;
+    protected Button $btnDisplayYesNo;
 
-    protected $btnValidation;
+    protected Button $btnValidation;
 
-    protected $dlgErrorMessage;
-    protected $btnErrorMessage;
-    protected $dlgInfoMessage;
-    protected $btnInfoMessage;
+    protected Dialog $dlgErrorMessage;
+    protected Button $btnErrorMessage;
+    protected Dialog $dlgInfoMessage;
+    protected Button $btnInfoMessage;
 
 
     // Initialize our Controls during the Form Creation process
-    protected function formCreate()
+    protected function formCreate(): void
     {
         // Define the Simple Message Dialog Box
         $this->dlgSimpleMessage = new Dialog($this);
@@ -59,7 +61,7 @@ class ExamplesForm extends FormBase
         $this->btnDisplaySimpleMessage->addAction(new Click(), new Ajax('btnDisplaySimpleMessage_Click'));
 
         // The Second "Display Simple Message" button will utilize Client Side-only JavaScripts to Show the Dialog Box
-        // (No postback/postajax is used)
+        // (No postback/post ajax is used)
         $this->btnDisplaySimpleMessageJsOnly = new Button($this);
         $this->btnDisplaySimpleMessageJsOnly->Text = 'Display Simple Message Dialog (ClientSide Only)';
         $this->btnDisplaySimpleMessageJsOnly->addAction(new Click(), new ShowDialog($this->dlgSimpleMessage));
@@ -72,8 +74,8 @@ class ExamplesForm extends FormBase
         $this->btnDisplayYesNo->addAction(new Click(), new Ajax('showYesNoClick'));
 
 
-        // Define the CalculatorWidget example. passing in the Method Callback for whenever the Calculator is Closed
-        // This is  example uses Button's instead of the JQuery UI buttons
+        // Define the CalculatorWidget example. Passing in the Method Callback for whenever the Calculator is Closed,
+        // This is exampled uses Button instead of the JQuery UI buttons
         $this->dlgCalculatorWidget = new CalculatorWidget($this);
         $this->dlgCalculatorWidget->setCloseCallback('btnCalculator_Close');
         $this->dlgCalculatorWidget->Title = "Calculator Widget";
@@ -81,7 +83,7 @@ class ExamplesForm extends FormBase
         $this->dlgCalculatorWidget->Resizable = false;
         $this->dlgCalculatorWidget->Modal = false;
 
-        // Setup the Value Textbox and Button for this example
+        // Set up the Value Textbox and Button for this example
         $this->txtValue = new TextBox($this);
 
         $this->btnCalculator = new Button($this);
@@ -103,16 +105,28 @@ class ExamplesForm extends FormBase
         $this->btnInfoMessage->addAction(new Click(), new Ajax('btnGetInfo_Click'));
     }
 
-    protected function btnDisplaySimpleMessage_Click()
+    /**
+     * Handles the button click event to display a simple message dialog.
+     * This method triggers the opening of the dialog box using its Open() method.
+     *
+     * @return void
+     */
+    protected function btnDisplaySimpleMessage_Click(): void
     {
         // "Show" the Dialog Box using the Open() method
         $this->dlgSimpleMessage->open();
     }
 
-    protected function btnCalculator_Click()
+    /**
+     * Handles the click event for the calculator button. Sets the value of the calculator widget
+     * based on the input text and displays the calculator dialog.
+     *
+     * @return void
+     */
+    protected function btnCalculator_Click(): void
     {
-        // Setup the Calculator Widget's Value
-        $this->dlgCalculatorWidget->Value = trim($this->txtValue->Text);
+        // Set up the Calculator Widget's Value
+        $this->dlgCalculatorWidget->Value = $this->txtValue->Text;
 
         // And Show it
         $this->dlgCalculatorWidget->open();
@@ -124,7 +138,7 @@ class ExamplesForm extends FormBase
      * entire dialog's HTML is sent to the browser whenever it is shown, which increases traffic. If the dialog
      * has to change a lot before being shown, then creating on the fly is the best.
      */
-    public function dlgValidate_Show()
+    public function dlgValidate_Show(): void
     {
         // Validate on JQuery UI buttons
         $dlgValidation = new Dialog();  // No parent object here!
@@ -141,22 +155,34 @@ class ExamplesForm extends FormBase
         $dlgValidation->addAction(new DialogButton(), new Ajax('dlgValidate_Click'));
         $dlgValidation->Title = 'Enter a number';
 
-        // Set up a field to be auto rendered, so no template is needed
+        // Set up a field to be auto-rendered, so no template is needed
         $dlgValidation->AutoRenderChildren = true;
         $txtFloat = new FloatTextBox($dlgValidation);
         $txtFloat->Placeholder = 'Float only';
         $txtFloat->PreferredRenderMethod = 'RenderWithError'; // Tell the panel to use this method when rendering
     }
 
-    public function dlgValidate_Click(ActionParams $params)
+    /**
+     * Handles the click event for the validation dialog. Closes the dialog upon execution.
+     *
+     * @param ActionParams $params Parameters related to the action, including the dialog control.
+     * @return void
+     */
+    public function dlgValidate_Click(ActionParams $params): void
     {
         $params->Control->close();
     }
 
 
-    // Setup the "Callback" function for when the calculator closes
+    // Set up the "Callback" function for when the calculator closes
     // This needs to be a public method
-    public function btnCalculator_Close()
+    /**
+     * Handles the close action of the calculator button. Sets the text value of the input field
+     * to the value retrieved from the calculator widget.
+     *
+     * @return void
+     */
+    public function btnCalculator_Close(): void
     {
         $this->txtValue->Text = $this->dlgCalculatorWidget->Value;
     }
@@ -165,15 +191,20 @@ class ExamplesForm extends FormBase
 
     /**
      * Note that in the following examples, you do NOT save a copy of the dialog in the form. Alerts are brief
-     * messages that are displayed, and then taken down immediately, and are not part of the form state.
+     * messages that are displayed and then taken down immediately and are not part of the form state.
      */
 
     /**
-     * In this example, we show a quick error message with a few styling options.
+     * Handles the button click event to display an error message dialog.
+     *
+     * This method brings up a dialog box with an error message. The dialog has an error styling
+     * and optionally includes a title. The dialog can be closed by the user through the close box provided.
+     *
+     * @return void
+     * @throws Caller
      */
-    protected function btnErrorMessage_Click()
+    protected function btnErrorMessage_Click(): void
     {
-
         /**
          * Bring up the dialog. Here we specify a simple dialog with no buttons.
          * With no buttons, a close box will be displayed so the user can close the dialog.
@@ -182,13 +213,17 @@ class ExamplesForm extends FormBase
 
         $dlg = Dialog::alert("Don't do that!");
         $dlg->Title = 'Error'; // Optional title for the alert.
-        $dlg->DialogState = Dialog::STATE_ERROR; // Optional error styling.
+        $dlg->DialogState = DialogBase::STATE_ERROR; // Optional error styling.
     }
 
     /**
-     * A more complex example designed to get user feedback. This could be a Yes/No dialog, or any number of buttons.
+     * Handles the button click event to display a dialog with two options.
+     * The dialog includes buttons allowing the user to choose an option, with an action added to handle button clicks.
+     *
+     * @return void
+     * @throws Caller
      */
-    protected function btnGetInfo_Click()
+    protected function btnGetInfo_Click(): void
     {
         /**
          * Bring up the dialog. Here we specify two buttons.
@@ -196,28 +231,37 @@ class ExamplesForm extends FormBase
          */
 
         $dlg = Dialog::alert("Which do you want?", ['This', 'That']);
-        $dlg->DialogState = Dialog::STATE_HIGHLIGHT;
+        $dlg->DialogState = DialogBase::STATE_HIGHLIGHT;
         $dlg->Title = 'Info';
         $dlg->addAction(new DialogButton(), new Ajax('infoClick')); // Add the action to detect a button click.
     }
 
     /**
-     * Here we respond to the button click. $strParameter will contain the text of the button clicked.
+     * Handles the click event triggered by the dialog's control.
+     *
+     * @param ActionParams $params Contains information about the current action, including the triggering control and parameters.
+     * @return void
+     * @throws Caller
      */
-    protected function infoClick(ActionParams $params)
+    protected function infoClick(ActionParams $params): void
     {
         $dlg = $params->Control;    // get the dialog object from the form.
-        $dlg->close(); // close the dialog. Note that you could detect which button was clicked and only close on some of the buttons.
+        $dlg->close(); // Close the dialog. Note that you could detect which button was clicked and only close on some of the buttons.
         Dialog::alert($params->ActionParameter . ' was clicked.', ['OK']);
     }
 
     /**
-     * This example shows how you can create an advanced dialog without creating a new control in the
-     * form object. You will need to specify some way of closing the dialog.
+     * Displays a confirmation dialog with "Yes" and "No" options.
+     *
+     * Initializes and configures a dialog window that asks the user a yes-or-no question.
+     * The dialog includes buttons for "Yes" and "No," and is set up to trigger an Ajax
+     * action when a button is clicked. Additional properties such as resizable option
+     * and close button visibility are configured.
+     *
+     * @return void
      */
-    protected function showYesNoClick()
+    protected function showYesNoClick(): void
     {
-
         $dlgYesNo = new Dialog();    // Note here there is no "$this" as the first parameter. By leaving this off, you
                                      // are telling QCubed to manage the dialog.
         $dlgYesNo->Text = t("Do you like QCubed?");
@@ -228,7 +272,14 @@ class ExamplesForm extends FormBase
         $dlgYesNo->HasCloseButton = false;
     }
 
-    protected function dlgYesNo_Button(ActionParams $params)
+    /**
+     * Handles the button click event for a Yes/No dialog.
+     *
+     * @param ActionParams $params Represents the parameters associated with the action,
+     *                             including the control and action parameter values.
+     * @return void This method does not return any value.
+     */
+    protected function dlgYesNo_Button(ActionParams $params): void
     {
         $dlg = $params->Control;    // get the dialog object from the form.
         if ($params->ActionParameter == 'Yes') {
@@ -238,7 +289,6 @@ class ExamplesForm extends FormBase
         }
         $dlg->close();
     }
-
 }
 
 // Run the Form we have defined

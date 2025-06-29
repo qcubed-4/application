@@ -14,7 +14,7 @@ namespace QCubed\Jqui\Event;
  *
  * The abstract SortableRemove class defined here is
  * code-generated. The code to generate this file is
- * in the /tools/jquery_ui_gen/jq_control_gen.php file
+ * in the /tools/jquery_ui_gen/jq_control_gen.php file,
  * and you can regenerate the files if you need to.
  *
  * The comments in this file are taken from the api reference site, so they do
@@ -31,17 +31,16 @@ namespace QCubed\Jqui\Event;
  * sorted.
  * 	* item Type: jQuery The jQuery object representing the current
  * dragged element.
- * 	* offset Type: Object The current absolute position of the helper
+ * 	* offset Type: Object The current absolute position of the helper is
  * represented as { top, left }.
- * 	* position Type: Object The current position of the helper
+ * 	* position Type: Object The current position of the helper is
  * represented as { top, left }.
- * 	* originalPosition Type: Object The original position of the element
+ * 	* originalPosition Type: Object The original position of the element is
  * represented as { top, left }.
  * 	* placeholder Type: jQuery The jQuery object representing the
  * element being used as a placeholder.
  * 
  *
- * @was QSortable_RemoveEvent
  */
 class SortableRemove extends EventBase
 {

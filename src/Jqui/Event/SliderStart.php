@@ -14,7 +14,7 @@ namespace QCubed\Jqui\Event;
  *
  * The abstract SliderStart class defined here is
  * code-generated. The code to generate this file is
- * in the /tools/jquery_ui_gen/jq_control_gen.php file
+ * in the /tools/jquery_ui_gen/jq_control_gen.php file,
  * and you can regenerate the files if you need to.
  *
  * The comments in this file are taken from the api reference site, so they do
@@ -33,7 +33,6 @@ namespace QCubed\Jqui\Event;
  * 	* value Type: Number The current value of the slider.
  * 
  *
- * @was QSlider_StartEvent
  */
 class SliderStart extends EventBase
 {

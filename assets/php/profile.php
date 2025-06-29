@@ -1,5 +1,10 @@
-<?php 
-    require_once('./qcubed.inc.php');
+<?php
+
+use QCubed\Database\Service;
+use QCubed\QString;
+use QCubed\Type;
+
+require_once('./qcubed.inc.php');
 
     //Exit gracefully if called directly or profiling data is missing.
     if (!isset($_POST['intDatabaseIndex']) && !isset($_POST['strProfileData']) && !isset($_POST['strReferrer'])) {
@@ -7,17 +12,23 @@
     }
 
     if (!isset($_POST['intDatabaseIndex']) || !isset($_POST['strProfileData']) || !isset($_POST['strReferrer'])) {
-        throw new \Exception('Database Profiling data appears to have been corrupted.');
+        throw new Exception('Database Profiling data appears to have been corrupted.');
     }
 
     $intDatabaseIndex = intval($_POST['intDatabaseIndex']);
-    $strReferrer = \QCubed\QString::htmlEntities($_POST['strReferrer']);
+    $strReferrer = QString::htmlEntities($_POST['strReferrer']);
 
     $objProfileArray = unserialize(base64_decode($_POST['strProfileData']));
-    $objProfileArray = \QCubed\Type::cast($objProfileArray, \QCubed\Type::ARRAY_TYPE);
+    $objProfileArray = Type::cast($objProfileArray, Type::ARRAY_TYPE);
     $intCount = count($objProfileArray);
-    
-    function printExplainStatement($strOriginalQuery)
+
+/**
+ * Outputs the result of an SQL EXPLAIN statement in an HTML table format for the given query.
+ *
+ * @param string $strOriginalQuery The original SQL query string to be explained.
+ * @return string|null The explanation of the query in HTML table format, or null if the query contains "AUTOCOMMIT=1".
+ */
+function printExplainStatement(string $strOriginalQuery): ?string
     {
         global $intDatabaseIndex;
         if (substr_count($strOriginalQuery, "AUTOCOMMIT=1") > 0) {
@@ -25,7 +36,7 @@
         }
         $result = "";
         
-        $objDb = \QCubed\Database\Service::getDatabase($intDatabaseIndex);
+        $objDb = Service::getDatabase($intDatabaseIndex);
         $objDbResult = $objDb->explainStatement($strOriginalQuery);
         if (!$objDbResult) {
             return "";
@@ -59,22 +70,22 @@
     $strJsFileArray = explode(",", QCUBED_JQUERY_JS);
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 	<title>QCubed Development Framework - Database Profiling Tool</title>
-	<style type="text/css">@import url("<?= QCUBED_BASE_URL ?>/application/assets/css/corepage.css");</style>
+    <link rel="stylesheet" type="text/css" href="<?php _p(QCUBED_BASE_URL . "/application/assets/css/corepage.css", false); ?>" />
 <?php
     foreach ($strJsFileArray as $strJsFile) {
-        if (false !== strpos($strJsFile, "http")) {
+        if (str_contains($strJsFile, "http")) {
             ?>
 	<script type="text/javascript" src="<?= $strJsFile ?>"></script>
 <?php
 
         } else {
             $strSlash = '';
-            if (0 !== strpos($strJsFile, "/")) {
+            if (!str_starts_with($strJsFile, "/")) {
                 $strSlash = '/';
-            } ?>			
+            } ?>
 	<script type="text/javascript" src="<?php _p(QCUBED_JS_URL . $strSlash . $strJsFile); ?>"></script>
 <?php
 
@@ -83,17 +94,17 @@
 ?>
 	<script type="text/javascript">
 		function toggle(strWhatId) {
-			var obj = document.getElementById(strWhatId);
-			var objButton = document.getElementById("button" + strWhatId);
+            const obj = document.getElementById(strWhatId);
+            const objButton = document.getElementById("button" + strWhatId);
 
-			if (obj && objButton) {
-				if (obj.style.display == "block") {
-					obj.style.display = "none";
+            if (obj && objButton) {
+				if (obj["style"].display === "block") {
+					obj["style"].display = "none";
 					objButton.innerHTML = objButton.innerHTML.replace("Hide", "Show");
 				}
 				
 				else {
-					obj.style.display = "block";
+					obj["style"].display = "block";
 					objButton.innerHTML = objButton.innerHTML.replace("Show", "Hide");
 				}
 			}
@@ -102,7 +113,7 @@
 
 		function showAll() {
 			jQuery(".querySection, .explainSection").each(function() {
-				if ($(this).css('display') == "none") {
+				if ($(this).css('display') === "none") {
 					toggle(this.id);
 				}
 			});
@@ -112,7 +123,7 @@
 
 		function hideAll() {
 			jQuery(".querySection, .explainSection").each(function() {
-				if ($(this).css('display') == "block") {
+				if ($(this).css('display') === "block") {
 					toggle(this.id);
 				}
 			});
@@ -145,9 +156,9 @@
 					</div>
 					<div id="hright">
 						<b>Database Index:</b> <?php _p($intDatabaseIndex); ?>&nbsp;&nbsp;
-						<b>Database Type:</b> <?php _p(\QCubed\Database\Service::getDatabase($intDatabaseIndex)->Adapter); ?><br/>
-						<b>Database Server:</b> <?php _p(\QCubed\Database\Service::getDatabase($intDatabaseIndex)->Server); ?>&nbsp;&nbsp;
-						<b>Database Name:</b> <?php _p(\QCubed\Database\Service::getDatabase($intDatabaseIndex)->Database); ?><br/>
+						<b>Database Type:</b> <?php _p(Service::getDatabase($intDatabaseIndex)->Adapter); ?><br/>
+						<b>Database Server:</b> <?php _p(Service::getDatabase($intDatabaseIndex)->Server); ?>&nbsp;&nbsp;
+						<b>Database Name:</b> <?php _p(Service::getDatabase($intDatabaseIndex)->Database); ?><br/>
 						<b>Profile Generated From:</b> <?php _p($strReferrer, false); ?>
 					</div>
 					<div class="clear"></div>
@@ -163,7 +174,7 @@
             case 0: _p('<b>There were no queries that were performed.</b>', false); break;
             case 1: _p('<b>There was 1 query that was performed.</b>', false); break;
             default: printf('<b>There were %s queries that were performed.</b>', $intCount); break;
-        };
+        }
 ?>
 		</span>
 		<br/>
@@ -221,10 +232,7 @@
 <?php
             $intIndex++;
         }
-?>			</div>
-	</div>
-	<script>
-		if (<?php _p($intCount); ?> <= 5) showAll();
-	</script>
+?>  </div>
+
 </body>
 </html>

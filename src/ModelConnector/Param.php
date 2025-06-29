@@ -9,13 +9,13 @@
 
 namespace QCubed\ModelConnector;
 
-require_once(dirname(dirname(__DIR__)) . '/i18n/i18n-lib.inc.php');
-use QCubed\Application\t;
+require_once(dirname(__DIR__, 2) . '/i18n/i18n-lib.inc.php');
+
+//use QCubed\Application\t;
 
 use QCubed\Control\IntegerTextBox;
 use QCubed\Control\RadioButtonList;
 use QCubed\Exception\Caller;
-use QCubed;
 use QCubed\ObjectBase;
 use QCubed\Control\ControlBase;
 use QCubed\Project\Control\ListBox;
@@ -34,7 +34,6 @@ use QCubed\Type;
  *
  * @property-read string $Category
  * @property-read string $Name
- * @was QModelConnectorParam
  * @package QCubed\ModelConnector
  */
 
@@ -46,20 +45,32 @@ class Param extends ObjectBase
     const GENERAL_CATEGORY = 'General';
 
     /** @var string  */
-    protected $strCategory;
+    protected string $strCategory;
     /** @var string  */
-    protected $strName;
+    protected string $strName;
     /** @var string  */
-    protected $strDescription;
+    protected string $strDescription;
     /** @var  string One of the controlType constants */
-    protected $controlType;
+    protected string $controlType;
     /** @var mixed Options dependent on the control type */
-    protected $options;
+    protected mixed $options;
 
-    /** @var  ControlBase caching the created control */
-    protected $objControl;
+    /** @var  ControlBase|null caching the created control */
+    protected ?ControlBase $objControl = null;
 
-    public function __construct($strCategory, $strName, $strDescription, $controlType, $options = null)
+    /**
+     * Initializes a new instance of the class.
+     *
+     * @param string $strCategory The category of the instance.
+     * @param string $strName The name of the instance.
+     * @param string $strDescription A description of the instance.
+     * @param mixed $controlType The type of control associated with the instance.
+     * @param mixed|null $options Optional additional options. Required for a selection list control type.
+     * @return void
+     *
+     * @throws Caller If the control type is a selection list, but no options are provided.
+     */
+    public function __construct(string $strCategory, string $strName, string $strDescription, mixed $controlType, mixed $options = null)
     {
         $this->strCategory = t($strCategory);
         $this->strName = t($strName);
@@ -75,12 +86,13 @@ class Param extends ObjectBase
 
     /**
      * Called by the QModelConnectorEditDlg dialog. Creates a control that will allow the user to edit the value
-     * associated with this parameter, and caches that control so that its easy to get to.
+     * associated with this parameter and caches that control so that it's easy to get to.
      *
      * @param ControlBase|null $objParent
-     * @return null|ControlBase
+     * @return IntegerTextBox|ListBox|RadioButtonList|TextBox|ControlBase|null
+     * @throws Caller
      */
-    public function getControl($objParent = null)
+    public function getControl(?ControlBase $objParent = null): IntegerTextBox|ListBox|RadioButtonList|TextBox|ControlBase|null
     {
         if ($this->objControl) {
             if ($objParent) {
@@ -95,12 +107,13 @@ class Param extends ObjectBase
     }
 
     /**
-     * Creates the actual control that will edit the value.
+     * Creates and returns a control instance based on the defined control type.
      *
-     * @param ControlBase $objParent
-     * @return IntegerTextBox|ListBox|RadioButtonList|TextBox
+     * @param ControlBase $objParent The parent control to associate with the newly created control.
+     * @return TextBox|RadioButtonList|ListBox|IntegerTextBox The created control instance configured with associated properties and settings.
+     * @throws Caller
      */
-    protected function createControl(ControlBase $objParent)
+    protected function createControl(ControlBase $objParent): TextBox|RadioButtonList|ListBox|IntegerTextBox
     {
         switch ($this->controlType) {
             case Type::BOOLEAN:
@@ -119,7 +132,7 @@ class Param extends ObjectBase
                 $ctl = new IntegerTextBox($objParent);
                 break;
 
-            case Type::ARRAY_TYPE:    // an array the user will specify in a comma separated list
+            case Type::ARRAY_TYPE:    // an array the user will specify in a comma-separated list
                 $ctl = new TextBox($objParent);
                 break;
 
@@ -131,7 +144,7 @@ class Param extends ObjectBase
                 }
                 break;
 
-            default: // i.e. QJsClosure, or other random items. Probably codegened, and not used much.
+            default: // i.e., QJsClosure, or other random items. Probably codegen, and not used much.
                 $ctl = new TextBox($objParent);
                 break;
 
@@ -143,17 +156,27 @@ class Param extends ObjectBase
     }
 
     /**
-     * @param string $strOptName
-     * @return mixed
+     * Retrieves the value of the specified option if it exists.
+     *
+     * @param string $strOptName The name of the option to retrieve.
+     * @return mixed|null The value of the option if it exists, otherwise null.
      */
-    public function getOption($strOptName) {
+    public function getOption(string $strOptName): mixed
+    {
         if (isset($this->options[$strOptName])) {
             return $this->options[$strOptName];
         }
         return null;
     }
 
-    public function __get($strName)
+    /**
+     * Magic method to retrieve the value of a property.
+     *
+     * @param string $strName The name of the property to retrieve.
+     * @return mixed The value of the requested property or the parent's implementation result.
+     * @throws Caller Thrown if the property does not exist.
+     */
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             case 'Name':

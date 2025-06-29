@@ -13,20 +13,29 @@ use QCubed\Exception\Caller;
 use QCubed\Query\Node as QQNode;
 use QCubed\Query\QQ;
 
-
 /**
  * Class NodeColumn
  *
  * A table column that displays the content of a database column represented by a NodeBase object.
  * The $objNodes can be a single node, or an array of nodes. If an array of nodes, the first
- * node will be the display node, and the rest of the nodes will be used for sorting.
+ * node is the display node, and the rest of the nodes will be used for sorting.
  *
- * @was QHtmlTableNodeColumn
  * @package QCubed\Table
  */
 class NodeColumn extends PropertyColumn
 {
-    public function __construct($strName, $objNodes)
+    /**
+     * Constructor method that initializes the object with a name and a set of QQNode\NodeBase nodes.
+     *
+     * @param string $strName The name of the object being constructed.
+     * @param QQNode\NodeBase|QQNode\NodeBase[] $objNodes A single QQNode\NodeBase instance or an array of QQNode\NodeBase instances.
+     *
+     * @return void
+     *
+     * @throws Caller If the provided nodes are not instances of QQNode\NodeBase or are invalid.
+     * @throws Caller If the first node is a top-level node or passes through "To Many" association nodes.
+     */
+    public function __construct(string $strName, $objNodes)
     {
         if ($objNodes instanceof QQNode\NodeBase) {
             $objNodes = [$objNodes];
@@ -34,7 +43,7 @@ class NodeColumn extends PropertyColumn
             throw new Caller('Pass either a QQNode\\NodeBase node or an array of Nodes only');
         }
 
-        $objNode = $objNodes[0]; // First node is the data node, the rest are for sorting.
+        $objNode = $objNodes[0]; // The First node is the data node, the rest are for sorting.
 
         if (!$objNode->_ParentNode) {
             throw new Caller('First QQNode\\NodeBase cannot be a Top Level Node');
@@ -57,7 +66,7 @@ class NodeColumn extends PropertyColumn
         }
         $properties = array_reverse($properties);
         $strProp = implode('->', $properties);
-        parent::__construct($strName, $strProp, null);
+        parent::__construct($strName, $strProp);
 
         // build sort nodes
         $objSortNodes = [];

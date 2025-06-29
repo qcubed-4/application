@@ -9,45 +9,45 @@
 
 namespace QCubed\Action;
 
+use QCubed\Event\EventBase;
 use QCubed\Exception\Caller;
 use QCubed\ObjectBase;
 use QCubed\Type;
 use QCubed\Control\ControlBase;
 
-
 /**
  * Base class for all other Actions.
  *
  * @package Actions
- * @property \QCubed\Event\EventBase $Event Any Event derived class instance
- * @was QAction
+ * @property EventBase $Event Any Event derived class instance
  */
 abstract class ActionBase extends ObjectBase
 {
     /**
-     * Abstract method, implemented in derived classes. Returns the JS needed for the action to work
+     * Renders the script for the specified control. This method should be implemented
+     * to generate and return the specific script content tied to the given control instance.
      *
-     * @param ControlBase $objControl
+     * @param ControlBase $objControl The control instance for which the script is to be rendered
      *
-     * @return mixed
+     * @return mixed The rendered script content or any other relevant output as defined by the implementation
      */
-    abstract public function renderScript(ControlBase $objControl);
+    abstract public function renderScript(ControlBase $objControl): mixed;
 
-    /** @var \QCubed\Event\EventBase Event object which will fire this action */
-    protected $objEvent;
+    /** @var EventBase|null Event object which will fire this action */
 
+    protected ?EventBase $objEvent = null;
 
     /**
      * PHP Magic function to set the property values of an object of the class
-     * In this case, we only have 'Event' property to be set
+     * In this case, we only have the 'Event' property to be set
      *
      * @param string $strName Name of the property
-     * @param string $mixValue Value of the property
+     * @param mixed $mixValue Value of the property
      *
-     * @throws Caller
      * @return void
+     * @throws Caller
      */
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             case 'Event':
@@ -73,7 +73,7 @@ abstract class ActionBase extends ObjectBase
      * @return mixed
      * @throws Caller
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             case 'Event':

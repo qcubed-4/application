@@ -1,22 +1,25 @@
 <?php
+
 use QCubed\Action\Ajax;
 use QCubed\Event\Click;
+use QCubed\Control\Label;
 use QCubed\Project\Control\Button;
 use QCubed\Project\Control\FormBase;
 
 require_once('../qcubed.inc.php');
 
-// Define the \QCubed\Project\Control\FormBase with all our Qcontrols
+// Define the \QCubed\Project\Control\FormBase with all our Controls
 class ExampleForm extends FormBase {
 
-	// Local declarations of our Qcontrols
-	protected $lblMessage;
-	protected $btnButton;
+	// Local declarations of our Controls
+	protected Label $lblMessage;
+	protected Button $btnButton;
 
 	// Initialize our Controls during the Form Creation process
-	protected function formCreate() {
+	protected function formCreate(): void
+    {
 		// Define the Label
-		$this->lblMessage = new \QCubed\Control\Label($this);
+		$this->lblMessage = new Label($this);
 		$this->lblMessage->Text = 'Click the button to change my message.';
 
 		// Define the Button
@@ -29,7 +32,8 @@ class ExampleForm extends FormBase {
 	}
 
 	// The "btnButton_Click" Event handler
-	protected function btnButton_Click($strFormId, $strControlId, $strParameter) {
+	protected function btnButton_Click(string $strFormId, string $strControlId, string $strParameter): void
+    {
 		$this->lblMessage->Text = 'Hello, world!';
 	}
 }

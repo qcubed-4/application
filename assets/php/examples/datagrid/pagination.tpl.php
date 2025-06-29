@@ -10,7 +10,7 @@
 
 	<p>In order to enable pagination, we need to define a <strong>Paginator</strong> object and assign it to
 		the <strong>DataGrid</strong>. The <strong>DataGrid</strong> will render the paginator inside a
-		caption tag in the table, and therefore, we will set the <strong>DataGridw</strong> as the <strong>Paginator</strong>'s
+		caption tag in the table, and therefore, we will set the <strong>DataGrid</strong> as the <strong>Paginator</strong>'s
 		parent in the <strong>Paginator</strong> constructor call.</p>
 
 	<p>In the locally defined <strong>dtgPersons_Bind</strong> method, in addition to setting the datagrid's <strong>DataSource</strong>,

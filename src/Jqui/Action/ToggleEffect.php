@@ -10,6 +10,8 @@
 namespace QCubed\Jqui\Action;
 
 use QCubed\Control\ControlBase;
+use QCubed\Exception\Caller;
+use QCubed\Exception\InvalidCast;
 use QCubed\Type;
 
 /**
@@ -18,21 +20,22 @@ use QCubed\Type;
  * Toggle visibility of a control, using additional visual effects
  *
  * @package QCubed\Jqui\Action
- * @was QJQToggleEffectAction
  */
 class ToggleEffect extends ActionBase
 {
-    protected $strOptions = null;
-    protected $intSpeed = null;
+    protected mixed $strOptions = null;
+    protected mixed $intSpeed = null;
 
     /**
      * ToggleEffect constructor.
      * @param ControlBase $objControl
      * @param string $strMethod
-     * @param string $strOptions
+     * @param string|null $strOptions
      * @param int $intSpeed
+     * @throws Caller
+     * @throws InvalidCast
      */
-    public function __construct(ControlBase $objControl, $strMethod = "slow", $strOptions = "", $intSpeed = 1000)
+    public function __construct(ControlBase $objControl, string $strMethod = "slow", ?string $strOptions = "", int $intSpeed = 1000)
     {
         $this->strOptions = Type::cast($strOptions, Type::STRING);
         $this->intSpeed = Type::cast($intSpeed, Type::INTEGER);
@@ -44,7 +47,7 @@ class ToggleEffect extends ActionBase
      * @param ControlBase $objControl
      * @return string
      */
-    public function renderScript(ControlBase $objControl)
+    public function renderScript(ControlBase $objControl): string
     {
         return sprintf('$j("#%s").toggle("%s", {%s}, %d);', $this->strControlId, $this->strMethod, $this->strOptions, $this->intSpeed);
     }

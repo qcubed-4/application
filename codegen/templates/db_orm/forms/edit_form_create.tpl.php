@@ -2,26 +2,27 @@
 use QCubed\Project\Codegen\CodegenBase as QCodegen;
 ?>
 
-    protected function formCreate() {
-		parent::formCreate();
+    protected function formCreate(): void
+    {
+        parent::formCreate();
 
-		$this->pnl<?= $strPropertyName ?> = new <?= $strPropertyName ?>EditPanel($this);
+        $this->pnl<?= $strPropertyName ?> = new <?= $strPropertyName ?>EditPanel($this);
 <?php
-	$_INDEX = 0;
-	foreach ($objTable->PrimaryKeyColumnArray as $objColumn) {
-		if (QCodeGen::$CreateMethod === 'queryString') {
+    $_INDEX = 0;
+    foreach ($objTable->PrimaryKeyColumnArray as $objColumn) {
+        if (QCodeGen::$CreateMethod === 'queryString') {
 ?>
-		$<?= $objColumn->VariableName ?> = Application::instance()->context()->queryStringItem('<?= $objColumn->VariableName ?>');
+        $<?= $objColumn->VariableName ?> = Application::instance()->context()->queryStringItem('<?= $objColumn->VariableName ?>');
 <?php
-		} else {
+} else {
 ?>
-		$<?= $objColumn->VariableName ?> = Application::instance()->context()->pathInfo(<?= $_INDEX ?>);
-<?php 		$_INDEX++;
-		}
+        $<?= $objColumn->VariableName ?> = Application::instance()->context()->pathInfo(<?= $_INDEX ?>);
+<?php $_INDEX++;
+}
 ?>
 <?php
-	}
+}
 ?>
-	    $this->pnl<?= $strPropertyName ?>->load(<?php foreach ($objTable->PrimaryKeyColumnArray as $objColumn) { ?>$<?= $objColumn->VariableName ?>, <?php } GO_BACK(2); ?>);
-		$this->createButtons();
-	}
+        $this->pnl<?= $strPropertyName ?>->load(<?php foreach ($objTable->PrimaryKeyColumnArray as $objColumn) { ?>$<?= $objColumn->VariableName ?>, <?php } GO_BACK(2); ?>);
+        $this->createButtons();
+    }

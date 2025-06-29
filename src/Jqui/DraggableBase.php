@@ -9,6 +9,7 @@
 
 namespace QCubed\Jqui;
 
+use QCubed\ApplicationBase;
 use QCubed\Control\ControlBase;
 use QCubed\Exception\Caller;
 use QCubed\Exception\InvalidCast;
@@ -19,19 +20,18 @@ use QCubed\Type;
  * Class DraggableBase
  *
  * The DraggableBase class defined here provides an interface between the generated
- * DraggableGen class, and QCubed. This file is part of the core and will be overwritten
+ * DraggableGen class and QCubed. This file is part of the core and will be overwritten
  * when you update QCubed. To override, make your changes to the Draggable.php file instead.
  *
  * This class is designed to work as a kind of add-on class to a QCubed Control, giving its capabilities
- * to the control. To make a QCubed Control draggable, simply set $ctl->Dragable = true. You can then
+ * to the control. To make a QCubed Control draggable, simply set $ctl->Draggable = true. You can then
  * get to this class to further manipulate the aspects of the draggable through $ctl->DragObj.
  *
- * @property-read Integer $DeltaX Amount of change in left that happened on the last drag
+ * @property-read Integer $DeltaX The amount of left shift during the last drag
  * @property-read Integer $DeltaY Amount of change in top that happened on the last drag
  * @property mixed $Handle A drag handle. Can be a control, a selector or array of controls or jQuery selectors.
  *
  * @link http://jqueryui.com/draggable/
- * @was QDraggableBase
  * @package QCubed\Jqui
  */
 class DraggableBase extends DraggableGen
@@ -40,46 +40,48 @@ class DraggableBase extends DraggableGen
     const REVERT_ON = true;                // always revert
     const REVERT_OFF = false;            // never revert
     const REVERT_VALID = 'valid';        // revert if dropped successfully
-    const REVERT_INVALID = 'invalid';    // revert if not dropped successfully
+    const REVERT_INVALID = 'invalid';    // revert if isn't dropped successfully
 
-    /** @var array */
-    protected $aryOriginalPosition = null;
-    /** @var array */
-    protected $aryNewPosition = null;
+    /** @var array|null */
+    protected ?array $aryOriginalPosition = null;
+    /** @var array|null */
+    protected ?array $aryNewPosition = null;
 
-    // redirect all js requests to the parent control
-    public function getJqControlId()
+    // redirect all JS requests to the parent control
+    public function getJqControlId(): string
     {
         return $this->objParentControl->ControlId;
     }
 
-    public function render($blnDisplayOutput = true)
+    public function render($blnDisplayOutput = true): string
     {
+        return '';
     }
 
-    protected function getControlHtml()
+    protected function getControlHtml(): string
     {
+        return '';
     }
 
-    public function validate()
+    public function validate(): bool
     {
         return true;
     }
 
-    public function parsePostData()
+    public function parsePostData(): void
     {
     }
 
 
-    protected function makeJqWidget()
+    protected function makeJqWidget(): void
     {
         parent::makeJqWidget();
         Application::executeJsFunction('qcubed.draggable', $this->getJqControlId(), $this->ControlId,
-            Application::PRIORITY_HIGH);
+            ApplicationBase::PRIORITY_HIGH);
     }
 
 
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             case '_DragData': // Internal only. Do not use. Used by JS above to keep track of user selection.
@@ -128,7 +130,7 @@ class DraggableBase extends DraggableGen
         }
     }
 
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             case 'DeltaX':

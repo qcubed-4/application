@@ -9,8 +9,10 @@
 
 namespace QCubed\Control;
 
-require_once(dirname(dirname(__DIR__)) . '/i18n/i18n-lib.inc.php');
-use QCubed\Application\t;
+require_once(dirname(__DIR__, 2) . '/i18n/i18n-lib.inc.php');
+
+use Exception;
+use QCubed\Action\ActionParams;
 
 use QCubed as Q;
 use QCubed\Exception\Caller;
@@ -18,54 +20,54 @@ use QCubed\Exception\InvalidCast;
 use QCubed\Type;
 
 /**
- * This controls works together with a PaginatedControl to implement a paginator for that control. Multiple
- * paginators per PaginatedControl can be declared.
+ * This control works with PaginatedControl to implement pagination for this control. Multiple
+ * Page numbers can be declared per PaginatedControl.
  *
- * @property integer      $ItemsPerPage        How many items you want to display per page when Pagination is enabled
+ * @property integer      $ItemsPerPage        How many items you want to display per a page when Pagination is enabled
  * @property integer      $PageNumber          The current page number you are viewing. 1 is the first page, there is no page zero.
  * @property integer      $TotalItemCount      The total number of items in the ENTIRE recordset -- only used when Pagination is enabled
  * @property boolean      $UseAjax             Whether to use ajax in the drawing.
- * @property-read integer $PageCount           Current number of pages being represented
+ * @property-read integer $PageCount           The Current number of pages being represented
  * @property mixed        $WaitIcon            The wait icon to display
  * @property-read mixed   $PaginatedControl    The paginated control linked to this control
- * @property integer      $IndexCount          The maximum number of page numbers to disply in the paginator
+ * @property integer      $IndexCount          The maximum number of page numbers to display in the paginator
  * @property string       LabelForPrevious     Label to be used for the 'Previous' link.
  * @property string       LabelForNext         Label to be used for the 'Next' link.
- * @was QPaginatorBase
+ *
  * @package QCubed\Control
  */
 abstract class PaginatorBase extends Q\Project\Control\ControlBase
 {
     /** @var string Label for the 'Previous' link */
-    protected $strLabelForPrevious;
+    protected string $strLabelForPrevious;
     /** @var string Label for the 'Next' link */
-    protected $strLabelForNext;
+    protected string $strLabelForNext;
 
     // BEHAVIOR
     /** @var int Default number of items per page */
-    protected $intItemsPerPage = 15;
+    protected int $intItemsPerPage = 15;
     /** @var int Default page number (to begin rendering with) */
-    protected $intPageNumber = 1;
+    protected int $intPageNumber = 1;
     /** @var int Default item count for the paginator */
-    protected $intTotalItemCount = 0;
-    /** @var bool Should switching the pages happen over AJAX or Server call (page reload) */
-    protected $blnUseAjax = true;
+    protected int $intTotalItemCount = 0;
+    /** @var bool If page switching should be done via AJAX or server call (page reload) */
+    protected bool $blnUseAjax = true;
     /** @var  PaginatedControl The control which is going to be paginated with the paginator */
-    protected $objPaginatedControl;
+    protected PaginatedControl $objPaginatedControl;
     /** @var string Default Wait Icon to be used */
-    protected $objWaitIcon = 'default';
+    protected string $objWaitIcon = 'default';
     /** @var int Number of index items in the paginator to display */
-    protected $intIndexCount = 10;
+    protected int $intIndexCount = 10;
 
 
     /** @var null|Proxy  */
-    protected $prxPagination = null;
+    protected ?Proxy $prxPagination = null;
 
     // SETUP
     /** @var bool  */
-    protected $blnIsBlockElement = false;
+    protected bool $blnIsBlockElement = false;
     /** @var string The tag element inside which the paginator has to be rendered */
-    protected $strTag = 'span';
+    protected string $strTag = 'span';
 
     //////////
     // Methods
@@ -74,11 +76,11 @@ abstract class PaginatorBase extends Q\Project\Control\ControlBase
      * Constructor method
      *
      * @param ControlBase|FormBase $objParentObject
-     * @param null|string                     $strControlId
+     * @param string|null $strControlId
      *
      * @throws Caller
      */
-    public function __construct($objParentObject, $strControlId = null)
+    public function __construct(FormBase|ControlBase $objParentObject, ?string $strControlId = null)
     {
         try {
             parent::__construct($objParentObject, $strControlId);
@@ -95,9 +97,16 @@ abstract class PaginatorBase extends Q\Project\Control\ControlBase
     }
 
     /**
-     * Setup the proxy events.
+     * Configure the pagination setup by attaching appropriate events and actions.
+     *
+     * This method sets up the pagination control by first clearing any existing actions
+     * linked to the click event and then adds new actions based on the configuration.
+     * The actions include either an AJAX-based or server-based page-click handler,
+     * followed by a terminate action.
+     *
+     * @throws Caller
      */
-    protected function setup()
+    protected function setup(): void
     {
         // Setup Pagination Events
         $this->prxPagination->removeAllActions( Q\Event\Click::EVENT_NAME);
@@ -109,7 +118,7 @@ abstract class PaginatorBase extends Q\Project\Control\ControlBase
         $this->prxPagination->addAction(new Q\Event\Click, new Q\Action\Terminate());
     }
 
-    public function parsePostData()
+    public function parsePostData(): void
     {
     }
 
@@ -120,7 +129,7 @@ abstract class PaginatorBase extends Q\Project\Control\ControlBase
      *
      * @return bool
      */
-    public function validate()
+    public function validate(): bool
     {
         return true;
     }
@@ -128,9 +137,11 @@ abstract class PaginatorBase extends Q\Project\Control\ControlBase
     /**
      * Respond to the pageClick event
      *
-     * @param array $params
+     * @param ActionParams $params
+     * @throws Caller
+     * @throws InvalidCast
      */
-    public function pageClick(Q\Action\ActionParams $params)
+    public function pageClick(Q\Action\ActionParams $params): void
     {
         $this->objPaginatedControl->PageNumber = Type::cast($params->Param, Type::INTEGER);
     }
@@ -140,7 +151,7 @@ abstract class PaginatorBase extends Q\Project\Control\ControlBase
      *
      * @param PaginatedControl $objPaginatedControl
      */
-    public function setPaginatedControl(Q\Control\PaginatedControl $objPaginatedControl)
+    public function setPaginatedControl(Q\Control\PaginatedControl $objPaginatedControl): void
     {
         $this->objPaginatedControl = $objPaginatedControl;
 
@@ -150,21 +161,22 @@ abstract class PaginatorBase extends Q\Project\Control\ControlBase
         $this->TotalItemCount = $objPaginatedControl->TotalItemCount;
     }
 
-
     /**
-     * Renders the set of previous buttons. This would be whatever comes before the page numbers in the paginator.
-     * This particular implementation renders a "Previous" text button, with a separator, and a Rewind button
-     * that looks like a number followed by an ellipsis.
+     * Generate the HTML for the previous page buttons in pagination
      *
-     * @return string
+     * This method creates the HTML string for the "previous" navigation buttons,
+     * including the conditional logic for the first page and preparing links for earlier pages.
+     * It also calculates and appends additional elements like ellipsis for skipped pages.
+     *
+     * @return string The generated HTML string for the previous buttons and related elements
      */
-    protected function getPreviousButtonsHtml()
+    protected function getPreviousButtonsHtml(): string
     {
         if ($this->intPageNumber <= 1) {
             $strPrevious = $this->strLabelForPrevious;
         } else {
             $mixActionParameter = $this->intPageNumber - 1;
-            $strPrevious = $this->prxPagination->renderAsLink($this->strLabelForPrevious, $mixActionParameter, ['id'=>$this->ControlId . "_arrow_" . $mixActionParameter]);
+            $strPrevious = $this->prxPagination->renderAsLink($this->strLabelForPrevious, $mixActionParameter, ['id' => $this->ControlId . "_arrow_" . $mixActionParameter]);
         }
 
         $strToReturn = sprintf('<span class="arrow previous">%s</span><span class="break">|</span>', $strPrevious);
@@ -179,30 +191,30 @@ abstract class PaginatorBase extends Q\Project\Control\ControlBase
         return $strToReturn;
     }
 
-
     /**
-     * Return the html for a particular page button.
+     * Generate the HTML for a pagination button
      *
-     * @param $intIndex
-     * @return string
+     * @param int $intIndex The index of the page button to generate
+     * @return string The HTML string representing the page button
      */
-    protected function getPageButtonHtml($intIndex)
+    protected function getPageButtonHtml(int $intIndex): string
     {
         if ($this->intPageNumber == $intIndex) {
             $strToReturn = sprintf('<span class="selected">%s</span>', $intIndex);
         } else {
             $mixActionParameter = $intIndex;
-            $strToReturn = $this->prxPagination->renderAsLink($intIndex, $mixActionParameter, ['id'=>$this->ControlId . "_page_" . $mixActionParameter]);
+            $strToReturn = $this->prxPagination->renderAsLink($intIndex, $mixActionParameter, ['id' => $this->ControlId . "_page_" . $mixActionParameter]);
             $strToReturn = sprintf('<span class="page">%s</span>', $strToReturn);
         }
         return $strToReturn;
     }
 
     /**
-     * Returns the HTML for the group of buttons that come after the group of page buttons.
-     * @return string
+     * Generates the HTML for the next buttons in the pagination control.
+     *
+     * @return string Returns the generated HTML string for the next pagination buttons.
      */
-    protected function getNextButtonsHtml()
+    protected function getNextButtonsHtml(): string
     {
         list($intPageStart, $intPageEnd) = $this->calcBunch();
 
@@ -213,7 +225,7 @@ abstract class PaginatorBase extends Q\Project\Control\ControlBase
             $strNext = $this->strLabelForNext;
         } else {
             $mixActionParameter = $this->intPageNumber + 1;
-            $strNext = $this->prxPagination->renderAsLink($this->strLabelForNext, $mixActionParameter, ['id'=>$this->ControlId . "_arrow_" . $mixActionParameter]);
+            $strNext = $this->prxPagination->renderAsLink($this->strLabelForNext, $mixActionParameter, ['id' => $this->ControlId . "_arrow_" . $mixActionParameter]);
         }
 
         $strToReturn = sprintf('<span class="arrow next">%s</span>', $strNext);
@@ -234,38 +246,36 @@ abstract class PaginatorBase extends Q\Project\Control\ControlBase
      * @return string HTML for the control
      * @throws Caller
      */
-    public function getControlHtml()
+    public function getControlHtml(): string
     {
         $this->objPaginatedControl->dataBind();
 
-        $strToReturn = $this->getPreviousButtonsHtml();
+        $strPaginatorHtml = $this->getPreviousButtonsHtml();
 
         list($intPageStart, $intPageEnd) = $this->calcBunch();
 
         for ($intIndex = $intPageStart; $intIndex <= $intPageEnd; $intIndex++) {
-            $strToReturn .= $this->getPageButtonHtml($intIndex);
+            $strPaginatorHtml .= $this->getPageButtonHtml($intIndex);
         }
 
-        $strToReturn .= $this->getNextButtonsHtml();
+        $strPaginatorHtml .= $this->getNextButtonsHtml();
 
         $strStyle = $this->getStyleAttributes();
         if ($strStyle) {
             $strStyle = sprintf(' style="%s"', $strStyle);
         }
 
-        // Wrap the whole paginator in the main control tag
-        $strToReturn = sprintf('<%s id="%s" %s%s>%s</%s>', $this->strTag, $this->strControlId, $strStyle, $this->renderHtmlAttributes(), $strToReturn, $this->strTag);
-
-        return $strToReturn;
+        // Let's put all the HTML in ONLY ONE wrapper:
+        return sprintf('<%s id="%s"%s%s>%s</%s>', $this->strTag, $this->strControlId, $strStyle, $this->renderHtmlAttributes(), $strPaginatorHtml, $this->strTag);
     }
-
+    
     /**
      * Calculates the start and end of the center bunch of the paginator. If the start is not 1, then we know
-     * we need to add a first page item too. If the end of the bunch is not the last page, then we need to add a last page item.
+     * we need to add a first page item too. If the end of the bunch is not the last page, then we need to add a last-page item.
      * Returns an array that has the start and end of the center bunch.
      * @return int[]
      */
-    protected function calcBunch()
+    protected function calcBunch(): array
     {
         /**
          * "Bunch" is defined as the collection of numbers that lies in between the pair of Ellipsis ("...")
@@ -273,48 +283,48 @@ abstract class PaginatorBase extends Q\Project\Control\ControlBase
          * LAYOUT
          *
          * For IndexCount of 10
-         * 2   213   2 (two items to the left of the bunch, and then 2 indexes, selected index, 3 indexes, and then two items to the right of the bunch)
-         * e.g. 1 ... 5 6 *7* 8 9 10 ... 100
+         * 2 213 2 (two items to the left of the bunch, and then 2 indexes, selected index, 3 indexes, and then two items to the right of the bunch)
+         * e.g., 1 ... 5 6 *7* 8 9 10 ... 100
          *
          * For IndexCount of 11
-         * 2   313   2
+         * 2 313 2
          *
          * For IndexCount of 12
-         * 2   314   2
+         * 2 314 2
          *
          * For IndexCount of 13
-         * 2   414   2
+         * 2 414 2
          *
          * For IndexCount of 14
-         * 2   415   2
+         * 2 415 2
          *
          *
          *
          * START/END PAGE NUMBERS FOR THE BUNCH
          *
          * For IndexCount of 10
-         * 1 2 3 4 5 6 7 8 .. 100
-         * 1 .. 4 5 *6* 7 8 9 .. 100
-         * 1 .. 92 93 *94* 95 96 97 .. 100
-         * 1 .. 93 94 95 96 97 98 99 100
+         * 1 2 3 4 5 6 7 8 ... 100
+         * 1 ... 4 5 *6* 7 8 9 ... 100
+         * 1 ... 92 93 *94* 95 96 97 ... 100
+         * 1 ... 93 94 95 96 97 98 99 100
          *
          * For IndexCount of 11
-         * 1 2 3 4 5 6 7 8 9 .. 100
-         * 1 .. 4 5 6 *7* 8 9 10 .. 100
-         * 1 .. 91 92 93 *94* 95 96 97 .. 100
-         * 1 .. 92 93 94 95 96 97 98 99 100
+         * 1 2 3 4 5 6 7 8 9 ... 100
+         * 1 ... 4 5 6 *7* 8 9 10 ... 100
+         * 1 ... 91 92 93 *94* 95 96 97 ... 100
+         * 1 ... 92 93 94 95 96 97 98 99 100
          *
          * For IndexCount of 12
-         * 1 2 3 4 5 6 7 8 9 10 .. 100
-         * 1 .. 4 5 6 *7* 8 9 10 11 .. 100
-         * 1 .. 90 91 92 *93* 94 95 96 97 .. 100
-         * 1 .. 91 92 93 94 95 96 97 98 99 100
+         * 1 2 3 4 5 6 7 8 9 10 ... 100
+         * 1 ... 4 5 6 *7* 8 9 10 11 ... 100
+         * 1 ... 90 91 92 *93* 94 95 96 97 ... 100
+         * 1 ... 91 92 93 94 95 96 97 98 99 100
          *
          * For IndexCount of 13
-         * 1 2 3 4 5 6 7 8 9 11 .. 100
-         * 1 .. 4 5 6 7 *8* 9 10 11 12 .. 100
-         * 1 .. 89 90 91 92 *93* 94 95 96 97 .. 100
-         * 1 .. 90 91 92 93 94 95 96 97 98 99 100
+         * 1 2 3 4 5 6 7 8 9 11 ... 100
+         * 1 ... 4 5 6 7 *8* 9 10 11 12 ... 100
+         * 1 ... 89 90 91 92 *93* 94 95 96 97 ... 100
+         * 1 ... 90 91 92 93 94 95 96 97 98 99 100
          */
 
         $intPageCount = $this->PageCount;
@@ -352,7 +362,7 @@ abstract class PaginatorBase extends Q\Project\Control\ControlBase
      * After adjusting the total item count, or page size, or other parameters, call this to adjust the page number
      * to make sure it is not off the end.
      */
-    public function limitPageNumber()
+    public function limitPageNumber(): void
     {
         $pageCount = $this->calcPageCount();
         if ($this->intPageNumber > $pageCount) {
@@ -365,15 +375,14 @@ abstract class PaginatorBase extends Q\Project\Control\ControlBase
     }
 
     /**
-     * Calculates the total number of pages for the paginator
+     * Calculate the total number of pages based on the total item count and items per page
      *
-     * @return float Number of pages
+     * @return float|int The calculated number of pages
      */
-    public function calcPageCount()
+    public function calcPageCount(): float|int
     {
-        $intCount = (int) floor($this->intTotalItemCount / $this->intItemsPerPage) +
+        return (int) floor($this->intTotalItemCount / $this->intItemsPerPage) +
             ((($this->intTotalItemCount % $this->intItemsPerPage) != 0) ? 1 : 0);
-        return $intCount;
     }
 
     /**
@@ -385,7 +394,7 @@ abstract class PaginatorBase extends Q\Project\Control\ControlBase
      *
      * @throws Caller
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             // BEHAVIOR
@@ -415,18 +424,18 @@ abstract class PaginatorBase extends Q\Project\Control\ControlBase
         }
     }
 
-
     /**
      * PHP magic method to set the value of property of class
      *
      * @param string $strName
-     * @param string $mixValue
+     * @param mixed $mixValue
      *
      * @return void
      * @throws Caller
      * @throws InvalidCast
+     * @throws Exception
      */
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         $this->blnModified = true;
 

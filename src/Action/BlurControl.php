@@ -9,35 +9,29 @@
 
 namespace QCubed\Action;
 
-use QCubed\Exception\Caller;
 use QCubed\Control\ControlBase;
 
 
 /**
  * Class BlurControl
  *
- * Blurs (JS blur, not visual blur) a control on server side (i.e. removes focus from that control)
+ * Blurs (JS blur, not visual blur) a control on the server side (i.e., removes focus from that control)
  *
- * @was QBlurControlAction
  * @package QCubed\Action
  */
 class BlurControl extends ActionBase
 {
     /** @var null|string Control ID of the control from which focus has to be removed */
-    protected $strControlId = null;
+    protected ?string $strControlId = null;
 
     /**
      * Constructor
      *
      * @param ControlBase $objControl
      *
-     * @throws Caller
      */
-    public function __construct($objControl)
+    public function __construct(ControlBase $objControl)
     {
-        if (!($objControl instanceof ControlBase)) {
-            throw new Caller('First parameter of constructor is expecting an object of type ControlBase');
-        }
 
         $this->strControlId = $objControl->ControlId;
     }
@@ -49,7 +43,7 @@ class BlurControl extends ActionBase
      *
      * @return string JavaScript to be executed on the client side
      */
-    public function renderScript(ControlBase $objControl)
+    public function renderScript(ControlBase $objControl): string
     {
         return sprintf("qc.getW('%s').blur();", $this->strControlId);
     }

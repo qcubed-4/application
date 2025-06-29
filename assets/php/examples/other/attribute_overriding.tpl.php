@@ -4,9 +4,9 @@
 <div id="instructions">
 	<h1>Overriding Control Attributes</h1>
 
-	<p>All <strong>Control</strong> classes have any number attributes which can be defined.  These are
-		either general attributes attributable to all controls (e.g. control name, font, color, width, etc.),
-		or they can also be specific attributes for specific controls (e.g. maxlength for textboxes,
+	<p>All <strong>Control</strong> classes have any number of attributes which can be defined. These are
+		either general attributes attributable to all controls (e.g., control name, font, color, width, etc.),
+		or they can also be specific attributes for specific controls (e.g., maxlength for textboxes,
 		rows for listboxes, etc.)</p>
 
 	<p>There are two ways these attributes can be specified.  For most of these examples, you have
@@ -20,7 +20,7 @@
 		and of course, it shows up as green.</p>
 
 	<p>Keep in mind that the settable property name must match the exact name of the property
-		you are trying to set (it is case sensitive).  The value you are trying to set it to can be
+		you are trying to set (it is case-sensitive). The value you are trying to set it to can be
 		optionally encapsulated within quotes.</p>
 
 	<p>In theory, if you have a designer working on the design and a developer working on the display

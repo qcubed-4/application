@@ -12,7 +12,6 @@ namespace QCubed\Event;
 /**
  * Class MouseDown
  *
- * @was QMouseDownEvent
  * @package QCubed\Event
  */
 class MouseDown extends EventBase

@@ -12,32 +12,32 @@ class ExampleForm extends FormBase
 {
     // Declare the panels and the buttons
     // Notice how we don't declare the textboxes that we will be moving back and forth.
-    // We do this to demonstrate that the panel can manage its own set of dynamically controls
+    // We do this to demonstrate that the panel can manage its own set of dynamic controls
     // through using GetChildControls() and AutoRenderChildren
 
     /** @var  Panel */
-    protected $pnlLeft;
+    protected Panel $pnlLeft;
     /** @var  Panel */
-    protected $pnlRight;
+    protected Panel $pnlRight;
     /** @var  Button */
-    protected $btnMoveLeft;
+    protected Button $btnMoveLeft;
     /** @var  Button */
-    protected $btnMoveRight;
+    protected Button $btnMoveRight;
     /** @var  Button */
-    protected $btnDeleteLeft;
+    protected Button $btnDeleteLeft;
 
-    protected function formCreate()
+    protected function formCreate(): void
     {
         // Define the Panels
         $this->pnlLeft = new Panel($this);
-        $this->pnlLeft->CssClass = 'textbox_panel';
+        $this->pnlLeft->CssClass = 'textbox_panel left';
         $this->pnlLeft->Width = 250;
 
         $this->pnlRight = new Panel($this);
-        $this->pnlRight->CssClass = 'textbox_panel';
+        $this->pnlRight->CssClass = 'textbox_panel right';
         $this->pnlRight->Width = 250;
 
-        // Let's have the panels auto render any and all child controls
+        // Let's have the panels auto render any and all-child controls
         $this->pnlLeft->AutoRenderChildren = true;
         $this->pnlRight->AutoRenderChildren = true;
 
@@ -53,10 +53,11 @@ class ExampleForm extends FormBase
         $this->btnMoveRight->ActionParameter = 'right';
 
         $this->btnDeleteLeft = new Button($this);
-        $this->btnDeleteLeft->Text = 'Delete One From Left';
+        $this->btnDeleteLeft->Text = "Delete one from the left";
         $this->btnDeleteLeft->addAction(new Click(), new Ajax('btnDeleteLeft_Click'));
 
-        // Define a bunch of textboxes, and put it into the left Panel
+
+        // Define a bunch of textboxes and put it into the left Panel
         for ($intIndex = 1; $intIndex <= 10; $intIndex++) {
             // The parent must be the panel, because the panel is going to be responsible
             // for rendering it.
@@ -68,7 +69,7 @@ class ExampleForm extends FormBase
 
     // Handle the action for the Button being clicked.  We want to basically
     // move one of the textboxes from one panel to the other
-    protected function moveTextbox($strFormId, $strControlId, $strParameter)
+    protected function moveTextbox(string $strFormId, string $strControlId, string $strParameter): void
     {
         if ($strParameter == 'left') {
             $pnlSource = $this->pnlRight;
@@ -81,7 +82,7 @@ class ExampleForm extends FormBase
         // Get the Source's Child Controls
         $objChildControls = $pnlSource->getChildControls();
 
-        // Only make the move if source has at least one control to move
+        // Only make the move if a source has at least one control to move
         if (count($objChildControls) > 0) {
             // Set the parent of the last control in this array to be the destination panel,
             // essentially moving it from one panel to the other
@@ -90,16 +91,15 @@ class ExampleForm extends FormBase
     }
 
     // Handle the action to delete a control from pnlLeft
-    protected function btnDeleteLeft_Click($strFormId, $strControlId, $strParameter)
+    protected function btnDeleteLeft_Click(string $strFormId, string $strControlId, string $strParameter): void
     {
         // Get the left panel's Child Controls
         $objChildControls = $this->pnlLeft->getChildControls();
 
-        // Only remove if pnlLeft has at least one control to remove
-        if (count($objChildControls) > 0) {
-            // Set the parent of the last control in this array to be NULL,
-            // essentially removing it from the panel (and the form altogether)
-            $objChildControls[count($objChildControls) - 1]->setParentControl(null);
+        foreach ($objChildControls as $ctrl) {
+            if ($ctrl instanceof TextBox) {
+                $this->pnlLeft->removeChildControl($ctrl->ControlId, true);
+            }
         }
     }
 }

@@ -1,9 +1,10 @@
 <?php
 namespace QCubed\Jqui;
 
-use QCubed;
+use QCubed\Control\Panel;
 use QCubed\Type;
 use QCubed\Project\Application;
+use QCubed\ApplicationBase;
 use QCubed\Exception\InvalidCast;
 use QCubed\Exception\Caller;
 use QCubed\ModelConnector\Param as QModelConnectorParam;
@@ -11,7 +12,7 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
 /**
  * Class DialogGen
  *
- * This is the DialogGen class which is automatically generated
+ * This is the DialogGen class that is automatically generated
  * by scraping the JQuery UI documentation website. As such, it includes all the options
  * as listed by the JQuery UI website, which may or may not be appropriate for QCubed. See
  * the DialogBase class for any glue code to make this class more
@@ -20,7 +21,7 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
  * @see DialogBase
  * @package QCubed\Jqui
  * @property mixed $AppendTo
- * Which element the dialog (and overlay, if modal) should be appended
+ * Which element of the dialog (and overlay, if modal) should be appended
  * to.
  * Note: The appendTo option should not be changed while the dialog is
  * open. (version added: 1.10.0)
@@ -31,37 +32,37 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
  * method is called.
  *
  * @property mixed $Buttons
- * Specifies which buttons should be displayed on the dialog. The context
+ * Specify which buttons should be displayed in the dialog. The context
  * of the callback is the dialog element; if you need access to the
  * button, it is available as the target of the event object.Multiple
  * types supported:
  * 
- * 	* Object: The keys are the button labels and the values are the
+ * 	* Object: The keys are the button labels, and the values are the
  * callbacks for when the associated button is clicked.
  * 	* Array: Each element of the array must be an object defining the
  * attributes, properties, and event handlers to set on the button. In
- * addition, a key of icons can be used to control buttons icons option,
- * and a key of showText can be used to control buttons text option.
+ * addition, a key of icons can be used to control a button icons option,
+ * and a key of showText can be used to control a button text option.
  * 
 
  *
  * @property mixed $Classes
- * Specify additional classes to add to the widgets elements. Any of
- * classes specified in the Theming section can be used as keys to
+ * Specify additional classes to add to the widget elements. Any of
+ * the classes specified in the Theming section can be used as keys to
  * override their value. To learn more about this option, check out the
- * learn article about the classes option.
+ * learned article about the classes option.
 
  *
  * @property boolean $CloseOnEscape
- * Specifies whether the dialog should close when it has focus and the
+ * Specify whether the dialog should close when it has focus and the
  * user presses the escape (ESC) key.
  *
  * @property string $CloseText
- * Specifies the text for the close button. Note that the close text is
+ * Specify the text for the close button. Note that the close text is
  * visibly hidden when using a standard theme.
  *
  * @property string $DialogClass
- * The specified class name(s) will be added to the dialog, for
+ * The specified class name(s) will be added to the dialog for
  * additional theming.
  * 
  * The dialogClass option has been deprecated in favor of the classes
@@ -85,7 +86,7 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
  * If and how to animate the hiding of the dialog.Multiple types
  * supported:
  * 
- * 	* Boolean: When set to false, no animation will be used and the
+ * 	* Boolean: When set to false, no animation will be used, and the
  * dialog will be hidden immediately. When set to true, the dialog will
  * fade out with the default duration and the default easing.
  * 	* Number: The dialog will fade out with the specified duration and
@@ -93,16 +94,16 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
  * 	* String: The dialog will be hidden using the specified effect. The
  * value can either be the name of a built-in jQuery animation method,
  * such as "slideUp", or the name of a jQuery UI effect, such as "fold".
- * In either case the effect will be used with the default duration and
+ * In either case, the effect will be used with the default duration and
  * the default easing.
  * 	* Object: If the value is an object, then effect, delay, duration,
  * and easing properties may be provided. If the effect property contains
  * the name of a jQuery method, then that method will be used; otherwise
  * it is assumed to be the name of a jQuery UI effect. When using a
  * jQuery UI effect that supports additional settings, you may include
- * those settings in the object and they will be passed to the effect. If
+ * those settings in the object, and they will be passed to the effect. If
  * duration or easing is omitted, then the default values will be used.
- * If effect is omitted, then "fadeOut" will be used. If delay is
+ * If the effect is omitted, then "fadeOut" will be used. If a delay is
  * omitted, then no delay is used.
  * 
 
@@ -126,7 +127,7 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
  * elements.
  *
  * @property mixed $Position
- * Specifies where the dialog should be displayed when opened. The dialog
+ * Specify where the dialog should be displayed when opened. The dialog
  * will handle collisions such that as much of the dialog is visible as
  * possible.
  * 
@@ -143,7 +144,7 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
  * If and how to animate the showing of the dialog.Multiple types
  * supported:
  * 
- * 	* Boolean: When set to false, no animation will be used and the
+ * 	* Boolean: When set to false, no animation will be used, and the
  * dialog will be shown immediately. When set to true, the dialog will
  * fade in with the default duration and the default easing.
  * 	* Number: The dialog will fade in with the specified duration and
@@ -151,82 +152,81 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
  * 	* String: The dialog will be shown using the specified effect. The
  * value can either be the name of a built-in jQuery animation method,
  * such as "slideDown", or the name of a jQuery UI effect, such as
- * "fold". In either case the effect will be used with the default
+ * "fold". In either case, the effect will be used with the default
  * duration and the default easing.
  * 	* Object: If the value is an object, then effect, delay, duration,
  * and easing properties may be provided. If the effect property contains
  * the name of a jQuery method, then that method will be used; otherwise
  * it is assumed to be the name of a jQuery UI effect. When using a
  * jQuery UI effect that supports additional settings, you may include
- * those settings in the object and they will be passed to the effect. If
+ * those settings in the object, and they will be passed to the effect. If
  * duration or easing is omitted, then the default values will be used.
- * If effect is omitted, then "fadeIn" will be used. If delay is omitted,
+ * If the effect is omitted, then "fadeIn" will be used. If a delay is omitted,
  * then no delay is used.
  * 
 
  *
  * @property string $Title
- * Specifies the title of the dialog. If the value is null, the title
+ * Specify the title of the dialog. If the value is null, the title
  * attribute on the dialog source element will be used.
  *
  * @property integer $Width
  * The width of the dialog, in pixels.
  *
- * @was QDialogGen
-
  */
 
-class DialogGen extends QCubed\Control\Panel
+class DialogGen extends Panel
 {
-    protected $strJavaScripts = QCUBED_JQUI_JS;
-    protected $strStyleSheets = QCUBED_JQUI_CSS;
+    protected string $strJavaScripts = QCUBED_JQUI_JS;
+    protected string $strStyleSheets = QCUBED_JQUI_CSS;
     /** @var mixed */
-    protected $mixAppendTo = null;
+    protected mixed $mixAppendTo = null;
     /** @var boolean */
-    protected $blnAutoOpen = null;
+    protected ?bool $blnAutoOpen = null;
     /** @var mixed */
-    protected $mixButtons = null;
+    protected mixed $mixButtons = null;
     /** @var mixed */
-    protected $mixClasses = null;
+    protected mixed $mixClasses = null;
     /** @var boolean */
-    protected $blnCloseOnEscape = null;
-    /** @var string */
-    protected $strCloseText = null;
-    /** @var string */
-    protected $strDialogClass = null;
+    protected ?bool $blnCloseOnEscape = null;
+    /** @var string|null */
+    protected ?string $strCloseText = null;
+    /** @var string|null */
+    protected ?string $strDialogClass = null;
     /** @var boolean */
-    protected $blnDraggable = null;
+    protected ?bool $blnDraggable = null;
     /** @var mixed */
-    protected $mixHeight = null;
+    protected mixed $mixHeight = null;
     /** @var mixed */
-    protected $mixHide = null;
-    /** @var integer */
-    protected $intMaxHeight = null;
-    /** @var integer */
-    protected $intMaxWidth = null;
-    /** @var integer */
-    protected $intMinHeight = null;
-    /** @var integer */
-    protected $intMinWidth = null;
+    protected mixed $mixHide = null;
+    /** @var integer|null */
+    protected ?int $intMaxHeight = null;
+    /** @var integer|null */
+    protected ?int $intMaxWidth = null;
+    /** @var integer|null */
+    protected ?int $intMinHeight = null;
+    /** @var integer|null */
+    protected ?int $intMinWidth = null;
     /** @var boolean */
-    protected $blnModal = null;
+    protected bool $blnModal = true;
     /** @var mixed */
-    protected $mixPosition = null;
+    protected mixed $mixPosition = null;
     /** @var boolean */
-    protected $blnResizable = null;
+    protected ?bool $blnResizable = null;
     /** @var mixed */
-    protected $mixShow = null;
-    /** @var string */
-    protected $strTitle = null;
-    /** @var integer */
-    protected $intWidth = null;
+    protected mixed $mixShow = null;
+    /** @var string|null */
+    protected ?string $strTitle = null;
+    /** @var integer|null */
+    protected ?int $intWidth = null;
 
     /**
      * Builds the option array to be sent to the widget constructor.
      *
      * @return array key=>value array of options
      */
-    protected function makeJqOptions() {
+    protected function makeJqOptions(): array
+    {
         $jqOptions = parent::MakeJqOptions();
         if (!is_null($val = $this->AppendTo)) {$jqOptions['appendTo'] = $val;}
         if (!is_null($val = $this->AutoOpen)) {$jqOptions['autoOpen'] = $val;}
@@ -256,31 +256,32 @@ class DialogGen extends QCubed\Control\Panel
      *
      * @return string
      */
-    public function getJqSetupFunction()
+    public function getJqSetupFunction(): string
     {
         return 'dialog';
     }
-
 
     /**
      * Closes the dialog.
      * 
      * 	* This method does not accept any arguments.
      */
-    public function close()
+    public function close(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "close", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "close", ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Removes the dialog functionality completely. This will return the
      * element back to its pre-init state.
      * 
      * 	* This method does not accept any arguments.
      */
-    public function destroy()
+    public function destroy(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "destroy", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "destroy", ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Retrieves the dialogs instance object. If the element does not have an
      * associated instance, undefined is returned.
@@ -290,92 +291,98 @@ class DialogGen extends QCubed\Control\Panel
      * 
      * 	* This method does not accept any arguments.
      */
-    public function instance()
+    public function instance(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "instance", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "instance", ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Whether the dialog is currently open.
      * 
      * 	* This method does not accept any arguments.
      */
-    public function isOpen()
+    public function isOpen(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "isOpen", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "isOpen", ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Moves the dialog to the top of the dialog stack.
      * 
      * 	* This method does not accept any arguments.
      */
-    public function moveToTop()
+    public function moveToTop(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "moveToTop", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "moveToTop", ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Opens the dialog.
      * 
      * 	* This method does not accept any arguments.
      */
-    public function open()
+    public function open(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "open", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "open", ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Gets the value currently associated with the specified optionName.
-     * 
+     *
      * Note: For options that have objects as their value, you can get the
      * value of a specific key by using dot notation. For example, "foo.bar"
      * would get the value of the bar property on the foo option.
-     * 
-     * 	* optionName Type: String The name of the option to get.
-     * @param $optionName
+     *
+     *    * optionName Type: String The name of the option to get.
+     * @param string $optionName
      */
-    public function option($optionName)
+    public function option(string $optionName): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $optionName, Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $optionName, ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Gets an object containing key/value pairs representing the current
      * dialog options hash.
      * 
      * 	* This signature does not accept any arguments.
      */
-    public function option1()
+    public function option1(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Sets the value of the dialog option associated with the specified
      * optionName.
-     * 
+     *
      * Note: For options that have objects as their value, you can set the
      * value of just one property by using dot notation for optionName. For
      * example, "foo.bar" would update only the bar property of the foo
      * option.
-     * 
-     * 	* optionName Type: String The name of the option to set.
-     * 	* value Type: Object A value to set for the option.
-     * @param $optionName
-     * @param $value
+     *
+     *    * optionName Type: String The name of the option to set.
+     *    * value Type: Object A value to set for the option.
+     * @param string $optionName
+     * @param string $value
      */
-    public function option2($optionName, $value)
+    public function option2(string $optionName, string $value): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $optionName, $value, Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $optionName, $value, ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Sets one or more options for the dialog.
-     * 
-     * 	* options Type: Object A map of option-value pairs to set.
-     * @param $options
+     *
+     *    * options Type: Object A map of option-value pairs to set.
+     * @param array $options
      */
-    public function option3($options)
+    public function option3(array $options): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $options, Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $options, ApplicationBase::PRIORITY_LOW);
     }
 
-
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             case 'AppendTo': return $this->mixAppendTo;
@@ -408,7 +415,7 @@ class DialogGen extends QCubed\Control\Panel
         }
     }
 
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             case 'AppendTo':
@@ -589,25 +596,27 @@ class DialogGen extends QCubed\Control\Panel
     }
 
     /**
-    * If this control is attachable to a codegenerated control in a ModelConnector, this function will be
-    * used by the ModelConnector designer dialog to display a list of options for the control.
-    * @return QModelConnectorParam[]
-    **/
-    public static function getModelConnectorParams()
+     * If this control is attachable to a codegenerated control in a ModelConnector, this function will be
+     * used by the ModelConnector designer dialog to display a list of options for the control.
+     * @return QModelConnectorParam[]
+     *
+     * @throws Caller
+     */
+    public static function getModelConnectorParams(): array
     {
         return array_merge(parent::GetModelConnectorParams(), array(
-            new QModelConnectorParam (get_called_class(), 'AutoOpen', 'If set to true, the dialog will automatically open uponinitialization. If false, the dialog will stay hidden until the open()method is called.', Type::BOOLEAN),
-            new QModelConnectorParam (get_called_class(), 'CloseOnEscape', 'Specifies whether the dialog should close when it has focus and theuser presses the escape (ESC) key.', Type::BOOLEAN),
-            new QModelConnectorParam (get_called_class(), 'CloseText', 'Specifies the text for the close button. Note that the close text isvisibly hidden when using a standard theme.', Type::STRING),
-            new QModelConnectorParam (get_called_class(), 'DialogClass', 'The specified class name(s) will be added to the dialog, foradditional theming.The dialogClass option has been deprecated in favor of the classesoption, using the ui-dialog property.(version deprecated: 1.12)', Type::STRING),
+            new QModelConnectorParam (get_called_class(), 'AutoOpen', 'If set to true, the dialog will automatically open upon initialization. If false, the dialog will stay hidden until the open()method is called.', Type::BOOLEAN),
+            new QModelConnectorParam (get_called_class(), 'CloseOnEscape', 'Specify whether the dialog should close when it has focus and thees presses the escape (ESC) key.', Type::BOOLEAN),
+            new QModelConnectorParam (get_called_class(), 'CloseText', 'Specify the text for the close button. Note that the close text is invisibly hid when using a standard theme.', Type::STRING),
+            new QModelConnectorParam (get_called_class(), 'DialogClass', 'The specified class name(s) will be added to the dialog, traditional theming. The dialogClass option has been deprecated in favor of the classes option, using the ui-dialog property. (version deprecated: 1.12)', Type::STRING),
             new QModelConnectorParam (get_called_class(), 'Draggable', 'If set to true, the dialog will be draggable by the title bar.Requires the jQuery UI Draggable widget to be included.', Type::BOOLEAN),
             new QModelConnectorParam (get_called_class(), 'MaxHeight', 'The maximum height to which the dialog can be resized, in pixels.', Type::INTEGER),
-            new QModelConnectorParam (get_called_class(), 'MaxWidth', 'The maximum width to which the dialog can be resized, in pixels.', Type::INTEGER),
+            new QModelConnectorParam (get_called_class(), 'MaxWidth', 'The maximum width to which the dialog can be resized in pixels.', Type::INTEGER),
             new QModelConnectorParam (get_called_class(), 'MinHeight', 'The minimum height to which the dialog can be resized, in pixels.', Type::INTEGER),
-            new QModelConnectorParam (get_called_class(), 'MinWidth', 'The minimum width to which the dialog can be resized, in pixels.', Type::INTEGER),
-            new QModelConnectorParam (get_called_class(), 'Modal', 'If set to true, the dialog will have modal behavior; other items onthe page will be disabled, i.e., cannot be interacted with. Modaldialogs create an overlay below the dialog but above other pageelements.', Type::BOOLEAN),
+            new QModelConnectorParam (get_called_class(), 'MinWidth', 'The minimum width to which the dialog can be resized in pixels.', Type::INTEGER),
+            new QModelConnectorParam (get_called_class(), 'Modal', 'If set to true, the dialog will have modal behavior; other items on the page will be disabled, i.e., cannot be interacted with. Modal dialogs create an overlay below the dialog but above other page elements.', Type::BOOLEAN),
             new QModelConnectorParam (get_called_class(), 'Resizable', 'If set to true, the dialog will be resizable. Requires the jQuery UIResizable widget to be included.', Type::BOOLEAN),
-            new QModelConnectorParam (get_called_class(), 'Title', 'Specifies the title of the dialog. If the value is null, the titleattribute on the dialog source element will be used.', Type::STRING),
+            new QModelConnectorParam (get_called_class(), 'Title', 'Specify the title of the dialog. If the value is null, the title attribute on the dialog source element will be used.', Type::STRING),
             new QModelConnectorParam (get_called_class(), 'Width', 'The width of the dialog, in pixels.', Type::INTEGER),
         ));
     }

@@ -8,11 +8,11 @@ require_once('../qcubed.inc.php'); ?>
 
 	<p>Up until now, we've only described doing simple joins with QQuery, where each
 	table is only needed for a single related record. But what about when you need
-	to check on multiple entries in the same joined table. In standard SQL, you
+	to check on multiple entries in the same joined table? In standard SQL, you
 	would join the table a second time, giving it a new name. And that's exactly
 	how you do it in QQuery as well, using <strong>QQ::alias()</strong>.</p>
 
-	<p>In the example 1 below, we need to find who belongs to both the ACME Website
+	<p>In example 1 below, we need to find who belongs to both the ACME Website
 	Redesign and the State College HR System projects. We do this simply by joining
 	the membership association table twice, each time with a different alias. This
 	allows us to create a condition that says that one associated project has an
@@ -25,7 +25,7 @@ require_once('../qcubed.inc.php'); ?>
 </div>
 
 <div id="demoZone">
-	<h2>Example 1: Project members whose are in both project 1 and 2</h2>
+	<h2>Example 1: Project members who are in both project 1 and 2</h2>
 <?php
     Person::getDatabase()->enableProfiling();
 
@@ -57,7 +57,7 @@ require_once('../qcubed.inc.php'); ?>
 	}
 ?>
 
-	<h2>Example 3: Managers having one least a project with a conson milestone, and for each manager, the first voyel milestone and the first conson one</h2>
+	<h2>Example 3: Managers have one at least a project with a common milestone, and for each manager, the first voyel milestone and the first common one</h2>
 <?php
 	$emptySelect = QQ::select();
 	$emptySelect->setSkipPrimaryKey(true);

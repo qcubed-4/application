@@ -12,7 +12,6 @@ namespace QCubed\Event;
 /**
  * Class FocusOut
  *
- * @was QFocusOutEvent
  * @package QCubed\Event
  */
 class FocusOut extends EventBase

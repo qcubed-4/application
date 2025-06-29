@@ -14,7 +14,6 @@ namespace QCubed\Event;
  *
  * When the left mouse button is released (after being pressed) from over the control
  *
- * @was QMouseUpEvent
  * @package QCubed\Event
  */
 class MouseUp extends EventBase

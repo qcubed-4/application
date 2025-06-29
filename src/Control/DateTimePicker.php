@@ -9,8 +9,7 @@
 
 namespace QCubed\Control;
 
-require_once(dirname(dirname(__DIR__)) . '/i18n/i18n-lib.inc.php');
-use QCubed\Application\t;
+require_once(dirname(__DIR__, 2) . '/i18n/i18n-lib.inc.php');
 
 use QCubed\Exception\Caller;
 use QCubed\Exception\InvalidCast;
@@ -20,7 +19,7 @@ use QCubed as Q;
 
 
 /**
- * This class is meant to be a date-picker.  It will essentially render an uneditable HTML textbox
+ * This class is meant to be a date-picker.  It will essentially render an editable HTML textbox
  * as well as a calendar icon.  The idea is that if you click on the icon or the textbox,
  * it will pop up a calendar in a new small window.
  *
@@ -33,194 +32,169 @@ use QCubed as Q;
  * @property integer $MaximumYear Maximum Year to show
  * @property bool $AllowBlankTime Allow the '--' value for the Time section of control's UI
  * @property bool $AllowBlankDate Allow the '--' value for the Date section of control's UI
- * @property string $TimeSeparator Character to separate the select boxes for hour, minute and seconds
+ * @property string $TimeSeparator Character to separate the select boxes for an hour, minute and seconds
  * @property int $SecondInterval Seconds are shown in these intervals
  * @property int $MinuteInterval Minutes are shown in these intervals
  * @property int $HourInterval Hours are shown in these intervals
- * @was QDateTimePicker
  */
 class DateTimePicker extends Q\Project\Control\ControlBase
 {
-    const SHOW_DATE = 'Date';
-    const SHOW_DATE_TIME = 'DateTime';
-    const SHOW_DATE_TIME_SECONDS = 'DateTimeSeconds';
-    const SHOW_TIME = 'Time';
-    const SHOW_TIME_SECONDS = 'TimeSeconds';
+    /**
+     *
+     */
+    public const SHOW_DATE = 'Date';
+    public const SHOW_DATE_TIME = 'DateTime';
 
-    const MONTH_DAY_YEAR = 'MonthDayYear';
-    const DAY_MONTH_YEAR = 'DayMonthYear';
-    const YEAR_MONTH_DAY = 'YearMonthDay';
+    public const SHOW_DATE_TIME_SECONDS = 'DateTimeSeconds';
+    public const SHOW_TIME = 'Time';
+    public const SHOW_TIME_SECONDS = 'TimeSeconds';
 
-    /** @var QDateTime|null */
-    protected $dttDateTime = null;
-    protected $strDateTimePickerType = self::SHOW_DATE;
-    protected $strDateTimePickerFormat = self::MONTH_DAY_YEAR;
-
-    protected $intMinimumYear = 1970;
-    protected $intMaximumYear = 2030;
-
-    protected $intSelectedMonth = null;
-    protected $intSelectedDay = null;
-    protected $intSelectedYear = null;
-
-    /** @var bool Allow or Disallow Choosing '--' in the control UI for time */
-    protected $blnAllowBlankTime = true;
-    /** @var bool Allow or Disallow Choosing '--' in the control UI for date */
-    protected $blnAllowBlankDate = true;
-    /** @var bool The character which appears between the hour, minutes and seconds */
-    protected $strTimeSeparator = ':';
-    /** @var int Steps of intervals to show for second field */
-    protected $intSecondInterval = 1;
-    /** @var int Steps of intervals to show for minute field */
-    protected $intMinuteInterval = 1;
-    /** @var int Steps of intervals to show for hour field */
-    protected $intHourInterval = 1;
-
-
-    protected $strCssClass = 'datetimepicker';
+    public const MONTH_DAY_YEAR = 'MonthDayYear';
+    public const DAY_MONTH_YEAR = 'DayMonthYear';
+    public const YEAR_MONTH_DAY = 'YearMonthDay';
 
     /**
-     * DateTimePicker constructor.
-     * @param ControlBase|FormBase $objParent
-     * @param null $strControlId
+     * @var QDateTime|null
      */
-    public function __construct($objParent, $strControlId = null)
+    protected ?QDateTime $dttDateTime = null;
+    protected string $strDateTimePickerType = self::SHOW_DATE;
+    protected string $strDateTimePickerFormat = self::MONTH_DAY_YEAR;
+
+    protected int $intMinimumYear = 1970;
+    protected int $intMaximumYear = 2030;
+
+    protected ?int $intSelectedMonth = null;
+    protected ?int $intSelectedDay = null;
+    protected ?int $intSelectedYear = null;
+
+    /** @var bool Allow or Disallow Choosing '--' in the control UI for time */
+    protected bool $blnAllowBlankTime = true;
+    /** @var bool Allow or Disallow Choosing '--' in the control UI for date */
+    protected bool $blnAllowBlankDate = true;
+    /** @var string The character which appears between the hour, minutes and seconds */
+    protected string $strTimeSeparator = ':';
+    /** @var int Steps of intervals to show for the second field */
+    protected int $intSecondInterval = 1;
+    /** @var int Steps of intervals to show for minute field */
+    protected int $intMinuteInterval = 1;
+    /** @var int Steps of intervals to show for hour field */
+    protected int $intHourInterval = 1;
+    protected string $strCssClass = 'datetimepicker';
+
+    /**
+     * Constructor for the class.
+     *
+     * @param FormBase|ControlBase $objParent The parent object of the control.
+     * @param string|null $strControlId Optional control ID to uniquely identify the control.
+     * @return void
+     * @throws Caller
+     */
+    public function __construct(FormBase|ControlBase $objParent, ?string $strControlId = null)
     {
         parent::__construct($objParent, $strControlId);
         $this->addJavascriptFile(QCUBED_JS_URL . '/date_time_picker.js');
     }
 
-    public function parsePostData()
+    /**
+     * Parses the posted data related to a date-time picker and updates the internal date-time object accordingly.
+     *
+     * This method processes the posted values for the date and/or time fields, validates them against the picker type,
+     * and updates the internal date-time object (`dttDateTime`) with the new values. If the picker type restricts to
+     * either date or time only, the excluded part is cleared.
+     *
+     * @return void
+     * @throws Caller
+     * @throws InvalidCast
+     */
+    public function parsePostData(): void
     {
         $blnIsDateTimeSet = false;
         if ($this->dttDateTime == null) {
             $dttNewDateTime = QDateTime::now();
         } else {
             $blnIsDateTimeSet = true;
-            $dttNewDateTime = $this->dttDateTime;
+            $dttNewDateTime = clone $this->dttDateTime;
         }
 
-        // Update Date Component
-        switch ($this->strDateTimePickerType) {
-            case self::SHOW_DATE:
-            case self::SHOW_DATE_TIME:
-            case self::SHOW_DATE_TIME_SECONDS:
-                $strKey = $this->strControlId . '_lstMonth';
-                if (array_key_exists($strKey, $_POST)) {
-                    $intMonth = $_POST[$strKey];
-                } else {
-                    if ($blnIsDateTimeSet) {
-                        $intMonth = $dttNewDateTime->Month;
-                    } else {
-                        $intMonth = null;
-                    }
-                }
+        // --- Date part ---
+        if (in_array($this->strDateTimePickerType, [self::SHOW_DATE, self::SHOW_DATE_TIME, self::SHOW_DATE_TIME_SECONDS])) {
+            $strKey = $this->strControlId . '_lstMonth';
+            $intMonth = array_key_exists($strKey, $_POST) ? $_POST[$strKey] : ($blnIsDateTimeSet ? $dttNewDateTime->Month : null);
 
-                $strKey = $this->strControlId . '_lstDay';
-                if (array_key_exists($strKey, $_POST)) {
-                    $intDay = $_POST[$strKey];
-                } else {
-                    if ($blnIsDateTimeSet) {
-                        $intDay = $dttNewDateTime->Day;
-                    } else {
-                        $intDay = null;
-                    }
-                }
+            $strKey = $this->strControlId . '_lstDay';
+            $intDay = array_key_exists($strKey, $_POST) ? $_POST[$strKey] : ($blnIsDateTimeSet ? $dttNewDateTime->Day : null);
 
-                $strKey = $this->strControlId . '_lstYear';
-                if (array_key_exists($strKey, $_POST)) {
-                    $intYear = $_POST[$strKey];
-                } else {
-                    if ($blnIsDateTimeSet) {
-                        $intYear = $dttNewDateTime->Year;
-                    } else {
-                        $intYear = null;
-                    }
-                }
+            $strKey = $this->strControlId . '_lstYear';
+            $intYear = array_key_exists($strKey, $_POST) ? $_POST[$strKey] : ($blnIsDateTimeSet ? $dttNewDateTime->Year : null);
 
-                $this->intSelectedMonth = $intMonth;
-                $this->intSelectedDay = $intDay;
-                $this->intSelectedYear = $intYear;
+            $this->intSelectedMonth = $intMonth;
+            $this->intSelectedDay   = $intDay;
+            $this->intSelectedYear  = $intYear;
 
-                if (!empty($intYear) && !empty($intMonth) && !empty($intDay)) {
-                    $dttNewDateTime->setDate($intYear, $intMonth, $intDay);
-                } else {
-                    $dttNewDateTime->Year = null;
-                }
-                break;
+            if (!empty($intYear) && !empty($intMonth) && !empty($intDay)) {
+                $dttNewDateTime->setDate($intYear, $intMonth, $intDay);
+            } else {
+                $dttNewDateTime->Year = null;
+            }
         }
 
-        // Update Time Component
-        if (!$dttNewDateTime->isTimeNull()) {
-            // Time is NOT NULL
-            $blnIsTimeSet = true;
-        } else {
-            // TIME IS NULL
-            $blnIsTimeSet = false;
+        // In the date selector (SHOW_DATE) CLEAR the time part!
+        if ($this->strDateTimePickerType === self::SHOW_DATE) {
+            // Leave the time blank!
+            $dttNewDateTime->Hour = null;
+            $dttNewDateTime->Minute = null;
+            $dttNewDateTime->Second = null;
         }
 
-        switch ($this->strDateTimePickerType) {
-            case self::SHOW_TIME:
-            case self::SHOW_TIME_SECONDS:
-            case self::SHOW_DATE_TIME:
-            case self::SHOW_DATE_TIME_SECONDS:
-                $strKey = $this->strControlId . '_lstHour';
-                if (array_key_exists($strKey, $_POST)) {
-                    $intHour = $_POST[$strKey];
-                } else {
-                    if ($blnIsTimeSet) {
-                        $intHour = $dttNewDateTime->Hour;
-                    } else {
-                        $intHour = null;
-                    }
-                }
+        // --- Time part ---
+        if (in_array($this->strDateTimePickerType, [self::SHOW_TIME, self::SHOW_TIME_SECONDS, self::SHOW_DATE_TIME, self::SHOW_DATE_TIME_SECONDS])) {
+            $strKey = $this->strControlId . '_lstHour';
+            $intHour = array_key_exists($strKey, $_POST) ? $_POST[$strKey] : ($blnIsDateTimeSet ? $dttNewDateTime->Hour : null);
 
-                $strKey = $this->strControlId . '_lstMinute';
-                if (array_key_exists($strKey, $_POST)) {
-                    $intMinute = $_POST[$strKey];
-                } else {
-                    if ($blnIsTimeSet) {
-                        $intMinute = $dttNewDateTime->Minute;
-                    } else {
-                        $intMinute = null;
-                    }
-                }
+            $strKey = $this->strControlId . '_lstMinute';
+            $intMinute = array_key_exists($strKey, $_POST) ? $_POST[$strKey] : ($blnIsDateTimeSet ? $dttNewDateTime->Minute : null);
 
-                $intSecond = 0;
+            $intSecond = 0;
+            if (in_array($this->strDateTimePickerType, [self::SHOW_TIME_SECONDS, self::SHOW_DATE_TIME_SECONDS])) {
+                $strKey = $this->strControlId . '_lstSecond';
+                $intSecond = array_key_exists($strKey, $_POST) ? $_POST[$strKey] : ($blnIsDateTimeSet ? $dttNewDateTime->Second : null);
+            }
 
-                if (($this->strDateTimePickerType == self::SHOW_TIME_SECONDS) ||
-                    ($this->strDateTimePickerType == self::SHOW_DATE_TIME_SECONDS)
-                ) {
-                    $strKey = $this->strControlId . '_lstSecond';
-                    if (array_key_exists($strKey, $_POST)) {
-                        $intSecond = $_POST[$strKey];
-                    } else {
-                        if ($blnIsTimeSet) {
-                            $intSecond = $dttNewDateTime->Second;
-                        } else {
-                            $intSecond = 0;
-                        }
-                    }
-                }
-
-                if (!empty($intHour) && !empty($intMinute) && !empty($intSecond)) {
-                    $dttNewDateTime->setTime($intHour, $intMinute, $intSecond);
-                } else {
-                    $dttNewDateTime->Hour = null;
-                }
-
-                break;
+            if (!empty($intHour) && !empty($intMinute) && $intHour !== null && $intMinute !== null) {
+                $dttNewDateTime->setTime($intHour, $intMinute, $intSecond);
+            } else {
+                $dttNewDateTime->Hour = null;
+                $dttNewDateTime->Minute = null;
+                $dttNewDateTime->Second = null;
+            }
+        } else if ($this->strDateTimePickerType === self::SHOW_DATE) {
+            // If only a date selection, the time is always empty (as a fallback if the logic ignored the previous place)
+            $dttNewDateTime->Hour = null;
+            $dttNewDateTime->Minute = null;
+            $dttNewDateTime->Second = null;
         }
 
         $this->dttDateTime = $dttNewDateTime;
     }
 
     /**
-     * Returns the HTML used to render this control
+     * Generates and returns the HTML for the control, including the appropriate attributes,
+     * CSS classes, and style rules. This method renders the necessary HTML for date and time
+     * pickers based on configurations such as date type, required fields, allowed blank dates,
+     * and intervals for time selections.
      *
-     * @return string
+     * The method handles the generation of combinations of dropdowns for months, days, years,
+     * hours, and minutes as required by the control's configuration. It adheres to specific
+     * formats and ordering of date and time components based on the picker type (e.g., date only,
+     * date and time, etc.).
+     *
+     * Various control options, including whether the fields are required, the ranges for
+     * selectable years, and intervals for time components, are taken into account while
+     * preparing these outputs.
+     *
+     * @return string The fully constructed HTML representation of the control.
      */
-    protected function getControlHtml()
+    protected function getControlHtml(): string
     {
         // Ignore Class
         $strCssClass = $this->strCssClass;
@@ -233,7 +207,7 @@ class DateTimePicker extends Q\Project\Control\ControlBase
             $strAttributes .= sprintf(' style="%s"', $strStyle);
         }
 
-        $strCommand = sprintf(' onchange="Qcubed__DateTimePicker_Change(\'%s\', this);"', $this->strControlId);
+        $strCommand = sprintf(' onchange="QCubed__DateTimePicker_Change(\'%s\', this);"', $this->strControlId);
 
         if ($this->dttDateTime) {
             $dttDateTime = $this->dttDateTime;
@@ -272,10 +246,10 @@ class DateTimePicker extends Q\Project\Control\ControlBase
 
                     $dateObj = new QDateTime("2000-$intMonth-01");
                     $strMonthListbox .= sprintf(
-                        '<option value="%s"%s>%s</option>',
+                        '<option value="%s" %s>%s</option>',
                         $intMonth,
                         $strSelected,
-                        $dateObj->format('M')  // Kasuta DateTime objekti, et saada lühike kuu nimi
+                        $dateObj->format('M')
                     );
                 }
 
@@ -303,10 +277,9 @@ class DateTimePicker extends Q\Project\Control\ControlBase
                             $strDayListbox .= sprintf('<option value="%s">%s</option>', $intDay, $intDay);
                         }
                     } else {
-                        // New DateTime -- but we are NOT required
-                        // See if a month has been selected yet.
+                        // New DateTime -- but we are NOT required to See if a month has been selected yet.
                         if ($this->intSelectedMonth) {
-                            $intSelectedYear = ($this->intSelectedYear) ? $this->intSelectedYear : 2000;
+                            $intSelectedYear = $this->intSelectedYear ?? 2000;
                             $intDaysInMonth = date('t', mktime(0, 0, 0, $this->intSelectedMonth, 1, $intSelectedYear));
                             for ($intDay = 1; $intDay <= $intDaysInMonth; $intDay++) {
                                 if (($dttDateTime->Day == $intDay) || ($this->intSelectedDay == $intDay)) {
@@ -314,7 +287,7 @@ class DateTimePicker extends Q\Project\Control\ControlBase
                                 } else {
                                     $strSelected = '';
                                 }
-                                $strDayListbox .= sprintf('<option value="%s"%s>%s</option>',
+                                $strDayListbox .= sprintf('<option value="%s" %s>%s</option>',
                                     $intDay,
                                     $strSelected,
                                     $intDay);
@@ -332,7 +305,7 @@ class DateTimePicker extends Q\Project\Control\ControlBase
                         } else {
                             $strSelected = '';
                         }
-                        $strDayListbox .= sprintf('<option value="%s"%s>%s</option>',
+                        $strDayListbox .= sprintf('<option value="%s" %s>%s</option>',
                             $intDay,
                             $strSelected,
                             $intDay);
@@ -357,30 +330,24 @@ class DateTimePicker extends Q\Project\Control\ControlBase
                 }
 
                 for ($intYear = $this->intMinimumYear; $intYear <= $this->intMaximumYear; $intYear++) {
-                    if (/*!$dttDateTime->isDateNull() && */
+                    if (!$dttDateTime->isDateNull() &&
                     (($dttDateTime->Year == $intYear) || ($this->intSelectedYear == $intYear))) {
                         $strSelected = ' selected="selected"';
                     } else {
                         $strSelected = '';
                     }
 
-                    $strYearListbox .= sprintf('<option value="%s"%s>%s</option>', $intYear, $strSelected, $intYear);
+                    $strYearListbox .= sprintf('<option value="%s" %s>%s</option>', $intYear, $strSelected, $intYear);
                 }
 
                 $strYearListbox .= '</select>';
 
                 // Put it all together
-                switch ($this->strDateTimePickerFormat) {
-                    case self::MONTH_DAY_YEAR:
-                        $strToReturn .= $strMonthListbox . $strDayListbox . $strYearListbox;
-                        break;
-                    case QDateTimePickerFormat::DayMonthYear:
-                        $strToReturn .= $strDayListbox . $strMonthListbox . $strYearListbox;
-                        break;
-                    case QDateTimePickerFormat::YearMonthDay:
-                        $strToReturn .= $strYearListbox . $strMonthListbox . $strDayListbox;
-                        break;
-                }
+                $strToReturn .= match ($this->strDateTimePickerFormat) {
+                    self::MONTH_DAY_YEAR => $strMonthListbox . $strDayListbox . $strYearListbox,
+                    self::DAY_MONTH_YEAR => $strDayListbox . $strMonthListbox . $strYearListbox,
+                    self::YEAR_MONTH_DAY => $strYearListbox . $strMonthListbox . $strDayListbox
+                };
                 break;
         }
 
@@ -409,7 +376,7 @@ class DateTimePicker extends Q\Project\Control\ControlBase
                     } else {
                         $strSelected = '';
                     }
-                    $strHourListBox .= sprintf('<option value="%s"%s>%s</option>',
+                    $strHourListBox .= sprintf('<option value="%s" %s>%s</option>',
                         $intHour,
                         $strSelected,
                         date('g A', mktime($intHour, 0, 0, 1, 1, 2000)));
@@ -430,7 +397,7 @@ class DateTimePicker extends Q\Project\Control\ControlBase
                     } else {
                         $strSelected = '';
                     }
-                    $strMinuteListBox .= sprintf('<option value="%s"%s>%02d</option>',
+                    $strMinuteListBox .= sprintf('<option value="%s" %s>%02d</option>',
                         $intMinute,
                         $strSelected,
                         $intMinute);
@@ -452,7 +419,7 @@ class DateTimePicker extends Q\Project\Control\ControlBase
                     } else {
                         $strSelected = '';
                     }
-                    $strSecondListBox .= sprintf('<option value="%s"%s>%02d</option>',
+                    $strSecondListBox .= sprintf('<option value="%s" %s>%02d</option>',
                         $intSecond,
                         $strSelected,
                         $intSecond);
@@ -460,7 +427,7 @@ class DateTimePicker extends Q\Project\Control\ControlBase
                 $strSecondListBox .= '</select>';
 
 
-                // PUtting it all together
+                // Putting it all together
                 if (($this->strDateTimePickerType == self::SHOW_DATE_TIME_SECONDS) ||
                     ($this->strDateTimePickerType == self::SHOW_TIME_SECONDS)
                 ) {
@@ -475,10 +442,15 @@ class DateTimePicker extends Q\Project\Control\ControlBase
         } else {
             $strCssClass = '';
         }
-        return sprintf('<span id="%s"%s>%s</span>', $this->strControlId, $strCssClass, $strToReturn);
+        return sprintf('<span id="%s" %s>%s</span>', $this->strControlId, $strCssClass, $strToReturn);
     }
 
-    public function validate()
+    /**
+     * Validates the control based on the defined requirements and selected values.
+     *
+     * @return bool True if the validation passes, false otherwise.
+     */
+    public function validate(): bool
     {
         if ($this->blnRequired) {
             $blnIsNull = false;
@@ -525,21 +497,19 @@ class DateTimePicker extends Q\Project\Control\ControlBase
         return true;
     }
 
-    /////////////////////////
-    // Public Properties: GET
-    /////////////////////////
-    public function __get($strName)
+    /**
+     * Magic getter method to retrieve the value of a property.
+     *
+     * @param string $strName The name of the property to retrieve.
+     * @return mixed The value of the requested property, or the value returned by the parent implementation.
+     * @throws Caller If the property does not exist or an exception occurs in the parent implementation.
+     */
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             // MISC
             case "DateTime":
-                if (is_null($this->dttDateTime) || $this->dttDateTime->isNull()) {
-                    return null;
-                } else {
-                    $objToReturn = clone($this->dttDateTime);
-                    return $objToReturn;
-                }
-
+                return ($this->dttDateTime instanceof QDateTime) ? $this->dttDateTime : null;
             case "DateTimePickerType":
                 return $this->strDateTimePickerType;
             case "DateTimePickerFormat":
@@ -571,10 +541,16 @@ class DateTimePicker extends Q\Project\Control\ControlBase
         }
     }
 
-    /////////////////////////
-    // Public Properties: SET
-    /////////////////////////
-    public function __set($strName, $mixValue)
+    /**
+     * Magic method to set the value of a property.
+     *
+     * @param string $strName The name of the property to set.
+     * @param mixed $mixValue The value to assign to the property.
+     * @return void
+     * @throws InvalidCast Thrown if the given value cannot be cast to the expected type.
+     * @throws Caller Thrown if the property does not exist or cannot be dynamically set.
+     */
+    public function __set(string $strName, mixed $mixValue): void
     {
         $this->blnModified = true;
 
@@ -705,7 +681,8 @@ class DateTimePicker extends Q\Project\Control\ControlBase
      *
      * @return Q\Codegen\Generator\GeneratorBase
      */
-    public static function getCodeGenerator() {
+    public static function getCodeGenerator(): Q\Codegen\Generator\DateTimePicker
+    {
         return new Q\Codegen\Generator\DateTimePicker(__CLASS__); // reuse the Table generator
     }
 }

@@ -1,98 +1,151 @@
 <?php
-use QCubed\Action\Server;
+
+use QCubed\Action\ActionParams;
+use QCubed\Action\Ajax;
 use QCubed\Control\CheckboxList;
 use QCubed\Control\Label;
-use QCubed\Event\Change;
 use QCubed\Project\Control\ListBox;
+use QCubed\Event\Change;
+use QCubed\Project\Control\FormBase;
 use QCubed\Query\QQ;
 
 require_once('../qcubed.inc.php');
 
-// Define the \QCubed\Project\Control\FormBase with all our Qcontrols
-class ExamplesForm extends \QCubed\Project\Control\FormBase
+/**
+ * This form demonstrates how to use a ListBox and a CheckboxList
+ * in QCubed with AJAX interactions. It displays persons from the database
+ * and allows selecting them in different formats.
+ */
+class ExamplesForm extends FormBase
 {
+    // UI elements used in the form: a label, two list boxes, and a checkbox list
+    protected Label $lblMessage;
+    protected ListBox $lstPersons;
+    protected ListBox $lstProjectPeople;
+    protected CheckboxList $chkPersons;
 
-    // Local declarations of our Qcontrols
-    protected $lblMessage;
-    // A listbox of Persons
-    protected $lstPersons;
-
-    protected $chkPersons;
-
-    // Initialize our Controls during the Form Creation process
-    protected function formCreate()
+    /**
+     * Initializes all controls on the form.
+     */
+    protected function formCreate(): void
     {
-        // Define our Label
+        // Label used to display the user's current selection
         $this->lblMessage = new Label($this);
         $this->lblMessage->Text = '<None>';
 
-        // Define the ListBox, and create the first listitem as 'Select One'
+        // First list box: displays all persons from the database
         $this->lstPersons = new ListBox($this);
-        $this->lstPersons->addItem('- Select One -', null);
+        $this->lstPersons->addItem('- Select One -', null); // Default placeholder option
 
-        // Add the items for the listbox, pulling in from the Person table
+        // Load all persons, ordered by last name and first name
         $objPersons = Person::loadAll(QQ::clause(QQ::orderBy(QQN::person()->LastName, QQN::person()->FirstName)));
         if ($objPersons) {
             foreach ($objPersons as $objPerson) {
-                // We want to display the listitem as Last Name, First Name
-                // and the VALUE of the listitem should be the person object itself
-                $this->lstPersons->addItem($objPerson->LastName . ', ' . $objPerson->FirstName, $objPerson);
+                // Display each person in "Last, First" format, with ID as value
+                $this->lstPersons->addItem($objPerson->LastName . ', ' . $objPerson->FirstName, $objPerson->Id);
             }
         }
-        // Declare a \QCubed\Event\Change to call a server action: the lstPersons_Change PHP method
-        $this->lstPersons->addAction(new Change(), new Server('lstPersons_Change'));
 
-        // Do the same but with a multiple selection \QCubed\Control\CheckboxList
+        // Attach an AJAX event handler when the selection changes
+        $this->lstPersons->addAction(new Change(), new Ajax('lstPersons_Change'));
+
+        // Second list box: groups persons under their respective projects
+        $this->lstProjectPeople = new ListBox($this);
+        $this->lstProjectPeople->addItem('- Select a person based on the project', null);
+
+        // Use expandAsArray to load related persons (team members) for each project
+        $clauses[] = QQ::expandAsArray(QQN::project()->PersonAsTeamMember);
+        $objProjects = Project::queryArray(QQ::all(), $clauses);
+
+        // Build grouped options: each person appears under their project name
+        foreach ($objProjects as $objProject) {
+            $projectName = $objProject->Name;
+            $members = $objProject->_PersonAsTeamMemberArray ?? [];
+
+            foreach ($members as $objPerson) {
+                $personName = $objPerson->FirstName . ' ' . $objPerson->LastName;
+
+                $this->lstProjectPeople->addItem(
+                    $personName,        // Text shown in the list
+                    $objPerson->Id,     // Value of the item
+                    false,                      // Not selected by default
+                    false,                      // Not disabled
+                    $projectName        // Group label (optgroup)
+                );
+            }
+        }
+
+        // AJAX callback when project-based list box value changes
+        $this->lstProjectPeople->addAction(new Change(), new Ajax('lstProjectPeople_Change'));
+
+        // Checkbox list: allows selecting multiple persons at once
         $this->chkPersons = new CheckboxList($this);
         if ($objPersons) {
             foreach ($objPersons as $objPerson) {
-                // We want to display the listitem as Last Name, First Name
-                // and the VALUE of the listitem will be the database id
+                // Each checkbox shows "First Last" with the person's ID as value
                 $this->chkPersons->addItem($objPerson->FirstName . ' ' . $objPerson->LastName, $objPerson->Id);
             }
         }
-        $this->chkPersons->RepeatColumns = 2;
-        $this->chkPersons->addAction(new Change(), new Server('chkPersons_Change'));
 
+        // Display checkboxes in two columns
+        $this->chkPersons->RepeatColumns = 2;
+
+        // AJAX callback when any checkbox is selected or unselected
+        $this->chkPersons->addAction(new Change(), new Ajax('chkPersons_Change'));
     }
 
-    // Handle the changing of the listbox
-    protected function lstPersons_Change($strFormId, $strControlId, $strParameter)
+    /**
+     * Triggered when a person is selected from the first list box (lstPersons).
+     * Displays the selected person's full name and ID in the label.
+     */
+    protected function lstPersons_Change(ActionParams $params): void
     {
-        // See if there is something selected
-        // Note that in the HTML that gets rendered, the <option> values are arbitrary
-        // index numbers.  However, we put in the whole Person object as the \QCubed\Control\ListItem
-        // value.  So the SelectedValue property of the \QCubed\Control\ListControl will
-        // do a proper lookup of the \QCubed\Control\ListItem that was selected, and will return
-        // to us the Person OBJECT (or NULL if they selected "- Select One -").
-        $objPerson = $this->lstPersons->SelectedValue;
+        $intPersonId = intval($this->lstPersons->SelectedValue);
+        $objPerson = Person::load($intPersonId);
 
-        if ($objPerson) {
-            $this->lblMessage->Text = sprintf('%s %s, Person ID of %s', $objPerson->FirstName, $objPerson->LastName,
-                $objPerson->Id);
+        if ($intPersonId) {
+            $this->lblMessage->Text = sprintf('%s %s, Person ID of %s', $objPerson->FirstName, $objPerson->LastName, $objPerson->Id);
         } else {
-            // No one was selected
             $this->lblMessage->Text = '<None>';
         }
     }
 
-    // Handle the changing of the checkbox list
-    protected function chkPersons_Change($strFormId, $strControlId, $strParameter)
+    /**
+     * Triggered when a person is selected from the project-based list box.
+     * Displays the selected person's name in the label.
+     */
+    public function lstProjectPeople_Change(ActionParams $params): void
     {
-        // In this example, since our values are database ids, we use the ids to lookup the names and display them.
+        $personId = $this->lstProjectPeople->SelectedValue;
 
+        if ($personId) {
+            $objPerson = Person::load($personId);
+
+            if ($objPerson) {
+                $this->lblMessage->Text = 'You chose: ' . $objPerson->FirstName . ' ' . $objPerson->LastName;
+            } else {
+                $this->lblMessage->Text = 'Person not found!';
+            }
+        } else {
+            $this->lblMessage->Text = 'Please select a person!';
+        }
+    }
+
+    /**
+     * Triggered when checkboxes are toggled in the CheckboxList.
+     * Displays a comma-separated list of selected names.
+     */
+    protected function chkPersons_Change(ActionParams $params): void
+    {
         $names = $this->chkPersons->SelectedNames;
 
         if ($names) {
             $this->lblMessage->Text = implode(", ", $names);
         } else {
-            // No one was selected
             $this->lblMessage->Text = '<None>';
         }
     }
-
 }
 
-// Run the Form we have defined
-// The \QCubed\Project\Control\FormBase engine will look to intro.tpl.php to use as its HTML template include file
+// Launch the form — QCubed will automatically look for the template file intro.tpl.php
 ExamplesForm::run('ExamplesForm');

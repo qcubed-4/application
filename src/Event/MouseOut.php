@@ -12,7 +12,6 @@ namespace QCubed\Event;
 /**
  * Class MouseOut
  *
- * @was QMouseOutEvent
  * @package QCubed\Event
  */
 class MouseOut extends EventBase

@@ -18,14 +18,13 @@ use QCubed\Type;
  *
  * Base class for HTML Button.
  *
- * Since the html button tag can have any html markup as content, the button is a subclass of a block control. You can
+ * Since the HTML button tag can have any HTML markup as content, the button is a subclass of a block control. You can
  * use Text, Template, or subclass and define your own getInnerHtml method to define the content of a button.
  *
  * @package Controls
  *
  * @property boolean $PrimaryButton is a boolean to specify whether or not the button is 'primary'
- * (e.g. makes this button a "Submit" form element rather than a "Button" form element)
- * @was QButtonBase
+ * (e.g., makes this button a "Submit" form element rather than a "Button" form element)
  * @package QCubed\Control
  */
 abstract class ButtonBase extends BlockControl
@@ -36,26 +35,27 @@ abstract class ButtonBase extends BlockControl
 
     // BEHAVIOR
     /** @var bool Is the button a primary button (causes form submission)? */
-    protected $blnPrimaryButton = false;
+    protected ?bool $blnPrimaryButton = false;
 
     // SETTINGS
     /**
      * @var bool Prevent any more actions from happening once action has been taken on this control
-     *  causes "event.preventDefault()" to be called on the client side
+     *  Causes "event.preventDefault()" to be called on the client side
      */
-    protected $blnActionsMustTerminate = true;
-    protected $strTagName = "button";
-    protected $mixCausesValidation = self::CAUSES_VALIDATION_ALL;   //default to causing validation. Can be turned off by user of control.
-
+    protected bool $blnActionsMustTerminate = true;
+    protected string $strTagName = "button";
+    protected mixed $mixCausesValidation = self::CAUSES_VALIDATION_ALL;   // Default to causing validation. Can be turned off by user of control.
 
     /**
-     * Returns the attributes as html
+     * Renders HTML attributes for the control, optionally applying overrides.
      *
-     * @param null $attributeOverrides
-     * @param null $styleOverrides
-     * @return string
+     * @param array|null $attributeOverrides An optional array of attribute overrides to apply
+     * @param array|null $styleOverrides An optional array of style overrides to apply
+     *
+     * @return string Rendered HTML attributes string
      */
-    public function renderHtmlAttributes($attributeOverrides = null, $styleOverrides = null) {
+    public function renderHtmlAttributes(?array $attributeOverrides = null, ?array $styleOverrides = null): string
+    {
         if (!$attributeOverrides) {
             $attributeOverrides = [];
         }
@@ -78,7 +78,7 @@ abstract class ButtonBase extends BlockControl
      * @return mixed
      * @throws Caller
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             case "PrimaryButton":
@@ -100,12 +100,12 @@ abstract class ButtonBase extends BlockControl
     /**
      * PHP Magic method __set implementation for this class (QButtonBase)
      * @param string $strName Name of the property
-     * @param string $mixValue Value of the property
+     * @param mixed $mixValue Value of the property
      *
      * @return void
      * @throws InvalidCast|Caller
      */
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             case "PrimaryButton":

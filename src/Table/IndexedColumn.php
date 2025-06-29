@@ -10,6 +10,7 @@
 namespace QCubed\Table;
 
 use QCubed\Exception\Caller;
+use Exception;
 
 /**
  * Class Indexed
@@ -17,18 +18,17 @@ use QCubed\Exception\Caller;
  * A type of column that should be used when the DataSource items are arrays
  *
  * @property int|string $Index the index or key to use when accessing the arrays in the DataSource array
- * @was QHtmlTableIndexedColumn
  * @package QCubed\Table
  */
 class IndexedColumn extends DataColumn
 {
-    protected $mixIndex;
+    protected string|int $mixIndex;
 
     /**
      * @param string $strName name of the column
      * @param int|string $mixIndex the index or key to use when accessing the DataSource row array
      */
-    public function __construct($strName, $mixIndex)
+    public function __construct(string $strName, int|string $mixIndex)
     {
         parent::__construct($strName);
         $this->mixIndex = $mixIndex;
@@ -40,22 +40,28 @@ class IndexedColumn extends DataColumn
      * @param mixed $item
      * @return string
      */
-    public function fetchCellObject($item)
+    public function fetchCellObject(mixed $item): mixed
     {
-        if (is_array($this->mixIndex)) {
-            foreach ($this->mixIndex as $i) {
-                if (!isset($item[$i])) {
-                    return '';
-                }
-                $item = $item[$i];
-            }
-            return $item;
-        }
-        elseif (isset($item[$this->mixIndex])) {
+
+        if (isset($item[$this->mixIndex])) {
             return $item[$this->mixIndex];
-        } else {
-            return '';
         }
+        return '';
+
+//        if (is_array($this->mixIndex)) {
+//            foreach ($this->mixIndex as $i) {
+//                if (!isset($item[$i])) {
+//                    return '';
+//                }
+//                $item = $item[$i];
+//            }
+//            return $item;
+//        }
+//        elseif (isset($item[$this->mixIndex])) {
+//            return $item[$this->mixIndex];
+//        } else {
+//            return '';
+//        }
     }
 
     /**
@@ -66,7 +72,7 @@ class IndexedColumn extends DataColumn
      * @return mixed
      * @throws Caller
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             case 'Index':
@@ -85,12 +91,13 @@ class IndexedColumn extends DataColumn
      * PHP magic method
      *
      * @param string $strName
-     * @param string $mixValue
+     * @param mixed $mixValue
      *
-     * @return mixed|void
+     * @return void
      * @throws Caller
+     * @throws Exception
      */
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             case "Index":

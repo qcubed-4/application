@@ -3,18 +3,18 @@
 namespace QCubed\Project\Control;
 
 use QCubed as Q;
+use QCubed\Exception\Caller;
 use QCubed\Project\Application;
 
 /**
  * Class ListBox
  *
- * The QListBox class is based upon QListBoxBase.
+ * The ListBox class is based upon ListBoxBase.
  *
  * The purpose of this class is entirely to provide a place for you to make modifications of the QListBox control.
- * All updates in QCubed releases will make changes to the QListBoxBase class.  By making your modifications here
+ * All updates in QCubed releases will make changes to the ListBoxBase class.  By making your modifications here
  * instead of in the base class, you can ensure that your changes are not affected by core improvements.
  *
- * @was QListBox
  * @package QCubed\Project\Control
  */
 class ListBox extends Q\Control\ListBoxBase
@@ -25,16 +25,17 @@ class ListBox extends Q\Control\ListBoxBase
 
     // Feel free to specify global display preferences/defaults for all QListBox controls
     /** @var string Default CSS class for the listbox */
-    protected $strCssClass = 'listbox';
+    protected string $strCssClass = 'listbox';
 //		protected $strFontNames = QFontFamily::Verdana;
 //		protected $strFontSize = '12px';
 //		protected $strWidth = '250px';
 
     /**
-     * Creates the reset button html for use with multiple select boxes.
+     * Creates the reset button HTML for use with multiple select boxes.
      *
+     * @throws Caller
      */
-    protected function getResetButtonHtml()
+    protected function getResetButtonHtml(): string
     {
         $strJavaScriptOnClick = sprintf('$j("#%s").val(null);$j("#%s").trigger("change"); return false;',
             $this->strControlId, $this->strControlId);
@@ -53,9 +54,10 @@ class ListBox extends Q\Control\ListBoxBase
     /**
      * Returns the generator corresponding to this control.
      *
-     * @return Q\Codegen\Generator\GeneratorBase
+     * @return Q\Codegen\Generator\ListBox
      */
-    public static function getCodeGenerator() {
+    public static function getCodeGenerator(): Q\Codegen\Generator\ListBox
+    {
         return new Q\Codegen\Generator\ListBox(__CLASS__);
     }
 

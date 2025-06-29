@@ -10,11 +10,16 @@
 namespace QCubed\Jqui;
 
 use QCubed as Q;
+use QCubed\Control\ControlBase;
+use QCubed\Control\FormBase;
 use QCubed\Exception\Caller;
 use QCubed\Exception\InvalidCast;
 use QCubed\Jqui;
+use QCubed\Js\Closure;
+use QCubed\Js\Helper;
 use QCubed\Project\Control\Dialog;
 use QCubed\Project\Application;
+use QCubed\ApplicationBase;
 use QCubed\Type;
 
 /**
@@ -25,7 +30,7 @@ use QCubed\Type;
  * when you update QCubed. To override, make your changes to the QDialog.class.php file instead.
  *
  *
- * A QDialog is a QPanel that pops up on the screen and implements an "in window" dialog.
+ * A QDialog is a Panel that pops up on the screen and implements an "in a window" dialog.
  *
  * There are a couple of ways to use the dialog. The simplest is as follows:
  *
@@ -51,16 +56,15 @@ use QCubed\Type;
  * </code>
  *
  *
- * Since Dialog is a descendant of Panel, you can do anything you can to a normal Panel,
- * including add QControls and use a template. When you want to hide the dialog, call <code>Close()</code>
+ * Since the Dialog is a descendant of Panel, you can do anything you can to a normal Panel,
+ * including add QControls and using a template. When you want to hide the dialog, call <code>Close()</code>
  *
  * @property boolean $HasCloseButton Disables (false) or enables (true) the close X in the upper right corner of the title. Can be set when initializing the dialog.
  *    Can be set when initializing the dialog. Also enables or disables the ability to close the box by pressing the ESC key.
  * @property-read integer $ClickedButton Returns the id of the button most recently clicked. (read-only)
- * @property-write string $DialogState Set whether this dialog is in an error or highlight (info) state. Choose on of Dialog::STATE_NONE, QDialogState::STATE_ERROR, QDialogState::stateHighlight(write-only)
+ * @property-write string $DialogState Set whether this dialog is in an error or highlight (info) state. Choose one of Dialog::STATE_NONE, QDialogState::STATE_ERROR, QDialogState::stateHighlight(write-only)
  *
  * @link http://jqueryui.com/dialog/
- * @was QDialogBase
  */
 class DialogBase extends DialogGen implements Q\Control\DialogInterface
 {
@@ -77,28 +81,34 @@ class DialogBase extends DialogGen implements Q\Control\DialogInterface
     const MESSAGE_DIALOG_ID = 'qAlertDialog';
 
     /** @var bool default to auto open being false, since this would be a rare need, and dialogs are auto-rendered. */
-    protected $blnAutoOpen = false;
-    /** @var  string Id of last button clicked. */
-    protected $strClickedButtonId;
+    protected ?bool $blnAutoOpen = false;
+    /** @var  string|null Id of last button clicked. */
+    protected ?string $strClickedButtonId = null;
     /** @var bool Should we draw a close button on the top? */
-    protected $blnHasCloseButton = true;
-    /** @var bool records whether dialog is open */
-    protected $blnIsOpen = false;
+    protected bool $blnHasCloseButton = true;
+    /** @var bool records whether the dialog is open */
+    protected ?bool $blnIsOpen = false;
     /** @var array whether a button causes validation */
-    protected $blnValidationArray = array();
+    protected array $blnValidationArray = array();
     /** @var bool */
-    protected $blnUseWrapper = true;
-    /** @var  string state of the dialog for special display */
-    protected $strDialogState;
+    protected bool $blnUseWrapper = true;
+    /** @var  string|null state of the dialog for special display */
+    protected ?string $strDialogState = null;
     /** @var bool */
-    protected $blnAutoRender = true;
+    protected bool $blnAutoRender = true;
     /** @var bool Whether to show the dialog as a modal dialog. Most dialogs are modal, so this defaults to true. */
-    protected $blnModal = true;
+    protected bool $blnModal = false;
 
-
-    public function __construct($objParentObject = null, $strControlId = null)
+    /**
+     * Constructor for the dialog object.
+     *
+     * @param FormBase|ControlBase|null $objParentObject The parent object, typically a form. If null, the dialog will be displayed immediately.
+     * @param string|null $strControlId The optional control ID of the dialog.
+     * @throws Caller
+     */
+    public function __construct(FormBase|ControlBase|null $objParentObject = null, ?string $strControlId = null)
     {
-        // Detect which mode we are going to display in, whether to show right away, or wait for later.
+        // Detect which mode we are going to display in, whether to show right away or wait for later.
         if ($objParentObject === null) {
             // The dialog will be shown right away, and then when closed, removed from the form.
             global $_FORM;
@@ -122,13 +132,13 @@ class DialogBase extends DialogGen implements Q\Control\DialogInterface
 
     /**
      * Validate the child items if the dialog is visible and the clicked button requires validation.
-     * This piece of magic makes validation specific to the dialog if an action is coming from the dialog,
+     * This piece of magic makes validation specific to the dialog if an action is coming from the dialog
      * and prevents the controls in the dialog from being validated if the action is coming from outside
      * the dialog.
      *
      * @return bool
      */
-    public function validateControlAndChildren()
+    public function validateControlAndChildren(): bool
     {
         if ($this->blnIsOpen) {    // don't validate a closed dialog
             if (!empty($this->mixButtons)) {    // using built-in dialog buttons
@@ -146,7 +156,7 @@ class DialogBase extends DialogGen implements Q\Control\DialogInterface
      * Returns the control id for purposes of jQuery UI.
      * @return string
      */
-    public function getJqControlId()
+    public function getJqControlId(): string
     {
         return $this->getWrapperId();
     }
@@ -156,34 +166,33 @@ class DialogBase extends DialogGen implements Q\Control\DialogInterface
      * on a control. This purposefully does not include textarea controls, which should get the enter key to
      * insert a newline.
      */
-
-    protected function makeJqWidget()
+    protected function makeJqWidget(): void
     {
         parent::makeJqWidget();
-        Application::executeJsFunction('qc.dialog', $this->getJqControlId(), Application::PRIORITY_HIGH);
+        Application::executeJsFunction('qc.dialog', $this->getJqControlId(), ApplicationBase::PRIORITY_HIGH);
     }
 
     /**
-     * Add additional javascript to the dialog creation to further format the dialog.
+     * Add additional JavaScript to the dialog creation to further format the dialog.
      * This will set the class of the title bar to the strDialogState value and add an
      * icon to implement a dialog state. Override and restyle for a different look.
      * @return string
      */
-    protected function stylingJs()
+    protected function stylingJs(): string
     {
         $strJs = '';
         if ($this->strDialogState) {
             $strIcon = '';
             
-            // Move the dialog class to the header of dialog to improve the appearance over the default.
+            // Move the dialog class to the header of the dialog to improve the appearance over the default.
             // Also add an appropriate icon.
             // Override this if you want your dialogs to look different.
             switch ($this->strDialogState) {
-                case Dialog::STATE_ERROR:
+                case self::STATE_ERROR:
                     $strIcon = 'alert';
                     break;
 
-                case Dialog::STATE_HIGHLIGHT:
+                case self::STATE_HIGHLIGHT:
                     $strIcon = 'info';
                     break;
             }
@@ -198,12 +207,12 @@ class DialogBase extends DialogGen implements Q\Control\DialogInterface
     }
 
     /**
-     * Implements QCubed specific dialog functions. Makes sure dialog is put at the end of the form
+     * Implements QCubed specific dialog functions. Makes sure a dialog is put at the end of the form
      * to fix an overlay problem with jQuery UI.
      *
-     * @return string
+     * @return array
      */
-    protected function makeJqOptions()
+    protected function makeJqOptions(): array
     {
         $jqOptions = parent::makeJqOptions();
 
@@ -216,18 +225,18 @@ class DialogBase extends DialogGen implements Q\Control\DialogInterface
             $strHideCloseButtonScript = '';
         }
 
-        $jqOptions['open'] = new Q\Js\Closure (
+        $jqOptions['open'] = new Closure (
             sprintf('qcubed.recordControlModification("%s", "_IsOpen", true);
             %s', $controlId, $strHideCloseButtonScript)
             , ['event', 'ui']);
-        $jqOptions['close'] = new Q\Js\Closure (sprintf(
+        $jqOptions['close'] = new Closure (sprintf(
             'qcubed.recordControlModification("%s", "_IsOpen", false);
             ', $controlId), ['event', 'ui']);
         $jqOptions['appendTo'] = "#{$strFormId}";
 
         // By doing the styling at creation time, we ensure that it gets done only once.
         if ($strCreateJs = $this->stylingJs()) {
-            $jqOptions['create'] = new Q\Js\Closure($strCreateJs);
+            $jqOptions['create'] = new Closure($strCreateJs);
         }
         return $jqOptions;
     }
@@ -237,24 +246,25 @@ class DialogBase extends DialogGen implements Q\Control\DialogInterface
      * Adds a button to the dialog. Use this to add buttons BEFORE bringing up the dialog.
      *
      * @param string $strButtonName
-     * @param string $strButtonId Id associated with the button for detecting clicks. Note that this is not the id on the form.
+     * @param string|null $strButtonId Id associated with the button for detecting clicks. Note that this is not the id on the form.
      *                                    Different dialogs can have the same button id.
-     *                                    To specify a control id for the button (for styling purposes for example), set the id in options.
+     *                                    To specify a control id for the button (for styling purposes, for example), set the id in options.
      * @param bool $blnCausesValidation If the button causes the dialog to be validated before the action is executed
-     * @param bool $blnIsPrimary Whether this button will be automatically clicked if user presses an enter key.
-     * @param string $strConfirmation If set, will confirm with the given string before the click is sent
-     * @param array $options Additional attributes to add to the button. Useful things to do are:
+     * @param bool $blnIsPrimary Whether this button will be automatically clicked if a user presses an enter key.
+     * @param string|null $strConfirmation If set, will confirm with the given string before the click is sent
+     * @param mixed|null $options Additional attributes to add to the button. Useful things to do are:
      *                                    array('class'=>'ui-button-left') to create a button on the left side.
      *                                    array('class'=>'ui-priority-primary') to style a button as important or primary.
      */
     public function addButton(
-        $strButtonName,
-        $strButtonId = null,
-        $blnCausesValidation = false,
-        $blnIsPrimary = false,
-        $strConfirmation = null,
-        $options = null
-    ) {
+        string $strButtonName,
+        ?string $strButtonId = null,
+        ?bool   $blnCausesValidation = false,
+        ?bool   $blnIsPrimary = false,
+        ?string $strConfirmation = null,
+        mixed $options = null
+    ): void
+    {
         if (!$this->mixButtons) {
             $this->mixButtons = array();
         }
@@ -280,7 +290,7 @@ class DialogBase extends DialogGen implements Q\Control\DialogInterface
 
         $btnOptions = array(
             'text' => $strButtonName,
-            'click' => new Q\Js\NoQuoteKey(new Q\Js\Closure($strJS, array('event'))),
+            'click' => new Q\Js\NoQuoteKey(new Closure($strJS, array('event'))),
             'data-btnid' => $strButtonId
         );
 
@@ -302,9 +312,9 @@ class DialogBase extends DialogGen implements Q\Control\DialogInterface
     /**
      * Remove the given button from the dialog.
      *
-     * @param $strButtonId
+     * @param string $strButtonId
      */
-    public function removeButton($strButtonId)
+    public function removeButton(string $strButtonId): void
     {
         if (!empty($this->mixButtons)) {
             $this->mixButtons = array_filter($this->mixButtons, function ($a) use ($strButtonId) {
@@ -320,7 +330,7 @@ class DialogBase extends DialogGen implements Q\Control\DialogInterface
     /**
      * Remove all the buttons from the dialog.
      */
-    public function removeAllButtons()
+    public function removeAllButtons(): void
     {
         $this->mixButtons = array();
         $this->blnValidationArray = array();
@@ -330,10 +340,11 @@ class DialogBase extends DialogGen implements Q\Control\DialogInterface
     /**
      * Show or hide the given button. Changes the display attribute, so the buttons will reflow.
      *
-     * @param $strButtonId
-     * @param $blnVisible
+     * @param string $strButtonId
+     * @param bool $blnVisible
+     * @throws Caller
      */
-    public function showHideButton($strButtonId, $blnVisible)
+    public function showHideButton(string $strButtonId, bool $blnVisible): void
     {
         if ($blnVisible) {
             Application::executeJavaScript(
@@ -353,12 +364,13 @@ class DialogBase extends DialogGen implements Q\Control\DialogInterface
      *
      * @param string $strButtonId Id of button to set the style on
      * @param array $styles Array of key/value style specifications
+     * @throws Caller
      */
-    public function setButtonStyle($strButtonId, $styles)
+    public function setButtonStyle(string $strButtonId, array $styles): void
     {
         Application::executeJavaScript(
             sprintf('$j("#%s").next().find("button[data-btnid=\'%s\']").css(%s)', $this->getJqControlId(), $strButtonId,
-                Q\Js\Helper::toJsObject($styles))
+                Helper::toJsObject($styles))
         );
     }
 
@@ -366,12 +378,12 @@ class DialogBase extends DialogGen implements Q\Control\DialogInterface
      * Adds a close button that just closes the dialog without firing the QDialogButton event. You can
      * detect this by adding an action to the QDialog_BeforeCloseEvent.
      *
-     * @param $strButtonName
+     * @param string $strButtonName
      */
-    public function addCloseButton($strButtonName)
+    public function addCloseButton(string $strButtonName): void
     {
         // This is an alternate button format supported by jQuery UI.
-        $this->mixButtons[$strButtonName] = new Q\Js\Closure('$j(this).dialog("close")');
+        $this->mixButtons[$strButtonName] = new Closure('$j(this).dialog("close")');
     }
 
     /**
@@ -390,8 +402,9 @@ class DialogBase extends DialogGen implements Q\Control\DialogInterface
      * @param string|string[]|null $strButtons
      * @param string|null $strControlId
      * @return Dialog
+     * @throws Caller
      */
-    public static function alert($strMessage, $strButtons = null, $strControlId = null)
+    public static function alert(string $strMessage, ?array $strButtons = null, ?string $strControlId = null): Dialog
     {
         $dlg = new Dialog(null, $strControlId);
         $dlg->Modal = true;
@@ -413,20 +426,22 @@ class DialogBase extends DialogGen implements Q\Control\DialogInterface
             }
         } else {
             $dlg->blnHasCloseButton = true;
-            $dlg->Height = 100; // fix problem with jquery ui dialog making space for buttons that don't exist
+            $dlg->Height = 100; // fix a problem with the jquery ui dialog making space for buttons that don't exist
         }
         $dlg->open();
         return $dlg;
     }
 
     /**
-     * A dialog is closing that is autoRemoved, so we remove the dialog from the form and the dom.
+     * Handles the closing of the dialog and removes the control from the form.
      *
-     * @param $strFormId
-     * @param $strControlId
-     * @param $strParameter
+     * @param string $strFormId The ID of the form containing the dialog.
+     * @param string $strControlId The ID of the control associated with the dialog.
+     * @param string $strParameter Additional parameters passed during the close action.
+     * @return void
+     * @throws Caller
      */
-    public function dialog_Close($strFormId, $strControlId, $strParameter)
+    public function dialog_Close(string $strFormId, string $strControlId, string $strParameter): void
     {
         $this->Form->removeControl($this->ControlId);
     }
@@ -435,7 +450,7 @@ class DialogBase extends DialogGen implements Q\Control\DialogInterface
      * Show the dialog.
      * @deprecated
      */
-    public function showDialogBox()
+    public function showDialogBox(): void
     {
         $this->open();
     }
@@ -443,12 +458,12 @@ class DialogBase extends DialogGen implements Q\Control\DialogInterface
     /**
      * Hide the dialog
      */
-    public function hideDialogBox()
+    public function hideDialogBox(): void
     {
         $this->close();
     }
 
-    public function open()
+    public function open(): void
     {
         $this->Visible = true;
         $this->Display = true;
@@ -459,25 +474,25 @@ class DialogBase extends DialogGen implements Q\Control\DialogInterface
      * Closes the dialog. To detect the close, use the DialogBeforeClose Event.
      *
      */
-    public function close()
+    public function close(): void
     {
         Application::instance()->executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "close",
-            Application::PRIORITY_LAST);
+            ApplicationBase::PRIORITY_LAST);
     }
 
     /**
      * PHP magic method
      *
      * @param string $strName
-     * @param string $mixValue
-     * @throws Caller
-     * @throws InvalidCast
+     * @param mixed $mixValue
      * @return void
+     *@throws InvalidCast
+     * @throws Caller
      */
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
-            case '_ClickedButton': // Internal only. Do not use. Used by JS above to keep track of clicked button.
+            case '_ClickedButton': // Internal only. Do not use. Used by JS above to keep track of the clicked button.
                 try {
                     $this->strClickedButtonId = Type::cast($mixValue, Type::STRING);
                 } catch (InvalidCast $objExc) {
@@ -486,7 +501,7 @@ class DialogBase extends DialogGen implements Q\Control\DialogInterface
                 }
                 break;
 
-            case '_IsOpen': // Internal only, to detect when dialog has been opened or closed.
+            case '_IsOpen': // Internal only to detect when a dialog has been opened or closed.
                 try {
                     $this->blnIsOpen = Type::cast($mixValue, Type::BOOLEAN);
                     $this->blnAutoOpen = $this->blnIsOpen;  // in case it gets redrawn
@@ -496,7 +511,7 @@ class DialogBase extends DialogGen implements Q\Control\DialogInterface
                 }
                 break;
 
-            // set to false to remove the close x in upper right corner and disable the
+            // set too false to remove the close x in the upper right corner and disable the
             // escape key as well
             case 'HasCloseButton':
                 try {
@@ -569,7 +584,7 @@ class DialogBase extends DialogGen implements Q\Control\DialogInterface
      * @return mixed
      * @throws Caller
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             case 'ClickedButton':

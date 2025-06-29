@@ -14,6 +14,7 @@ use QCubed\Control\FormBase;
 use QCubed\Control\Proxy;
 use QCubed\Exception\Caller;
 use QCubed\Exception\InvalidCast;
+use Exception;
 use QCubed\Query\Node\NodeBase;
 use QCubed\Query\Node\ReverseReference;
 use QCubed\Type;
@@ -22,19 +23,19 @@ use QCubed\Type;
 /**
  * Class LinkColumn
  *
- * A multi-purpose link column. This column lets you specify a column whose purpose is to show an anchor tag
- * with text, attributes and properties related to row item. It can handle row items that are objects or arrays,
+ * A multipurpose link column. This column lets you specify a column whose purpose is to show an anchor tag
+ * with text, attributes, and properties related to the row item. It can handle row items that are objects or arrays
  * and specify parameters or methods of objects, as well as offsets in arrays.
  *
- * You can specify the text of the link, the destination address, the html get variables, and the attributes
+ * You can specify the text of the link, the destination address, the HTML get variables, and the attributes
  * to the anchor tag in a variety of ways as follows:
  * - as a static string
- * - as a two member array callable, with the row item passed to the callable
- * - as an object property or string of properties (i.e. $item->prop1->prop2) by starting the string with "->" and
- *   separating each property with a "->". If the property ends with "()", then it will be a method call instead.
+ * - as a two-member array callable, with the row item passed to the callable
+ * - as an object property or string of properties (i.e., $item->prop1->prop2) by starting the string with "->" and
+ *   separating each property with a "->". If the property ends with, "()", then it will be a method call instead.
  *   The same can be accomplished by passing an array, with each item being a step in the property chain. This
  *   is provided the row item is an object.
- * - as an index into an array, or a multi-index array (i.e. $item['index1']['index2']) by passing a string of the
+ * - as an index into an array, or a multi-index array (i.e., $item['index1']['index2']) bypassing a string of the
  *   form "[index1][index2]...". You can also pass an array that contains the indexes into the array. This is provided
  *   the row item is an array.
  *
@@ -60,7 +61,7 @@ use QCubed\Type;
  *   as the id to the destination link. Use the "title" index as the label for the link.
  *  $objColumn = new QHtmlTableLinkColumn ("Zoom", "[title]", "zoom.php", ["intId"=>"[id]"]);
  *
- *  Create a simple link column that just specifies a data attribute, and uses event delegation attached to the table to trap a click on the link.
+ *  Create a simple link column that just specifies a data attribute and uses event delegation attached to the table to trap a click on the link.
  *   Return the id of the item clicked to the action as the action parameter.
  *  $objTable = new QHtmlTable ($this);
  *  $objTable->createLinkColumn("", "->Name", "#", null, ["data-id"=>"->Id"]);
@@ -68,60 +69,60 @@ use QCubed\Type;
  *
  * @property bool $AsButton    Only used if this is drawing a Proxy. Will draw the proxy as a button.
  * @property-write null|string|array $Text The text to display as the label of the anchor, a callable callback to get the text,
- *   a string that represents a property chain or a multi-dimensional array, or an array that represents the same. Depends on
- *   what time of row item is passed.
+ *   a string that represents a property chain or a multidimensional array, or an array that represents the same. Depends on
+ *   what time of the row item is passed.
  * @property-write null|string|array|Proxy $Destination The text representing the destination of the anchor, a callable callback to get the destination,
- *   a string that represents a property chain or a multi-dimensional array, or an array that represents the same,
- *   or a Proxy. Depends on what time of row item is passed.
+ *   a string that represents a property chain or a multidimensional array, or an array that represents the same,
+ *   or a Proxy. Depends on what time of the row item is passed.
  * @property-write null|string|array $GetVars An array of key=>value pairs to use as the GET variables in the link URL,
  *   or in the case of a Proxy, possibly a string to represent the action parameter. In either case, each item
  *   can be a property chain, an array index list, or a callable callback as specified above.
  * @property-write null|array $TagAttributes An array of key=>value pairs to use as additional attributes in the tag.
- *   For example, could be used to add a class or an id to each tag.
+ *   For example, it could be used to add a class or an id to each tag.
  * @was QHtmlTableLinkColumn
  * @package QCubed\Table
  */
 class LinkColumn extends DataColumn
 {
     /** @var bool */
-    protected $blnHtmlEntities = false;    // we are rendering a link so turn off entities
+    protected bool $blnHtmlEntities = false;    // we are rendering a link so turn off entities
 
     /** @var  string|array */
-    protected $mixText;
+    protected string|array $mixText;
     /** @var  string|array|Proxy|null */
-    protected $mixDestination;
+    protected Proxy|string|array|null $mixDestination;
     /** @var  array|string|null */
-    protected $getVars;
+    protected  mixed $getVars;
     /** @var  array|null */
-    protected $tagAttributes;
+    protected ?array $tagAttributes;
     /** @var bool */
-    protected $blnAsButton;
+    protected bool $blnAsButton = false;
 
     /**
      * QHtmlTableLinkColumn constructor.
      *
      * @param string $strName Column name to be displayed in the table header.
-     * @param null|string|array|NodeBase $mixText The text to display as the label of the anchor, a callable callback to get the text,
-     *   a string that represents a property chain or a multi-dimensional array, or an array that represents the same, or a NodeBase representing the property.
+     * @param array|string|NodeBase|null $mixText The text to display as the label of the anchor, a callable callback to get the text,
+     *   a string that represents a property chain or a multidimensional array, or an array that represents the same, or a NodeBase representing the property.
      *   Depends on what type of row item is passed.
-     * @param null|string|array|Proxy $mixDestination The text representing the destination of the anchor, a callable callback to get the destination,
-     *   a string that represents a property chain or a multi-dimensional array, or an array that represents the same,
+     * @param array|string|Proxy|null $mixDestination The text representing the destination of the anchor, a callable callback to get the destination,
+     *   a string that represents a property chain or a multidimensional array, or an array that represents the same,
      *   or a Q\Control\Proxy. Depends on what type of row item is passed.
-     * @param null|string|array $getVars An array of key=>value pairs to use as the GET variables in the link URL,
+     * @param array|string|null $getVars An array of key=>value pairs to use as the GET variables in the link URL,
      *   or in the case of a Proxy, possibly a string to represent the action parameter. In either case, each item
      *   can be a property chain, an array index list, a NodeBase, or a callable callback as specified above. If the destination is a
      *   Proxy, this would be what to use as the action parameter.
-     * @param null|array $tagAttributes An array of key=>value pairs to use as additional attributes in the tag.
-     *   For example, could be used to add a class or an id to each tag.
+     * @param array|null $tagAttributes An array of key=>value pairs to use as additional attributes in the tag.
+     *   For example, it could be used to add a class or an id to each tag.
      * @param bool $blnAsButton Only used if this is drawing a Proxy. Will draw the proxy as a button.
      */
     public function __construct(
-        $strName,
-        $mixText,
-        $mixDestination = null,
-        $getVars = null,
-        $tagAttributes = null,
-        $blnAsButton = false
+        string                     $strName,
+        array|string|NodeBase|null $mixText,
+        array|string|Proxy|null    $mixDestination = null,
+        mixed                       $getVars = null,
+        ?array                      $tagAttributes = null,
+        bool                       $blnAsButton = false
     ) {
         parent::__construct($strName);
         $this->Text = $mixText;
@@ -138,19 +139,17 @@ class LinkColumn extends DataColumn
      * @param mixed $mixSpec
      * @return mixed
      */
-    protected static function splitSpec($mixSpec)
+    protected static function splitSpec(mixed $mixSpec): mixed
     {
         if (is_array($mixSpec)) {
             return $mixSpec; // already split
         } elseif (is_string($mixSpec)) {
-            if (strpos($mixSpec, '->') === 0) {
+            if (str_starts_with($mixSpec, '->')) {
                 // It is an object property list ($item->param1->param2)
-                $parts = explode('->', substr($mixSpec, 2));
-                return $parts;
-            } elseif ($mixSpec[0] == '[' && substr($mixSpec, -1) == ']') {
+                return explode('->', substr($mixSpec, 2));
+            } elseif ($mixSpec[0] == '[' && str_ends_with($mixSpec, ']')) {
                 // It is a list of array dereferences
-                $parts = explode('][', $mixSpec, substr(1, strlen($mixSpec) - 2));
-                return $parts;
+                return explode('][', $mixSpec, substr(1, strlen($mixSpec) - 2));
             } else {
                 return $mixSpec;
             }
@@ -169,18 +168,18 @@ class LinkColumn extends DataColumn
      * @return mixed
      * @throws Caller
      */
-    protected static function getObjectValue($mixSpec, $item)
+    protected static function getObjectValue(mixed $mixSpec, mixed $item): mixed
     {
         if (is_array($mixSpec)) {
             if (is_object($mixSpec[0]) && is_callable($mixSpec)) {
-                // If its a callable array, then call it
+                // If it's a callable array, then call it
                 return call_user_func($mixSpec, $item);
             } elseif (is_object($item)) {
                 // It is an object property list ($item->param1->param2 or $item->method()->method2()). Can mix these too.
                 $value = $item;
                 foreach ($mixSpec as $part) {
                     // Evaluate as a function, or a param
-                    if (substr($part, -2) == '()') {
+                    if (str_ends_with($part, '()')) {
                         // call as a method
                         $value = $value->$part();
                     } else {
@@ -231,8 +230,9 @@ class LinkColumn extends DataColumn
      *
      * @param mixed $item
      * @return string
+     * @throws Caller
      */
-    public function fetchCellObject($item)
+    public function fetchCellObject(mixed $item): mixed
     {
         return static::getObjectValue($this->mixText, $item);
     }
@@ -242,19 +242,20 @@ class LinkColumn extends DataColumn
      *
      * @param mixed $item
      * @return string
+     * @throws Caller
      */
-    public function fetchCellValue($item)
+    public function fetchCellValue(mixed $item): string
     {
-        $strText = parent::fetchCellValue($item);    // allow post processing of cell label
+        $strText = parent::fetchCellValue($item);    // allow post-processing of cell label
 
         $getVars = null;
         if ($this->getVars) {
             if (is_array($this->getVars)) {
                 if (array_keys($this->getVars)[0] === 0) {
-                    // assume this is not associative array. Likely we are here to extract a property list.
+                    // Assume this is not an associative array. Likely we are here to extract a property list.
                     $getVars = static::getObjectValue($this->getVars, $item);
                 } else {
-                    // associative array, so likely these are Get variables to be assigned individually
+                    // an associative array, so likely these are Get variables to be assigned individually
                     foreach ($this->getVars as $key => $val) {
                         $getVars[$key] = static::getObjectValue($val, $item);
                     }
@@ -290,7 +291,7 @@ class LinkColumn extends DataColumn
     /**
      * Fix up possible embedded references to the form.
      */
-    public function sleep()
+    public function sleep(): void
     {
         $this->mixText = Q\Project\Control\ControlBase::sleepHelper($this->mixText);
         $this->mixDestination = Q\Project\Control\ControlBase::sleepHelper($this->mixDestination);
@@ -304,7 +305,7 @@ class LinkColumn extends DataColumn
      *
      * @param FormBase $objForm
      */
-    public function wakeup(FormBase $objForm)
+    public function wakeup(FormBase $objForm): void
     {
         parent::wakeup($objForm);
         $this->mixText = Q\Project\Control\ControlBase::wakeupHelper($objForm, $this->mixText);
@@ -322,7 +323,7 @@ class LinkColumn extends DataColumn
      * @return mixed
      * @throws Caller
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             case 'AsButton':
@@ -343,12 +344,11 @@ class LinkColumn extends DataColumn
      * @param string $strName
      * @param string $mixValue
      *
-     * @return mixed|void
-     * @throws \Exception
+     * @return void
      * @throws Caller
      * @throws InvalidCast
      */
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             case "AsButton":
@@ -386,7 +386,7 @@ class LinkColumn extends DataColumn
                     } elseif ($mixValue instanceof NodeBase) {
                         $this->getVars = $mixValue;
                     } else {
-                        throw new \Exception("Invalid type");
+                        throw new Exception("Invalid type");
                     }
                     break;
                 } catch (InvalidCast $objExc) {
@@ -404,7 +404,7 @@ class LinkColumn extends DataColumn
                             $this->tagAttributes[$key] = self::splitSpec($val);
                         }
                     } else {
-                        throw new \Exception("Invalid type");
+                        throw new Exception("Invalid type");
                     }
                     break;
                 } catch (InvalidCast $objExc) {

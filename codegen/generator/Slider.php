@@ -16,11 +16,10 @@ use QCubed\Codegen\DatabaseCodeGen;
 /**
  * Class Slider
  * @package QCubed\Codegen\Generator
- * @was QSliderBase_CodeGenerator
  */
 class Slider extends Control
 {
-    public function __construct($strControlClassName = 'QCubed\\Project\\Jqui\\Slider')
+    public function __construct(string $strControlClassName = 'QCubed\\Project\\Jqui\\Slider')
     {
         parent::__construct($strControlClassName);
     }
@@ -29,7 +28,7 @@ class Slider extends Control
      * @param string $strPropName
      * @return string
      */
-    public function varName($strPropName)
+    public function varName(string $strPropName): string
     {
         return 'sld' . $strPropName;
     }
@@ -43,8 +42,10 @@ class Slider extends Control
      * @param SqlTable $objTable
      * @param ColumnInterface $objColumn
      * @return string
+     * @throws \QCubed\Exception\Caller
+     * @throws \QCubed\Exception\InvalidCast
      */
-    public function connectorCreate(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn)
+    public function connectorCreate(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn): string
     {
         $strObjectName = $objCodeGen->modelVariableName($objTable->Name);
         $strClassName = $objTable->ClassName;
@@ -107,7 +108,7 @@ TMPL;
      * @param bool $blnInit
      * @return string
      */
-    public function connectorRefresh(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn, $blnInit = false)
+    public function connectorRefresh(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn, ?bool $blnInit = false): string
     {
         $strObjectName = $objCodeGen->modelVariableName($objTable->Name);
         $strPropName = $objColumn->Reference ? $objColumn->Reference->PropertyName : $objColumn->PropertyName;
@@ -127,15 +128,14 @@ TMPL;
      * @param ColumnInterface $objColumn
      * @return string
      */
-    public function connectorUpdate(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn)
+    public function connectorUpdate(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn): string
     {
         $strObjectName = $objCodeGen->modelVariableName($objTable->Name);
         $strPropName = $objColumn->Reference ? $objColumn->Reference->PropertyName : $objColumn->PropertyName;
         $strControlVarName = $this->varName($strPropName);
-        $strRet = <<<TMPL
+        return <<<TMPL
 				if (\$this->{$strControlVarName}) \$this->{$strObjectName}->{$strPropName} = \$this->{$strControlVarName}->Value;
 
 TMPL;
-        return $strRet;
     }
 }

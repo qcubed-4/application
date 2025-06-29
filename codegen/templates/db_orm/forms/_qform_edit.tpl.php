@@ -17,20 +17,27 @@ use QCubed\QString;
 ?>
 <?php print("<?php\n"); ?>
 
-use QCubed as Q;
-use QCubed\Project\Application;
-use QCubed\Project\Control\Dialog;
 use QCubed\Project\Control\FormBase;
-use QCubed\Project\Control\ControlBase;
+use QCubed\Action\Ajax;
+use QCubed\Event\Click;
+use QCubed\Action\ActionParams;
+use QCubed\Project\Application;
+use QCubed\Exception\Caller;
+use QCubed\Exception\InvalidCast;
+use QCubed\Database\Exception\OptimisticLocking;
+use QCubed\Project\Control\Button;
+use QCubed\Project\Control\Dialog;
+use QCubed\Event\DialogButton;
 
 // Load the QCubed Development Framework
+
 require('../qcubed.inc.php');
 
 require(QCUBED_PROJECT_PANEL_DIR . '/<?= $objTable->ClassName ?>EditPanel.php');
 
 /**
- * This is a draft FormBase object to do Create, Edit, and Delete functionality
- * of the <?= $objTable->ClassName ?> class.  It uses the code-generated
+ * This is a draft FormBase object to do the Create, Edit, and Delete functionality
+ * of the <?= $objTable->ClassName ?> class. It uses the code-generated
  * <?= $objTable->ClassName ?>Connector class, which has methods to help with
  * easily creating/defining controls to modify the fields of <?= $objTable->ClassName ?> columns.
  *
@@ -42,16 +49,16 @@ class <?= $objTable->ClassName ?>EditForm extends FormBase
 
 <?php include ('edit_protected_member_variables.tpl.php'); ?>
 
-	// Override Form Event Handlers as Needed
-	protected function formRun() {
-		parent::formRun();
+    // Override Form Event Handlers as needed
+    protected function formRun(): void
+    {
+        parent::formRun();
 
-        // If your app requires a login, or some other kind of authroization step, this is the place to do that
-		Application::checkAuthorized();
-	}
+        // If your app requires a login, or some other kind of authorization step, this is the place to do that
+        Application::checkAuthorized();
+    }
 
-//	protected function formLoad() {}
-
+    // protected function formLoad(): void {}
 <?php include ('edit_form_create.tpl.php'); ?>
 
 <?php include ('edit_create_buttons.tpl.php'); ?>

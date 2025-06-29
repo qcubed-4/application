@@ -17,21 +17,20 @@ use QCubed\QString;
  * Class JavaScript
  *
  * Client-side action - no postbacks of any kind are performed.
- * All handling activity happens in Javascript.
+ * All handling activity happens in JavaScript.
  *
- * @was QJavaScriptAction
  * @package QCubed\Action
  */
 class JavaScript extends ActionBase
 {
     /** @var string JS to be run on the client side */
-    protected $strJavaScript;
+    protected string $strJavaScript;
 
     /**
      * The constructor
-     * @param string $strJavaScript JS which is to be executed on the client side
+     * @param string $strJavaScript JS, which is to be executed on the client side
      */
-    public function __construct($strJavaScript)
+    public function __construct(string $strJavaScript)
     {
         $this->strJavaScript = trim($strJavaScript);
         if (QString::lastCharacter($this->strJavaScript) == ';') {
@@ -46,7 +45,7 @@ class JavaScript extends ActionBase
      * @return mixed|null|string
      * @throws Caller
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             case 'JavaScript':
@@ -62,12 +61,12 @@ class JavaScript extends ActionBase
     }
 
     /**
-     * Returns the JS which will be executed on the client side
+     * Returns the JS, which will be executed on the client side
      *
      * @param ControlBase $objControl
      * @return string
      */
-    public function renderScript(ControlBase $objControl)
+    public function renderScript(ControlBase $objControl): string
     {
         return sprintf('%s;', $this->strJavaScript);
     }

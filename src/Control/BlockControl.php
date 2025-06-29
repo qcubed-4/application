@@ -19,16 +19,15 @@ use QCubed as Q;
 /**
  * Class BlockControl
  *
- * This abstract class is designed to be a base for class for span and div controls. It adds additional drag and
+ * This abstract class is designed to be a base for a class for a span and div control. It adds an additional drag and
  * drop support to these objects, as well as templating.
  *
- * @property string $Text is the Html that you want rendered
+ * @property string $Text is the HTML that you want rendered?
  * @property string $Format is a sprintf string that the Text property will be sent to for further formatting.
  * @property string $Template Path to the HTML template (.tpl.php) file (applicable in case a template is being used for Render)
  * @property boolean $AutoRenderChildren Render the child controls of this control automatically
  * @property string $TagName HTML tag to be used by the control (such as div or span)
- * @property boolean $HtmlEntities hould htmlentities be used on the contents of this control
- * @was QBlockControl
+ * @property boolean $HtmlEntities hold htmlentities be used on the contents of this control
  */
 abstract class BlockControl extends Q\Project\Control\ControlBase
 {
@@ -37,18 +36,18 @@ abstract class BlockControl extends Q\Project\Control\ControlBase
     ///////////////////////////
 
     // APPEARANCE
-    /** @var string The text on the control */
-    protected $strText = null;
-    /** @var string The format specifier for rendering the control */
-    protected $strFormat = null;
+    /** @var string|null The text on the control */
+    protected ?string $strText = null;
+    /** @var string|null The format specifier for rendering the control */
+    protected ?string $strFormat = null;
     /** @var string Path to the HTML template (.tpl.php) file (applicable in case a template is being used for Render) */
-    protected $strTemplate = null;
+    protected string $strTemplate = '';
     /** @var bool Render the child controls of this control automatically? */
-    protected $blnAutoRenderChildren = false;
+    protected ?bool $blnAutoRenderChildren = false;
     /** @var string HTML tag to be used by the control (such as div or span) */
-    protected $strTagName = null;
+    protected string $strTagName = '';
     /** @var bool Should htmlentities be used on the contents of this control? */
-    protected $blnHtmlEntities = true;
+    protected bool $blnHtmlEntities = true;
 
     // BEHAVIOR
     /** @var bool Is it a drop target? */
@@ -56,15 +55,19 @@ abstract class BlockControl extends Q\Project\Control\ControlBase
 
     // Move Targets and Drop Zones
 
-    protected $objMovesControlsArray = array();
-    protected $objDropsControlsArray = array();
-    protected $objDropsGroupingsArray = array();
-    protected $objIsDropZoneFor = array();
+    protected array|bool $objMovesControlsArray = array();
+    protected array $objDropsControlsArray = array();
+    protected array $objDropsGroupingsArray = array();
+    protected array $objIsDropZoneFor = array();
 
     /**
-     * @param ControlBase $objTargetControl
+     * Adds functionality to move a target control in response to this control's drag events.
+     *
+     * @param ControlBase|null $objTargetControl The control to move when this control is dragged. If null, no control is targeted.
+     * @return void
+     * @throws Caller
      */
-    public function addControlToMove($objTargetControl = null)
+    public function addControlToMove(?ControlBase $objTargetControl = null): void
     {
         $this->strJavaScripts = QCUBED_JQUI_JS;
         if ($objTargetControl && $objTargetControl->ControlId != $this->ControlId) {
@@ -78,21 +81,38 @@ abstract class BlockControl extends Q\Project\Control\ControlBase
             // Replace ExecuteJavascript with this:
             //$this->addAttributeScript('qcubed', 'ctrlToMove', $objTargetControl->ControlId);
         }
-        return;
+        //return;
     }
 
-    public function removeControlToMove(ControlBase $objTargetControl)
+    /**
+     * Removes a control from the list of controls to be moved.
+     *
+     * @param ControlBase $objTargetControl The control to remove from the list.
+     * @return void
+     */
+    public function removeControlToMove(ControlBase $objTargetControl): void
     {
         unset($this->objMovesControlsArray[$objTargetControl->ControlId]);
     }
 
-    public function removeAllControlsToMove()
+    /**
+     * Removes all controls designated to be moved and clears all drop zones.
+     *
+     * @return void
+     */
+    public function removeAllControlsToMove(): void
     {
         $this->objMovesControlsArray = array();
         $this->removeAllDropZones();
     }
 
-    public function addDropZone($objParentObject)
+    /**
+     * Adds a drop zone to the specified parent object.
+     *
+     * @param object $objParentObject The parent object to which the drop zone will be added.
+     * @return void
+     */
+    public function addDropZone(object $objParentObject): void
     {
         $this->strJavaScripts = QCUBED_JQUI_JS;
         $this->objDropsControlsArray[$objParentObject->ControlId] = true;
@@ -100,7 +120,15 @@ abstract class BlockControl extends Q\Project\Control\ControlBase
         $objParentObject->objIsDropZoneFor[$this->ControlId] = true;
     }
 
-    public function removeDropZone($objParentObject)
+    /**
+     * Removes the drop zone associated with the specified parent object.
+     *
+     * @param mixed $objParentObject The parent object which can be either an instance of FormBase or BlockControl.
+     *                               If it is a BlockControl, it will also remove the corresponding relationship.
+     * @return void
+     * @throws Caller If the parent object is not an instance of FormBase or BlockControl.
+     */
+    public function removeDropZone(mixed $objParentObject): void
     {
         if ($objParentObject instanceof FormBase) {
             $this->objDropsControlsArray[$objParentObject->FormId] = false;
@@ -114,27 +142,35 @@ abstract class BlockControl extends Q\Project\Control\ControlBase
         }
     }
 
-    public function removeAllDropZones()
+    /**
+     * Removes all drop zones associated with the control, resetting configurations
+     * and updating the relevant associations.
+     *
+     * @return void
+     */
+    public function removeAllDropZones(): void
     {
         Application::executeControlCommand($this->strControlId, 'draggable', "option", "revert", "invalid");
 
         foreach ($this->objDropsControlsArray as $strControlId => $blnValue) {
             if ($blnValue) {
                 $objControl = $this->objForm->getControl($strControlId);
-                if ($objControl) {
+                if ($objControl && property_exists($objControl, 'objIsDropZoneFor')) {
                     $objControl->objIsDropZoneFor[$this->ControlId] = false;
                 }
             }
         }
+
         $this->objDropsControlsArray = array();
     }
 
     /**
-     * Returns the End Script of the Control which is sent to the client when the control's Render is complete
-     * @return string The JS EndScript for the control
+     * Returns the end script for the control, including handling for drop zones.
+     *
+     * @return string
      */
 
-    public function getEndScript()
+    public function getEndScript(): string
     {
         $strToReturn = parent::getEndScript();
 
@@ -162,9 +198,11 @@ abstract class BlockControl extends Q\Project\Control\ControlBase
     // Methods
     //////////
     /**
-     * Public function (to be overridden in child classes) to Parse the POST data recieved by control
+     * Parse the POST data and process it accordingly.
+     *
+     * @return void
      */
-    public function parsePostData()
+    public function parsePostData(): void
     {
     }
 
@@ -173,10 +211,15 @@ abstract class BlockControl extends Q\Project\Control\ControlBase
      * Returns the HTML of the Control
      * @return string The HTML string
      */
-    protected function getControlHtml()
+    protected function getControlHtml(): string
     {
 
-        $strToReturn = $this->renderTag($this->strTagName,
+        return $this->renderTag($this->strTagName,
+            null,
+            null,
+            $this->getInnerHtml());
+
+       /* $strToReturn = $this->renderTag($this->strTagName,
             null,
             null,
             $this->getInnerHtml());
@@ -184,15 +227,15 @@ abstract class BlockControl extends Q\Project\Control\ControlBase
 //			if ($this->blnDropTarget)
 //				$strToReturn .= sprintf('<span id="%s_ctldzmask" style="position:absolute;"><span style="font-size: 1px">&nbsp;</span></span>', $this->strControlId);
 
-        return $strToReturn;
+        return $strToReturn;*/
     }
 
     /**
-     * Return the inner html between the tags.
+     * Return the inner HTML between the tags.
      *
      * @return string
      */
-    protected function getInnerHtml()
+    protected function getInnerHtml(): string
     {
         if ($this->strFormat) {
             $strText = sprintf($this->strFormat, $this->strText);
@@ -222,14 +265,14 @@ abstract class BlockControl extends Q\Project\Control\ControlBase
     }
 
     /**
-     * Public function to be overrriden by child classes
+     * Public function to be overridden by child classes
      *
      * It is used to determine if the input fed into the control is valid or not.
      * The rules are written in this function only. If the control is set for Validation,
      * this function is automatically called on postback.
-     * @return bool Whether or not the input inside the control are valid
+     * @return bool Whether the input inside the control are valid
      */
-    public function validate()
+    public function validate(): bool
     {
         return true;
     }
@@ -244,7 +287,7 @@ abstract class BlockControl extends Q\Project\Control\ControlBase
      * @return mixed
      * @throws Caller
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             // APPEARANCE
@@ -282,12 +325,12 @@ abstract class BlockControl extends Q\Project\Control\ControlBase
     /**
      * PHP __set magic method implementation
      * @param string $strName Property Name
-     * @param string $mixValue Property Value
+     * @param mixed $mixValue Property Value
      *
-     * @throws Caller|InvalidCast
      * @return void
+     *@throws Caller|InvalidCast
      */
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             // APPEARANCE
@@ -322,7 +365,7 @@ abstract class BlockControl extends Q\Project\Control\ControlBase
                         if (file_exists($strPath = $this->getTemplatePath($mixValue))) {
                             $this->strTemplate = Type::cast($strPath, Type::STRING);
                         } else {
-                            throw new Caller('Could not find template file: ' . $mixValue);
+                            throw new Caller('Could not find a template file: ' . $mixValue);
                         }
                     } else {
                         $this->strTemplate = null;
@@ -400,7 +443,7 @@ abstract class BlockControl extends Q\Project\Control\ControlBase
      *
      * @return Q\ModelConnector\Param[]
      */
-    public static function getModelConnectorParams()
+    public static function getModelConnectorParams(): array
     {
         return array(
             new Q\ModelConnector\Param ('BlockControl', 'Text', 'Text to draw in the control', Type::STRING),
@@ -416,4 +459,4 @@ abstract class BlockControl extends Q\Project\Control\ControlBase
 
 
 // TODO: Move this somewhere else
-$_CONTROL = null;
+//$_CONTROL = null;

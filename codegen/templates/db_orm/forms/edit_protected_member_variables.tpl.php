@@ -2,11 +2,11 @@
 use QCubed\Project\Codegen\CodegenBase as QCodegen;
 ?>
     /** @var <?= $strPropertyName ?>EditPanel  */
-	protected $pnl<?= $strPropertyName ?>;
+    protected <?= $strPropertyName ?>EditPanel $pnl<?= $strPropertyName ?>;
 
-	/** @var <?= QCodeGen::$DefaultButtonClass ?>  */
-	protected $btnSave;
-	/** @var <?= QCodeGen::$DefaultButtonClass ?>  */
-	protected $btnCancel;
-	/** @var <?= QCodeGen::$DefaultButtonClass ?>  */
-	protected $btnDelete;
+    /** @var Button */
+    protected Button $btnSave;
+    /** @var Button */
+    protected Button $btnCancel;
+    /** @var Button */
+    protected Button $btnDelete;

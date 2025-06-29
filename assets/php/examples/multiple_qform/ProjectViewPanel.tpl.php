@@ -1,3 +1,3 @@
-<?php $_CONTROL->pnlTitle->Render(); ?>
-<p><?php $_CONTROL->btnEditProject->Render(); ?></p>
-<?php $_CONTROL->dtgMembers->Render() ?>
+<?php $this->pnlTitle->render(); ?>
+<p><?php $this->btnEditProject->render(); ?></p>
+<?php $this->dtgMembers->render() ?>

@@ -9,14 +9,12 @@
 
 namespace QCubed;
 
-use QCubed\Project\Control\FormBase as QForm;
-
 /**
  * Class Context
  *
  * The Context singleton reports information about the current environment the script is running in.
  *
- * Scripts could be running in command line mode (CLI), or in response to web server requests. Web server requests
+ * Scripts could be running in command line mode (CLI) or in response to web server requests. Web server requests
  * can come in the form of Ajax or Standard requests. This class encapsulates that information and makes it available
  * to the application as needed. All processed information is cached so multiple requests for the same thing can be fast.
  *
@@ -24,48 +22,48 @@ use QCubed\Project\Control\FormBase as QForm;
  */
 class Context
 {
-    const INTERNET_EXPLORER = 1;
-    const FIREFOX = 0x10;
-    const SAFARI = 0x200;
-    const OPERA = 0x2000;
-    const KONQUEROR = 0x20000;
-    const CHROME = 0x100000;
+    public const int INTERNET_EXPLORER = 1;
+    public const int FIREFOX = 0x10;
+    public const int SAFARI = 0x200;
+    public const int OPERA = 0x2000;
+    public const int KONQUEROR = 0x20000;
+    public const int CHROME = 0x100000;
 
-    const WINDOWS = 0x800000;
-    const LINUX = 0x1000000;
-    const MACINTOSH = 0x2000000;
+    public const int WINDOWS = 0x800000;
+    public const int LINUX = 0x1000000;
+    public const int MACINTOSH = 0x2000000;
 
-    const MOBILE = 0x4000000;    // some kind of mobile browser
+    public const int MOBILE = 0x4000000;    // some kind of mobile browser
 
-    /** We don't know this gentleman...err...gentlebrowser */
-    const UNSUPPORTED = 0x8000000;
+    /** We don't know this gentleman...err...gentle browser */
+    public const int UNSUPPORTED = 0x8000000;
 
-    const REQUEST_MODE_QCUBED_SERVER = 'Server'; // calling back in to currently showing page using a standard form post
-    const REQUEST_MODE_HTTP = 'Http';   // new page request
-    const REQUEST_MODE_QCUBED_AJAX = 'Ajax';  // calling back in to an currently showing page using an ajax request
-    const REQUEST_MODE_AJAX = 'AjaxNonQ';   // calling an entry point from ajax, but not through qcubed.js. REST API perhaps?
-    const REQUEST_MODE_CLI = 'Cli'; // command line call
+    public const string REQUEST_MODE_QCUBED_SERVER = 'Server'; // calling back in to currently showing page using a standard form post
+    public const string REQUEST_MODE_HTTP = 'Http';   // new page request
+    public const string REQUEST_MODE_QCUBED_AJAX = 'Ajax';  // calling back in to use currently showing page using an ajax request
+    public const string REQUEST_MODE_AJAX = 'AjaxNonQ';   // calling an entry point from ajax, but not through qcubed.js. REST API perhaps?
+    public const string REQUEST_MODE_CLI = 'Cli'; // command line call
 
     /** @var  bool Are we running in command line mode? */
-    protected $blnCliMode;
+    protected bool $blnCliMode;
     /** @var  string */
-    protected $strServerAddress;
+    protected string $strServerAddress = '';
     /** @var  string */
-    protected $strScriptFileName;
+    protected string $strScriptFileName = '';
     /** @var  string */
-    protected $strScriptName;
+    protected string $strScriptName = '';
     /** @var string */
-    protected $strPathInfo;
+    protected string $strPathInfo = '';
     /** @var  string */
-    protected $strQueryString;
+    protected string $strQueryString = '';
     /** @var  string */
-    protected $strRequestUri;
-    /** @var  integer */
-    protected $intBrowserType;
-    /** @var  float */
-    protected $fltBrowserVersion;
+    protected string $strRequestUri = '';
+    /** @var  integer|null */
+    protected ?int $intBrowserType = null;
+    /** @var  float|null */
+    protected ?float $fltBrowserVersion = null;
     /** @var  string */
-    protected $strRequestMode;
+    protected string $strRequestMode = '';
 
 
     /**
@@ -74,13 +72,12 @@ class Context
     public function __construct()
     {
         $this->blnCliMode = (PHP_SAPI == 'cli');
-
     }
 
     /**
      * @return bool Whether we are in command line mode.
      */
-    public function cliMode()
+    public function cliMode(): bool
     {
         return $this->blnCliMode;
     }
@@ -90,7 +87,7 @@ class Context
      *
      * @return string
      */
-    public function serverAddress()
+    public function serverAddress(): string
     {
         if (!$this->strServerAddress) {
             if (isset($_SERVER['LOCAL_ADDR'])) {
@@ -108,9 +105,9 @@ class Context
 
     /**
      * The name of the script file currently running. If a file is included, this would be the topmost file.
-     * @return bool|string
+     * @return string
      */
-    public function scriptFileName()
+    public function scriptFileName(): string
     {
         if (!$this->strScriptFileName) {
             // Setup ScriptFilename and ScriptName
@@ -131,7 +128,7 @@ class Context
      *
      * @return string
      */
-    public function scriptName()
+    public function scriptName(): string
     {
         if (!$this->strScriptName) {
             $this->strScriptName = $_SERVER['SCRIPT_NAME'];
@@ -144,9 +141,9 @@ class Context
      *
      * @return string
      */
-    public function pathInfo()
+    public function pathInfo(): string
     {
-        if ($this->strPathInfo === null) {
+        if (!$this->strPathInfo) {
             // PATH_INFO not available - we use REQUEST_URI
             if (isset($_SERVER['REQUEST_URI'])) {
                 // Clean up the REQUEST_URI by removing the script name and query string
@@ -172,7 +169,7 @@ class Context
      *
      * @return string
      */
-    public function queryString()
+    public function queryString(): string
     {
         if (!$this->strQueryString) {
             if (isset($_SERVER['QUERY_STRING'])) {
@@ -187,7 +184,7 @@ class Context
      *
      * @return string
      */
-    public function requestUri()
+    public function requestUri(): string
     {
         if (!$this->strRequestUri) {
             // We use REQUEST_URI whenever available
@@ -215,7 +212,7 @@ class Context
      * @return string|null
      * @was QApplication::PathInfo
      */
-    public function pathItem($intIndex)
+    public function pathItem(int $intIndex): ?string
     {
         // TODO: Cache PathInfo
         $strPathInfo = urldecode($this->pathInfo());
@@ -231,11 +228,7 @@ class Context
 
         $strPathInfoArray = explode('/', $strPathInfo);
 
-        if (isset($strPathInfoArray[$intIndex])) {
-            return $strPathInfoArray[$intIndex];
-        } else {
-            return null;
-        }
+        return $strPathInfoArray[$intIndex] ?? null;
     }
 
     /**
@@ -243,10 +236,10 @@ class Context
      *
      * @param string $strItem the parameter name
      *
-     * @return string value of the parameter
+     * @return string|null value of the parameter
      * @was QApplication::QueryString
      */
-    public function queryStringItem($strItem)
+    public function queryStringItem(string $strItem): ?string
     {
         if (array_key_exists($strItem, $_GET)) {
             return $_GET[$strItem];
@@ -256,11 +249,11 @@ class Context
     }
 
     /**
-     * Returns a bit mask representing the current browser. See consts at top of this file.
+     * Returns a bit mask representing the current browser. See consts at the top of this file.
      *
      * @return int
      */
-    public function browserType()
+    public function browserType(): int
     {
         if (!$this->intBrowserType) {
             $this->browserInit();
@@ -273,7 +266,7 @@ class Context
      *
      * @return float
      */
-    public function browserVersion()
+    public function browserVersion(): float
     {
         if (!$this->fltBrowserVersion) {
             $this->browserInit();
@@ -286,7 +279,7 @@ class Context
      *
      * @internal
      */
-    protected function browserInit()
+    protected function browserInit(): void
     {
         // Setup Browser Type
         if (isset($_SERVER['HTTP_USER_AGENT'])) {
@@ -295,17 +288,17 @@ class Context
             $this->intBrowserType = 0;
 
             // INTERNET EXPLORER (versions 6 through 10)
-            if (strpos($strUserAgent, 'msie') !== false) {
+            if (str_contains($strUserAgent, 'msie')) {
                 $this->intBrowserType = $this->intBrowserType | static::INTERNET_EXPLORER;
 
-                // just major version number. Will not see IE 10.6.
+                // just a major version number. Will not see IE 10.6.
                 $matches = array();
                 preg_match('#msie\s(.\d)#', $strUserAgent, $matches);
                 if ($matches) {
                     $this->fltBrowserVersion = (int)$matches[1];
                 }
             } else {
-                if (strpos($strUserAgent, 'trident') !== false) {
+                if (str_contains($strUserAgent, 'trident')) {
                     // IE 11 significantly changes the user agent, and no longer includes 'MSIE'
                     $this->intBrowserType = $this->intBrowserType | static::INTERNET_EXPLORER;
 
@@ -316,8 +309,7 @@ class Context
                     }
                     // FIREFOX
                 } else {
-                    if ((strpos($strUserAgent, 'firefox') !== false) || (strpos($strUserAgent,
-                                'iceweasel') !== false)
+                    if ((str_contains($strUserAgent, 'firefox')) || (str_contains($strUserAgent, 'iceweasel'))
                     ) {
                         $this->intBrowserType = $this->intBrowserType | static::FIREFOX;
                         $strUserAgent = str_replace('iceweasel/', 'firefox/', $strUserAgent);
@@ -327,8 +319,8 @@ class Context
                         if ($matches) {
                             $this->fltBrowserVersion = (float)$matches[1];
                         }
-                    } // CHROME, must come before safari because it also includes a safari string
-                    elseif (strpos($strUserAgent, 'chrome') !== false) {
+                    } // CHROME must come before safari because it also includes a safari string
+                    elseif (str_contains($strUserAgent, 'chrome')) {
                         $this->intBrowserType = $this->intBrowserType | static::CHROME;
 
                         // find major version number only
@@ -338,7 +330,7 @@ class Context
                             $this->fltBrowserVersion = (int)$matches[1];
                         }
                     } // SAFARI
-                    elseif (strpos($strUserAgent, 'safari') !== false) {
+                    elseif (str_contains($strUserAgent, 'safari')) {
                         $this->intBrowserType = $this->intBrowserType | static::SAFARI;
 
                         $matches = array();
@@ -347,7 +339,7 @@ class Context
                             $this->fltBrowserVersion = (float)$matches[1];
                         }
                     } // KONQUEROR
-                    elseif (strpos($strUserAgent, 'konqueror') !== false) {
+                    elseif (str_contains($strUserAgent, 'konqueror')) {
                         $this->intBrowserType = $this->intBrowserType | static::KONQUEROR;
 
                         // only looking at major version number on this one
@@ -357,7 +349,7 @@ class Context
                             $this->fltBrowserVersion = (int)$matches[1];
                         }
                     } // OPERA
-                    elseif (strpos($strUserAgent, 'opera') !== false) {
+                    elseif (str_contains($strUserAgent, 'opera')) {
                         $this->intBrowserType = $this->intBrowserType | static::OPERA;
 
                         // two different patterns;
@@ -381,16 +373,16 @@ class Context
             }
 
             // OS (supporting Windows, Linux and Mac)
-            if (strpos($strUserAgent, 'windows') !== false) {
+            if (str_contains($strUserAgent, 'windows')) {
                 $this->intBrowserType = $this->intBrowserType | static::WINDOWS;
-            } elseif (strpos($strUserAgent, 'linux') !== false) {
+            } elseif (str_contains($strUserAgent, 'linux')) {
                 $this->intBrowserType = $this->intBrowserType | static::LINUX;
-            } elseif (strpos($strUserAgent, 'macintosh') !== false) {
+            } elseif (str_contains($strUserAgent, 'macintosh')) {
                 $this->intBrowserType = $this->intBrowserType | static::MACINTOSH;
             }
 
             // Mobile version of one of the above browsers, or some other unknown browser
-            if (strpos($strUserAgent, 'mobi') !== false) // opera is just 'mobi', everyone else uses 'mobile'
+            if (str_contains($strUserAgent, 'mobi')) // opera is just 'mobi', everyone else uses 'mobile'
             {
                 $this->intBrowserType = $this->intBrowserType | static::MOBILE;
             }
@@ -403,7 +395,7 @@ class Context
      * @return bool
      * @was QApplication::IsBrowser
      */
-    public function isBrowser($intBrowserType)
+    public function isBrowser(int $intBrowserType): bool
     {
         return ($intBrowserType & $this->browserType()) != 0;
     }
@@ -413,11 +405,11 @@ class Context
      *
      * @return string
      */
-    public function requestMode()
+    public function requestMode(): string
     {
         if (!$this->strRequestMode) {
-            if (isset($_POST[QForm::POST_CALL_TYPE])) { // call is being made by qcubed.js
-                if ($_POST[QForm::POST_CALL_TYPE] == 'Ajax') {
+            if (isset($_POST[Control\FormBase::POST_CALL_TYPE])) { // call is being made by qcubed.js
+                if ($_POST[Control\FormBase::POST_CALL_TYPE] == 'Ajax') {
                     $this->strRequestMode = self::REQUEST_MODE_QCUBED_AJAX;
                 } else {
                     $this->strRequestMode = self::REQUEST_MODE_QCUBED_SERVER;

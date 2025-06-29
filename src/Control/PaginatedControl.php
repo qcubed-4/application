@@ -9,8 +9,9 @@
 
 namespace QCubed\Control;
 
-require_once(dirname(dirname(__DIR__)) . '/i18n/i18n-lib.inc.php');
-use QCubed\Application\t;
+require_once(dirname(__DIR__, 2) . '/i18n/i18n-lib.inc.php');
+
+//use QCubed\Application;
 
 use QCubed as Q;
 use QCubed\Exception\Caller;
@@ -18,25 +19,26 @@ use QCubed\Exception\InvalidCast;
 use QCubed\Query\QQ;
 use QCubed\Type;
 use QCubed\Project\Control\Paginator;
+use Throwable;
 
 /**
  * Class PaginatedControl
  *
- * @property string $Noun Name of the items which are being paginated (book, movie, post etc.)
- * @property string $NounPlural Plural form of name of the items which are being paginated (books, movies, posts etc.)
+ * @property string $Noun Name of the items which are being paginated (book, movie, post, etc.)
+ * @property string $NounPlural Plural form of name of the items which are being paginated (books, movies, posts, etc.)
  * @property PaginatorBase $Paginator
  * @property PaginatorBase $PaginatorAlternate
  * @property boolean $UseAjax
- * @property integer $ItemsPerPage   is how many items you want to display per page when Pagination is enabled
- * @property integer $TotalItemCount is the total number of items in the ENTIRE recordset -- only used when Pagination is enabled
+ * @property integer $ItemsPerPage indicates how many items you want to display on a single page if pages are enabled.
+ * @property integer $TotalItemCount is the total number of items in the ENTIRE recordset -- only used when Pagination is enabled?
  * @property mixed $DataSource     is an array of anything.  THIS MUST BE SET EVERY TIME (DataSource does NOT persist from postback to postback
  * @property-read mixed $LimitClause
- * @property-read mixed $LimitInfo      is what should be passed in to the LIMIT clause of the sql query that retrieves the array of items from the database
+ * @property-read mixed $LimitInfo If what should be passed in to the LIMIT clause of the SQL query that retrieves the array of items from the database
  * @property-read integer $ItemCount
  * @property integer $PageNumber     is the current page number you are viewing
  * @property-read integer $PageCount
  * @property-read integer $ItemsOffset    Current offset of Items from the result
- * @was QPaginatedControl
+ *
  * @package QCubed\Control
  */
 abstract class PaginatedControl extends Q\Project\Control\ControlBase
@@ -44,33 +46,34 @@ abstract class PaginatedControl extends Q\Project\Control\ControlBase
     use DataBinderTrait;
 
     // APPEARANCE
-    /** @var string Name of the items which are being paginated (books, movies, posts etc.) */
-    protected $strNoun;
-    /**  @var string Plural form of name of the items which are being paginated (books, movies, posts etc.) */
-    protected $strNounPlural;
+    /** @var string Name of the items which are being paginated (books, movies, posts, etc.) */
+    protected string $strNoun;
+    /**  @var string Plural form of name of the items which are being paginated (books, movies, posts, etc.) */
+    protected string $strNounPlural;
 
     // BEHAVIOR
     /** @var null|Paginator Paginator at the top */
-    protected $objPaginator = null;
+    protected ?Paginator $objPaginator = null;
     /** @var null|Paginator Paginator at the bottom */
-    protected $objPaginatorAlternate = null;
-    /** @var bool Determines whether this QDataGrid wll use AJAX or not */
-    protected $blnUseAjax = true;
+    protected ?Paginator $objPaginatorAlternate = null;
+    /** @var bool Determines whether this QDataGrid wll uses AJAX or not */
+    protected bool $blnUseAjax = true;
 
     // MISC
-    /** @var array DataSource from which the items are picked and rendered */
-    protected $objDataSource;
+    /** @var array DataSource, from which the items are picked and rendered */
+    protected array $objDataSource = [];
 
     // SETUP
     /** @var bool Is this paginator a block element? */
-    protected $blnIsBlockElement = true;
+    protected bool $blnIsBlockElement = true;
 
     /**
      * PaginatedControl constructor.
      * @param ControlBase|FormBase $objParentObject
-     * @param null|string $strControlId
+     * @param string|null $strControlId
+     * @throws Caller
      */
-    public function __construct($objParentObject, $strControlId = null)
+    public function __construct(FormBase|ControlBase $objParentObject, ?string $strControlId = null)
     {
         parent::__construct($objParentObject, $strControlId);
 
@@ -81,7 +84,7 @@ abstract class PaginatedControl extends Q\Project\Control\ControlBase
     /**
      * @return bool
      */
-    public function validate()
+    public function validate(): bool
     {
         return true;
     }
@@ -89,100 +92,99 @@ abstract class PaginatedControl extends Q\Project\Control\ControlBase
     /**
      * @throws Caller
      */
-    public function dataBind()
+    public function dataBind(): void
     {
         // Run the DataBinder (if applicable)
-        if (($this->objDataSource === null) && ($this->hasDataBinder()) && (!$this->blnRendered)) {
-            try {
-                $this->callDataBinder();
-            } catch (Caller $objExc) {
-                $objExc->incrementOffset();
-                throw $objExc;
-            }
-
-            if ($this->objPaginator && $this->PageNumber > $this->PageCount) {
-                $this->PageNumber = max($this->PageCount, 1);
-            }
+        if ($this->objDataSource !== [] || !$this->hasDataBinder()) {
+            return;
         }
+
+        if ($this->blnRendered) {
+            return;
+        }
+
+        try {
+            $this->callDataBinder();
+        } catch (Caller $objExc) {
+            $objExc->incrementOffset();
+            throw $objExc;
+        }
+
+        if (isset($this->objPaginator) &&  $this->PageNumber > $this->PageCount) {
+            $this->PageNumber = max($this->PageCount, 1);
+        }
+
     }
 
     /**
-     * PHP magic method
-     * @param string $strName Property name
+     * Magic getter method to retrieve the value of a property based on its name.
      *
-     * @return mixed
-     * @throws Caller
+     * @param string $strName The name of the property being accessed.
+     * @return mixed The value of the requested property, or the result of the parent __get method if applicable.
+     * @throws Caller If the property does not exist or cannot be accessed.
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             // APPEARANCE
             case "Noun":
                 return $this->strNoun;
+
             case "NounPlural":
                 return $this->strNounPlural;
 
             // BEHAVIOR
             case "Paginator":
                 return $this->objPaginator;
+
             case "PaginatorAlternate":
                 return $this->objPaginatorAlternate;
+
             case "UseAjax":
                 return $this->blnUseAjax;
+
             case "ItemsPerPage":
-                if ($this->objPaginator) {
-                    return $this->objPaginator->ItemsPerPage;
-                } else {
-                    return null;
-                }
+                return $this->objPaginator?->ItemsPerPage;
+
             case "ItemsOffset":
                 if ($this->objPaginator) {
                     return ($this->objPaginator->PageNumber - 1) * $this->objPaginator->ItemsPerPage;
                 } else {
                     return null;
                 }
+
             case "TotalItemCount":
-                if ($this->objPaginator) {
-                    return $this->objPaginator->TotalItemCount;
-                } else {
-                    return null;
-                }
+                return $this->objPaginator?->TotalItemCount;
 
             // MISC
             case "DataSource":
                 return $this->objDataSource;
+
             case "LimitClause":
                 if ($this->objPaginator) {
-                    //						if ($this->objPaginator->TotalItemCount > 0) {
-                    $intOffset = $this->ItemsOffset;
-                    return QQ::limitInfo($this->objPaginator->ItemsPerPage, $intOffset);
-//						}
+                     if ($this->objPaginator->TotalItemCount > 0) {
+                         $intOffset = $this->ItemsOffset;
+                         return QQ::limitInfo($this->objPaginator->ItemsPerPage, $intOffset);
+                     }
                 }
-                return null;
+                break;
+
             case "LimitInfo":
                 if ($this->objPaginator) {
-                    //						if ($this->objPaginator->TotalItemCount > 0) {
-                    $intOffset = $this->ItemsOffset;
-                    return $intOffset . ',' . $this->objPaginator->ItemsPerPage;
-//						}
+                    if ($this->objPaginator->TotalItemCount > 0) {
+                        $intOffset = $this->ItemsOffset;
+                        return $intOffset . ',' . $this->objPaginator->ItemsPerPage;
+                    }
                 }
-                return null;
+                break;
             case "ItemCount":
                 return count($this->objDataSource);
 
             case 'PageNumber':
-                if ($this->objPaginator) {
-                    return $this->objPaginator->PageNumber;
-                } else {
-                    return null;
-                }
+                return $this->objPaginator?->PageNumber;
 
             case 'PageCount':
-                if ($this->objPaginator) {
-                    return $this->objPaginator->PageCount;
-                } else {
-                    return null;
-                }
+                return $this->objPaginator?->PageCount;
 
             default:
                 try {
@@ -192,16 +194,21 @@ abstract class PaginatedControl extends Q\Project\Control\ControlBase
                     throw $objExc;
                 }
         }
+        // Fallback return statement to satisfy the return type, could be adjusted as needed
+        return '';
     }
 
     /**
-     * @param string $strName
-     * @param string $mixValue
-     * @throws Caller
-     * @throws InvalidCast
+     * Magic method to set the value of a property.
+     *
+     * @param string $strName The name of the property to set.
+     * @param mixed $mixValue The value to assign to the property.
      * @return void
+     * @throws Caller Thrown if a property-specific validation or assignment fails.
+     * @throws InvalidCast Thrown if the value cannot be cast to the expected type.
+     * @throws Throwable
      */
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             // APPEARANCE
@@ -214,6 +221,7 @@ abstract class PaginatedControl extends Q\Project\Control\ControlBase
                     $objExc->incrementOffset();
                     throw $objExc;
                 }
+
             case "NounPlural":
                 try {
                     $this->strNounPlural = Type::cast($mixValue, Type::STRING);
@@ -272,6 +280,7 @@ abstract class PaginatedControl extends Q\Project\Control\ControlBase
                     $objExc->incrementOffset();
                     throw $objExc;
                 }
+
             case "ItemsPerPage":
                 if ($this->objPaginator) {
                     try {
@@ -291,6 +300,7 @@ abstract class PaginatedControl extends Q\Project\Control\ControlBase
                 } else {
                     throw new Caller('Setting ItemsPerPage requires a Paginator to be set');
                 }
+
             case "TotalItemCount":
                 if ($this->objPaginator) {
                     try {

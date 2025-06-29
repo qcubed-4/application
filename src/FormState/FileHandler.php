@@ -16,22 +16,21 @@ use QCubed\Project\Application;
  * Class FileHandler
  *
  * This will store the formstate in a pre-specified directory on the file system.
- * This offers significant speed advantage over PHP SESSION because EACH form state
+ * This offers a significant speed advantage over PHP SESSION because EACH form state
  * is saved in its own file, and only the form state that is needed for loading will
- * be accessed (as opposed to with session, ALL the form states are loaded into memory
+ * be accessed (as opposed to with a session, ALL the form states are loaded into memory
  * every time).
  *
  * The downside is that because it doesn't utilize PHP's session management subsystem,
  * this class must take care of its own garbage collection/deleting of old/outdated
  * formstate files.
  *
- * Because the index is randomy generated and MD5-hashed, there is no benefit from
+ * Because the index is randomly generated and MD5-hashed, there is no benefit from
  * encrypting it -- therefore, the QForm encryption preferences are ignored when using
- * QFileFormStateHandler.
+ * FileHandler.
  *
  * This formstate handler is compatible with asynchronous ajax calls.
  *
- * @was QFileFormStateHandler
  * @package QCubed\FormState
  */
 class FileHandler extends ObjectBase
@@ -41,14 +40,14 @@ class FileHandler extends ObjectBase
      *
      * @var string StatePath
      */
-    public static $StatePath = __FILE_FORM_STATE_HANDLER_PATH__;
+    public static string $StatePath = FILE_FORM_STATE_HANDLER_PATH;
 
     /**
      * The filename prefix to be used by all FormState files
      *
      * @var string FileNamePrefix
      */
-    public static $FileNamePrefix = 'qformstate_';
+    public static string $FileNamePrefix = 'qformstate_';
 
     /**
      * The interval of hits before the garbage collection should kick in to delete
@@ -59,18 +58,18 @@ class FileHandler extends ObjectBase
      *
      * @var integer GarbageCollectInterval
      */
-    public static $GarbageCollectInterval = 200;
+    public static int $GarbageCollectInterval = 200;
 
     /**
      * The minimum age (in days) a formstate file has to be in order to be considered old enough
      * to be garbage collected.  So if set to "1.5", then all formstate files older than 1.5 days
      * will be deleted when the GC interval is kicked off.
      *
-     * Obviously, if the GC Interval is set to 0, then this GC Days Old value will be never used.
+     * Obviously, if the GC Interval is set to 0, then this GC Days Old value will never be used.
      *
      * @var integer GarbageCollectDaysOld
      */
-    public static $GarbageCollectDaysOld = 2;
+    public static int $GarbageCollectDaysOld = 2;
 
     /**
      * If PHP SESSION is enabled, then this method will delete all formstate files specifically
@@ -80,7 +79,7 @@ class FileHandler extends ObjectBase
      * Also, for standard web applications with logins, it might be a good idea to call
      * this method whenever the user logs out.
      */
-    public static function deleteFormStateForSession()
+    public static function deleteFormStateForSession(): void
     {
         // Figure Out Session Id (if applicable)
         $strSessionId = session_id();
@@ -103,7 +102,7 @@ class FileHandler extends ObjectBase
      * This will delete all the formstate files that are older than $GarbageCollectDaysOld
      * days old.
      */
-    public static function garbageCollect()
+    public static function garbageCollect(): void
     {
         // Go through all the files
         $objDirectory = dir(self::$StatePath);
@@ -125,9 +124,16 @@ class FileHandler extends ObjectBase
         }
     }
 
-    public static function save($strFormState, $blnBackButtonFlag)
+    /**
+     * Saves the given form state to the file system and returns the generated Page ID.
+     *
+     * @param string $strFormState The serialized form state data to be saved.
+     * @param bool $blnBackButtonFlag Indicates whether the save operation is being performed for the back button functionality.
+     * @return string The generated Page ID for the saved form state.
+     */
+    public static function save(string $strFormState, bool $blnBackButtonFlag): string
     {
-        // First see if we need to perform garbage collection
+        // First, see if we need to perform garbage collection
         if (self::$GarbageCollectInterval > 0) {
             // This is a crude interval-tester, but it works
             if (rand(1, self::$GarbageCollectInterval) == 1) {
@@ -150,7 +156,7 @@ class FileHandler extends ObjectBase
             $strPageId = md5(microtime());
         }
 
-        // Figure Out FilePath
+        // Figure Out the FilePath
         $strFilePath = sprintf('%s/%s%s_%s',
             self::$StatePath,
             self::$FileNamePrefix,
@@ -168,7 +174,13 @@ class FileHandler extends ObjectBase
         return $strPageId;
     }
 
-    public static function load($strPostDataState)
+    /**
+     * Loads the serialized form state from the file system based on the provided post-data state.
+     *
+     * @param string $strPostDataState The state string representing the post-data, used to identify the corresponding form state file.
+     * @return string|null The deserialized form state as a string if the file exists, or null if the file is not found.
+     */
+    public static function load(string $strPostDataState): ?string
     {
         // Pull Out strPageId
         $strPageId = $strPostDataState;
@@ -176,7 +188,7 @@ class FileHandler extends ObjectBase
         // Figure Out Session Id (if applicable)
         $strSessionId = session_id();
 
-        // Figure Out FilePath
+        // Figure Out the FilePath
         $strFilePath = sprintf('%s/%s%s_%s',
             self::$StatePath,
             self::$FileNamePrefix,
@@ -187,7 +199,7 @@ class FileHandler extends ObjectBase
             // Pull FormState from file system
             // NOTE: if gzcompress is used, we are restoring the *BINARY* data stream of the compressed formstate
             // In theory, this SHOULD work.  But if there is a webserver/os/php version that doesn't like
-            // binary session streams, you can first base64_decode before restoring from session (see note above).
+            // binary session streams, you can first base64_decode before restoring from a session (see note above).
             $strSerializedForm = file_get_contents($strFilePath);
 
             // Uncompress (if available)

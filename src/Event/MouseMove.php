@@ -14,7 +14,6 @@ namespace QCubed\Event;
  *
  * When the mouse pointer moves within the control on the browser
  *
- * @was QMouseMoveEvent
  * @package QCubed\Event
  */
 class MouseMove extends EventBase

@@ -3,26 +3,27 @@
 namespace QCubed\Project\Control;
 
 use QCubed as Q;
+use QCubed\Control\CheckboxBase;
 
 /**
  * Button class - You may modify it to contain your own modifications to the
  * Button throughout the framework.
- * @was QCheckbox
  */
-class Checkbox extends \QCubed\Control\CheckboxBase
+class Checkbox extends CheckboxBase
 {
     ///////////////////////////
     // Button Preferences
     ///////////////////////////
 
-    protected $strCssClass = 'checkbox';
+    protected string $strCssClass = 'checkbox';
 
     /**
      * Returns the generator corresponding to this control.
      *
-     * @return Q\Codegen\Generator\GeneratorBase
+     * @return Q\Codegen\Generator\Checkbox
      */
-    public static function getCodeGenerator() {
+    public static function getCodeGenerator(): Q\Codegen\Generator\Checkbox
+    {
         return new Q\Codegen\Generator\Checkbox(__CLASS__);
     }
 

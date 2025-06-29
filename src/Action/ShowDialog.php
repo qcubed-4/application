@@ -20,13 +20,12 @@ use QCubed\Control\ControlBase;
  * This is the JQuery UI alternative to show dialog
  *
  * @deprecated Create dialogs on the fly
- * @was QShowDialog
  * @package QCubed\Action
  */
 class ShowDialog extends ActionBase
 {
     /** @var null|string The JS to show the dialog */
-    protected $strJavaScript = null;
+    protected ?string $strJavaScript = null;
 
     /**
      * Constructor
@@ -46,9 +45,9 @@ class ShowDialog extends ActionBase
      *
      * @param ControlBase $objControl
      *
-     * @return null|string JS that will be run on the client side
+     * @return string JS that will be run on the client side
      */
-    public function renderScript(ControlBase $objControl)
+    public function renderScript(ControlBase $objControl): string
     {
         return $this->strJavaScript;
     }

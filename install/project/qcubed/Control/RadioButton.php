@@ -2,7 +2,7 @@
 
 namespace QCubed\Project\Control;
 
-use QCubed as Q;
+use QCubed\Control\RadioButtonBase;
 
 /**
  * Class RadioButton
@@ -10,16 +10,14 @@ use QCubed as Q;
  * Button class - You may modify it to contain your own modifications to the
  * Button throughout the framework.
  * @package Controls
- * @was QRadioButton
  */
-class RadioButton extends \QCubed\Control\RadioButtonBase
+class RadioButton extends RadioButtonBase
 {
     ///////////////////////////
     // Button Preferences
     ///////////////////////////
 
     // Feel free to specify global display preferences/defaults for all QButton controls
-    protected $strCssClass = 'radio';
-
+    protected string $strCssClass = 'radio';
 
 }

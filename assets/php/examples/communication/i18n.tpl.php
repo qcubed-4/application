@@ -1,4 +1,6 @@
-<?php require('../includes/header.inc.php'); ?>
+<?php
+use QCubed\I18n\TranslationService;
+require('../includes/header.inc.php'); ?>
 <?php $this->renderBegin(); ?>
 
 <div id="instructions">
@@ -22,10 +24,10 @@
     </p>
 
 	<p>
-        <?php _t('Note that generated Forms and the Controls are all I18n aware -- they will translate themselves 
-                based on the selected language (as long as the appropriate language file exists).  QCubed-specific langauge 
-                files are part of QCubed core, and exist in the i18n directories of their respective libraries. 
-                If you are able to contribute, please take the current en.po file and translate it to any currently 
+        <?php _t('Note that generated Forms and the Controls are all I18n aware -- they will translate themselves
+                based on the selected language (as long as the appropriate language file exists). QCubed-specific language
+                files are part of QCubed core and exist in the i18n directories of their respective libraries.
+                If you are able to contribute, please and take the current en.po file and translate it to any currently
                 unsupported language and feel free to submit it.'); ?>
     </p>
 </div>
@@ -34,11 +36,11 @@
 	<h2><?php _t('Internationalization Example'); ?></h2>
 	<p>
 		<?php _t('Current Language'); ?>:
-		<strong><?php _p(\QCubed\I18n\TranslationService::instance()->translator()->getLocale() ? \QCubed\I18n\TranslationService::instance()->translator()->getLocale() : 'none'); ?></strong>
+		<strong><?php _p(TranslationService::instance()->translator()->getLocale() ? TranslationService::instance()->translator()->getLocale() : 'none'); ?></strong>
 	</p>
 
-	<?php  $this->btnEn->render('Text="' . t('Switch to') . ' en"'); ?>
-	<?php  $this->btnEs->render('Text="' . t('Switch to') . ' es"'); ?>
+	<?php  $this->btnEn->render(); ?>
+	<?php  $this->btnEs->render(); ?>
 </div>
 
 <?php $this->renderEnd(); ?>

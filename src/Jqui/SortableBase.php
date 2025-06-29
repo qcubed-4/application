@@ -19,28 +19,27 @@ use QCubed as Q;
  * Class SortableBase
  *
  * The SortableBase class defined here provides an interface between the generated
- * SortableGen class, and QCubed. This file is part of the core and will be overwritten
+ * SortableGen class and QCubed. This file is part of the core and will be overwritten
  * when you update QCubed. To override, make your changes to the Sortable.class.php file instead.
  *
  * Sortable is a group of panels that can be dragged to reorder them. You will need to put
- * some care into the css styling of the objects so that the css allows them to be moved. It
- * will use the top level html objects inside the panel to decide what to sort. Make sure
- * they have ids so it can return the ids of the items in sort order.
+ * some care into the CSS styling of the objects so that the CSS allows them to be moved. It
+ * will use the top level HTML objects inside the panel to decide what to sort. Make sure
+ * they have IDs so they can return the IDs of the items in sort order.
  *
  * @property-read array $ItemArray    List of ControlIds in sort order.
  *
  * @link http://jqueryui.com/sortable/
- * @was QSortableBase
  * @package QCubed\Jqui
  */
 class SortableBase extends SortableGen
 {
-    /** @var array */
-    protected $aryItemArray = null;
+    /** @var array|null */
+    protected ?array $aryItemArray = null;
 
 
     // Find out what the sort order is at the beginning so that aryItemArray is up to date
-    public function makeJqOptions()
+    public function makeJqOptions(): array
     {
         $jqOptions = parent::makeJqOptions();
 
@@ -53,7 +52,7 @@ class SortableBase extends SortableGen
         return $jqOptions;
     }
 
-    public function getEndScript()
+    public function getEndScript(): string
     {
         $strJS = parent::getEndScript();
 
@@ -64,13 +63,21 @@ class SortableBase extends SortableGen
 			 			qcubed.recordControlModification("$this->ControlId", "_ItemArray", str);
 					})						
 FUNC;
-        Application::executeJavaScript($strCtrlJs, Application::PRIORITY_HIGH);
+        Application::executeJavaScript($strCtrlJs, Q\ApplicationBase::PRIORITY_HIGH);
 
         return $strJS;
     }
 
-
-    public function __set($strName, $mixValue)
+    /**
+     * Sets the value of a property dynamically.
+     *
+     * @param string $strName The name of the property to set.
+     * @param string $mixValue The value to assign to the property.
+     * @return void
+     * @throws InvalidCast If the value cannot be cast to the required type.
+     * @throws Caller If the property name is invalid or cannot be set.
+     */
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             case '_ItemArray': // Internal only. Do not use. Used by JS above to track selections.
@@ -95,7 +102,7 @@ FUNC;
         }
     }
 
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             case 'ItemArray':

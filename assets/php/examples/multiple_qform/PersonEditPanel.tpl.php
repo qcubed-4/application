@@ -1,24 +1,24 @@
-		<div class="title_action"><?php _p($_CONTROL->strTitleVerb); ?></div>
+		<div class="title_action"><?php _p($this->strTitleVerb); ?></div>
 		<div class="title"><?php _t('Person')?></div>
 		<br class="item_divider" />
 
-		<?php $_CONTROL->lblId->RenderWithName(); ?>
+		<?php $this->lblId->renderWithName(); ?>
 		<br class="item_divider" />
 
-		<?php $_CONTROL->txtFirstName->RenderWithName(); ?>
+		<?php $this->txtFirstName->renderWithName(); ?>
 		<br class="item_divider" />
 
-		<?php $_CONTROL->txtLastName->RenderWithName(); ?>
+		<?php $this->txtLastName->renderWithName(); ?>
 		<br class="item_divider" />
 
-		<?php $_CONTROL->lstLogin->RenderWithName(); ?>
+		<?php $this->lstLogin->renderWithName(); ?>
 		<br class="item_divider" />
 
-		<?php $_CONTROL->lstProjectsAsTeamMember->RenderWithName(true, "Rows=10"); ?>
+		<?php $this->lstProjectsAsTeamMember->renderWithName(true, "Rows=10"); ?>
 		<br class="item_divider" />
 
 
 		<br />
-		<?php $_CONTROL->btnSave->Render() ?>
+		<?php $this->btnSave->render() ?>
 		&nbsp;&nbsp;&nbsp;
-		<?php $_CONTROL->btnCancel->Render() ?>
+		<?php $this->btnCancel->render() ?>

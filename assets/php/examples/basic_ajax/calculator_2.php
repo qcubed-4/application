@@ -4,26 +4,27 @@ use QCubed\Control\IntegerTextBox;
 use QCubed\Control\Label;
 use QCubed\Event\Click;
 use QCubed\Project\Control\Button;
+use QCubed\Project\Control\FormBase;
 use QCubed\Project\Control\ListBox;
 
 require_once('../qcubed.inc.php');
 
-class CalculatorForm extends \QCubed\Project\Control\FormBase
+class CalculatorForm extends FormBase
 {
 
     // Our Calculator needs 2 Textboxes (one for each operand)
     // A listbox of operations to choose from
     // A button to execute the calculation
     // And a label to output the result
-    protected $txtValue1;
-    protected $txtValue2;
-    protected $lstOperation;
-    protected $btnCalculate;
-    protected $lblResult;
+    protected IntegerTextBox $txtValue1;
+    protected IntegerTextBox $txtValue2;
+    protected ListBox $lstOperation;
+    protected Button $btnCalculate;
+    protected Label $lblResult;
 
-    // Define all the QContrtol objects for our Calculator
+    // Define all the QControl objects for our Calculator
     // Make our textboxes IntegerTextboxes and make them required
-    protected function formCreate()
+    protected function formCreate(): void
     {
         $this->txtValue1 = new IntegerTextBox($this);
         $this->txtValue1->Required = true;
@@ -45,20 +46,20 @@ class CalculatorForm extends \QCubed\Project\Control\FormBase
 
         // With btnCalculate being responsible for the action, we set this Button's CausesValidation to true
         // so that validation will occur on the form when click the button.
-        // But if you set it to false, you'll see that integers and null entries would instead be always allowed.
+        // But if you set it to false, you'll see that integers and null entries would instead always be allowed.
         $this->btnCalculate->CausesValidation = true;
 
         $this->lblResult = new Label($this);
         $this->lblResult->HtmlEntities = false;
     }
 
-    protected function formLoad()
+    protected function formLoad(): void
     {
         // Let's always clear the Result label
         $this->lblResult->Text = '';
     }
 
-    protected function formValidate()
+    protected function formValidate(): bool
     {
         // If we are Dividing and if the divisor is 0, then this is not valid
         if (($this->lstOperation->SelectedValue == 'divide') &&
@@ -72,25 +73,16 @@ class CalculatorForm extends \QCubed\Project\Control\FormBase
         return true;
     }
 
-    // Perform the necessary operations on the operands, and output the value to the lblResult
-    protected function btnCalculate_Click($strFormId, $strControlId, $strParameter)
+    // Perform the necessary operations on the operands and output the value to the lblResult
+    protected function btnCalculate_Click(string $strFormId, string $strControlId, string $strParameter): void
     {
-        switch ($this->lstOperation->SelectedValue) {
-            case 'add':
-                $mixResult = $this->txtValue1->Text + $this->txtValue2->Text;
-                break;
-            case 'subtract':
-                $mixResult = $this->txtValue1->Text - $this->txtValue2->Text;
-                break;
-            case 'multiply':
-                $mixResult = $this->txtValue1->Text * $this->txtValue2->Text;
-                break;
-            case 'divide':
-                $mixResult = $this->txtValue1->Text / $this->txtValue2->Text;
-                break;
-            default:
-                throw new Exception('Invalid Action');
-        }
+        $mixResult = match ($this->lstOperation->SelectedValue) {
+            'add' => $this->txtValue1->Text + $this->txtValue2->Text,
+            'subtract' => $this->txtValue1->Text - $this->txtValue2->Text,
+            'multiply' => $this->txtValue1->Text * $this->txtValue2->Text,
+            'divide' => $this->txtValue1->Text / $this->txtValue2->Text,
+            default => throw new Exception('Invalid Action'),
+        };
 
         if (isset($mixResult)) {
             $this->lblResult->Text = '<strong>Your Result:</strong> ' . $mixResult;

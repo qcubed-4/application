@@ -1,6 +1,7 @@
 <?php
 use QCubed\Action\Ajax;
 use QCubed\Event\Click;
+use QCubed\Exception\Caller;
 use QCubed\Project\Application;
 use QCubed\Project\Control\Button;
 use QCubed\Project\Control\DataGrid;
@@ -11,10 +12,10 @@ require_once('../qcubed.inc.php');
 class ExampleForm extends FormBase
 {
     // Declare the DataGrid
-    protected $dtgPersons;
-    protected $dtgPersonsDelegated;
+    protected DataGrid $dtgPersons;
+    protected DataGrid $dtgPersonsDelegated;
 
-    protected function formCreate()
+    protected function formCreate(): void
     {
         // Define the DataGrid
         $this->dtgPersons = new DataGrid($this, 'dtgPersons');
@@ -42,9 +43,9 @@ class ExampleForm extends FormBase
         $this->dtgPersonsDelegated->addAction(
         // The 3rd parameter is the jQuery selector that controls which controls we are listening to. This is similar to a CSS selector.
         // In our example, we are listening to buttons that have a 'data-id' attribute.
-            new Click(null, 0, 'button[data-id]'),
+            new Click((int)null, 0, 'button[data-id]'),
             // Respond to click events with an ajax action. The fourth parameter is a JavaScript fragment that controls what
-            // the action paremeter will be. In this case, its the value of the data-id attribute. Note that the "event.target" member
+            // the action parameter will be. In this case, it's the value of the data-id attribute. Note that the "event.target" member
             // of the event is the button that was clicked on. Also, we are sending in the record id as the action parameter, so we can
             // use the same dtgPersonsButton_Click for the delegated and non-delegated actions.
             new Ajax('dtgPersonsButton_Click', null, null, '$j(event.target).data("id")')
@@ -61,7 +62,7 @@ class ExampleForm extends FormBase
      * Bind the data to the data source. Note that the first parameter is the control we are binding to. This allows
      * us to use the same data binder for multiple controls.
      */
-    protected function dtgPersons_Bind($objControl)
+    protected function dtgPersons_Bind($objControl): void
     {
         // Use the control passed in to the data binder to know to which to send the data.
         $objControl->DataSource = Person::loadAll();
@@ -70,7 +71,7 @@ class ExampleForm extends FormBase
     /**
      * Respond to the button click for the non-delegated events.
      */
-    public function dtgPersonsButton_Click($strFormId, $strControlId, $strParameter)
+    public function dtgPersonsButton_Click(string $strFormId, string $strControlId, string $strParameter): void
     {
         $intPersonId = intval($strParameter);
 
@@ -83,8 +84,9 @@ class ExampleForm extends FormBase
      *
      * @param Person $objPerson
      * @return String
+     * @throws Caller
      */
-    public function renderDeleteButton($objPerson)
+    public function renderDeleteButton(Person $objPerson): string
     {
         $strControlId = 'btn' . $objPerson->Id;
         $objControl = $this->getControl($strControlId);
@@ -93,21 +95,21 @@ class ExampleForm extends FormBase
             $objControl->Text = 'Edit';
             $objControl->ActionParameter = $objPerson->Id;
             $objControl->addAction(new Click(),
-                new Ajax('dtgPersonsButton_Click')); // This will generate a javascript call for every button created.
+                new Ajax('dtgPersonsButton_Click')); // This will generate a JavaScript call for every button created.
         }
         return $objControl->render(false);
     }
 
     /**
-     * The delegated button. We are directly creating the html for the button and assigning a data-id that corresponds to the action
+     * The delegated button. We are directly creating the HTML for the button and assigning a data-id that corresponds to the action
      * parameter we will eventually send in to the action handler.
      *
-     * @param $objPerson
+     * @param Person $objPerson
      * @return string
      */
-    public function renderDeleteButton2($objPerson)
+    public function renderDeleteButton2(Person $objPerson): string
     {
-        //create the delete button row, with a special naming scheme for the button ids: "delete_" . id (where id is a person id)
+        //Create the delete button row, with a special naming scheme for the button IDs: "delete_". id (where id is a person id)
         return '<button data-id="' . $objPerson->Id . '">Edit</button>';
     }
 }

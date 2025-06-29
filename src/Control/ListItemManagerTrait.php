@@ -21,10 +21,9 @@ use QCubed\Type;
  * and the HListItem classes, the latter because a HListItem can itself contain a list of other items.
  *
  * Note that some abstract methods are declared here that must be implemented by the using class:
- * GetId()    - returns the id
+ * GetId() - returns the id
  * MarkAsModified() - marks the object as modified. Optional.
  *
- * @was QListItemManager
  * @package QCubed\Control
  */
 trait ListItemManagerTrait
@@ -33,27 +32,27 @@ trait ListItemManagerTrait
     // Private Member Variables
     ///////////////////////////
     /** @var ListItemBase[] an array of subitems if this is a recursive item. */
-    protected $objListItemArray;
+    protected array $objListItemArray = [];
 
     /**
-     * Add a base list item to the list.
+     * Adds a new item to the list and assigns it a unique ID based on the parent control's ID.
      *
-     * @param ListItemBase $objListItem
+     * @param ListItemBase $objListItem The item to be added to the list.
+     * @return void
      */
-    public function addListItem(ListItemBase $objListItem)
+    public function addListItem(ListItemBase $objListItem): void
     {
         if ($strControlId = $this->getId()) {
             $num = 0;
             if ($this->objListItemArray) {
                 $num = count($this->objListItemArray);
             }
-            $objListItem->setId($strControlId . '_' . $num);    // auto assign the id based on parent id
+            $objListItem->setId($strControlId . '_' . $num);    // auto assign the ID based on parent ID
             $objListItem->reindex();
         }
         $this->objListItemArray[] = $objListItem;
         $this->markAsModified();
     }
-
 
     /**
      * Allows you to add a ListItem at a certain index
@@ -64,9 +63,9 @@ trait ListItemManagerTrait
      * @param ListItemBase $objListItem the ListItem which shall be inserted
      *
      * @throws IndexOutOfRange
-     * @throws InvalidCast
+     * @throws InvalidCast|Caller
      */
-    public function addItemAt($intIndex, ListItemBase $objListItem)
+    public function addItemAt(int $intIndex, ListItemBase $objListItem): void
     {
         try {
             $intIndex = Type::cast($intIndex, Type::INTEGER);
@@ -90,38 +89,41 @@ trait ListItemManagerTrait
     }
 
     /**
-     * Reindex the ids of the items based on the current item. We manage all the ids in the list internally
-     * to be able to get to an item in the list quickly, and to make sure the ids are unique.
+     * Reindex the IDs of the items based on the current item. We manage all the IDs in the list internally
+     * to be able to get to an item in the list quickly and to make sure the IDs are unique.
      */
-    public function reindex()
+    public function reindex(): void
     {
         if ($this->getId() && $this->objListItemArray) {
             for ($i = 0; $i < $this->getItemCount(); $i++) {
-                $this->objListItemArray[$i]->setId($this->getId() . '_' . $i);    // assign the id based on parent id
+                $this->objListItemArray[$i]->setId($this->getId() . '_' . $i);    // assign the ID based on parent ID
                 $this->objListItemArray[$i]->reindex();
             }
         }
     }
 
     /**
-     * Stub function. The including function needs to implement this.
+     * Marks the current object as modified. This method should be implemented in derived classes to handle functionality
+     * related to flagging the object state as changed or dirty, typically for persisting updates or tracking state changes.
      */
-    abstract public function markAsModified();
+    abstract public function markAsModified(): void;
 
     /**
-     * Returns the id of the item, however the item stores it.
-     * @return string
-     */
-    abstract public function getId();
-
-    /**
-     * Adds an array of items,
+     * Retrieves the ID of the entity or object.
      *
-     * @param ListItemBase[]|array $objListItemArray Array of ListItems or key=>val pairs.
-     * @throws InvalidCast
-     * @throws Caller
+     * @return string|null The unique identifier as a string.
      */
-    public function addListItems(array $objListItemArray)
+    abstract public function getId(): ?string;
+
+    /**
+     * Adds an array of ListItemBase objects to the current list.
+     *
+     * @param array $objListItemArray An array of ListItemBase objects to be added. The array must only contain instances of ListItemBase.
+     * @return void
+     * @throws Caller
+     * @throws InvalidCast
+     */
+    public function addListItems(array $objListItemArray): void
     {
         try {
             $objListItemArray = Type::cast($objListItemArray, Type::ARRAY_TYPE);
@@ -149,11 +151,11 @@ trait ListItemManagerTrait
      *
      * @param integer $intIndex
      *
-     * @throws IndexOutOfRange
-     * @throws InvalidCast
      * @return ListItemBase
+     * @throws InvalidCast
+     * @throws IndexOutOfRange|Caller
      */
-    public function getItem($intIndex)
+    public function getItem(int $intIndex): ListItemBase
     {
         try {
             $intIndex = Type::cast($intIndex, Type::INTEGER);
@@ -171,13 +173,11 @@ trait ListItemManagerTrait
     }
 
     /**
-     * This will return an array of ALL the QListItems associated with this QListControl.
-     * Please note that while each individual item can be altered, altering the array, itself,
-     * will not affect any change on the QListControl.  So existing QListItems may be modified,
-     * but to add / remove items from the QListControl, you should use AddItem() and RemoveItem().
-     * @return ListItemBase[]
+     * Retrieves all items from the internal list.
+     *
+     * @return array Returns an array containing all items in the list. If the list is empty, an empty array is returned.
      */
-    public function getAllItems()
+    public function getAllItems(): array
     {
         return $this->objListItemArray;
     }
@@ -185,10 +185,10 @@ trait ListItemManagerTrait
     /**
      * Removes all the items in objListItemArray
      */
-    public function removeAllItems()
+    public function removeAllItems(): void
     {
         $this->markAsModified();
-        $this->objListItemArray = null;
+        $this->objListItemArray = [];
     }
 
     /**
@@ -197,9 +197,9 @@ trait ListItemManagerTrait
      * @param integer $intIndex
      *
      * @throws IndexOutOfRange
-     * @throws InvalidCast
+     * @throws InvalidCast|Caller
      */
-    public function removeItem($intIndex)
+    public function removeItem(int $intIndex): void
     {
         try {
             $intIndex = Type::cast($intIndex, Type::INTEGER);
@@ -228,9 +228,9 @@ trait ListItemManagerTrait
      * @param integer $intIndex
      * @param ListItem $objListItem
      *
-     * @throws InvalidCast
+     * @throws InvalidCast|Caller
      */
-    public function replaceItem($intIndex, ListItem $objListItem)
+    public function replaceItem(int $intIndex, ListItem $objListItem): void
     {
         try {
             $intIndex = Type::cast($intIndex, Type::INTEGER);
@@ -249,7 +249,7 @@ trait ListItemManagerTrait
      *
      * @return int
      */
-    public function getItemCount()
+    public function getItemCount(): int
     {
         $count = 0;
         if ($this->objListItemArray) {
@@ -259,17 +259,17 @@ trait ListItemManagerTrait
     }
 
     /**
-     * Finds the item by id recursively. Makes use of the fact that we maintain the ids in order to efficiently
-     * find the item.
+     * Searches for and retrieves an item from the list based on the specified ID.
      *
-     * @param string $strId If this is a sub-item, it will be an id fragment
-     * @return null|ListItemBase
+     * @param string $strId The ID of the item to be found, formatted as a string with optional hierarchical components.
+     * @return ListItemBase|null Returns the found item if it exists, or null if no item is found or the list is empty.
      */
-    public function findItem($strId)
+    public function findItem(string $strId): ?ListItemBase
     {
         if (!$this->objListItemArray) {
             return null;
         }
+
         $objFoundItem = null;
         $a = explode('_', $strId, 3);
         if (isset($a[1]) &&
@@ -285,16 +285,17 @@ trait ListItemManagerTrait
     }
 
     /**
-     * Returns the first tiem found with the given value.
+     * Finds an item in the list that matches the specified value.
      *
-     * @param $strValue
-     * @return null|ListItemBase
+     * @param mixed $strValue The value to search for in the list of items.
+     * @return null|ListItemBase The item that matches the specified value, or null if not found.
      */
-    public function findItemByValue($strValue)
+    public function findItemByValue(mixed $strValue): ?ListItemBase
     {
         if (!$this->objListItemArray) {
             return null;
         }
+
         foreach ($this->objListItemArray as $objItem) {
             if ($objItem->Value == $strValue) {
                 return $objItem;

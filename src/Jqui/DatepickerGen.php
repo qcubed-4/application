@@ -4,6 +4,7 @@ namespace QCubed\Jqui;
 use QCubed;
 use QCubed\Type;
 use QCubed\Project\Application;
+use QCubed\ApplicationBase;
 use QCubed\Exception\InvalidCast;
 use QCubed\Exception\Caller;
 use QCubed\ModelConnector\Param as QModelConnectorParam;
@@ -11,7 +12,7 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
 /**
  * Class DatepickerGen
  *
- * This is the DatepickerGen class which is automatically generated
+ * This is the DatepickerGen class that is automatically generated
  * by scraping the JQuery UI documentation website. As such, it includes all the options
  * as listed by the JQuery UI website, which may or may not be appropriate for QCubed. See
  * the DatepickerBase class for any glue code to make this class more
@@ -28,7 +29,7 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
  * The dateFormat to be used for the altField option. This allows one
  * date format to be shown to the user for selection purposes, while a
  * different format is actually sent behind the scenes. For a full list
- * of the possible formats see the formatDate function
+ * of the possible formats, see the formatDate function
  *
  * @property string $AppendText
  * The text to display after each date field, e.g., to show the required
@@ -40,7 +41,7 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
  *
  * @property mixed $BeforeShow
  * A function that takes an input field and current datepicker instance
- * and returns an options object to update the datepicker with. It is
+ * and returns an option object to update the datepicker with. It is
  * called just before the datepicker is displayed.
  *
  * @property mixed $BeforeShowDay
@@ -71,7 +72,7 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
  *
  * @property mixed $CalculateWeek
  * A function to calculate the week of the year for a given date. The
- * default implementation uses the ISO 8601 definition: weeks start on a
+ * default implementation uses the ISO 8601 definition: week starts on a
  * Monday; the first week of the year contains the first Thursday of the
  * year.
  *
@@ -92,12 +93,12 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
  * allowed by the current dateFormat option.
  *
  * @property string $CurrentText
- * The text to display for the current day link. Use the showButtonPanel
+ * The text to display for the current-day link. Use the showButtonPanel
  * option to display this button.
  *
  * @property string $JqDateFormat
  * The format for parsed and displayed dates. For a full list of the
- * possible formats see the formatDate function.
+ * possible formats, see the formatDate function.
  *
  * @property array $DayNames
  * The list of long day names, starting from Sunday, for use as requested
@@ -112,15 +113,15 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
  * requested via the dateFormat option.
  *
  * @property mixed $DefaultDate
- * Set the date to highlight on first opening if the field is blank.
+ * Set the date to highlight on the first opening if the field is blank.
  * Specify either an actual date via a Date object or as a string in the
- * current dateFormat, or a number of days from today (e.g. +7) or a
+ * current dateFormat, or a number of days from today (e.g., +7) or a
  * string of values and periods (y for years, m for months, w for weeks,
- * d for days, e.g. +1m +7d), or null for today.Multiple types supported:
+ * d for days, e.g., +1m +7d), or null for today.Multiple types supported:
  * 
  * 	* Date: A date object containing the default date.
- * 	* Number: A number of days from today. For example 2 represents two
- * days from today and -1 represents yesterday.
+ * 	* Number: A number of days from today. For example, 2 represents two
+ * days from today and -1 represented yesterday.
  * 	* String: A string in the format defined by the dateFormat option,
  * or a relative date. Relative dates must contain value and period
  * pairs; valid periods are "y" for years, "m" for months, "w" for weeks,
@@ -138,11 +139,11 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
  * Set the first day of the week: Sunday is 0, Monday is 1, etc.
  *
  * @property boolean $GotoCurrent
- * When true, the current day link moves to the currently selected date
+ * When true, the current-day link moves to the currently selected date
  * instead of today.
  *
  * @property boolean $HideIfNoPrevNext
- * Normally the previous and next links are disabled when not applicable
+ * Normally, the previous and next links are disabled when not applicable
  * (see the minDate and maxDate options). You can hide them altogether by
  * setting this attribute to true.
  *
@@ -150,12 +151,12 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
  * Whether the current language is drawn from right to left.
  *
  * @property mixed $MaxDate
- * The maximum selectable date. When set to null, there is no
+ * The maximum selectable date. When set to null, there are no
  * maximum.Multiple types supported:
  * 
  * 	* Date: A date object containing the maximum date.
- * 	* Number: A number of days from today. For example 2 represents two
- * days from today and -1 represents yesterday.
+ * 	* Number: A number of days from today. For example, 2 represents two
+ * days from today and -1 represented yesterday.
  * 	* String: A string in the format defined by the dateFormat option,
  * or a relative date. Relative dates must contain value and period
  * pairs; valid periods are "y" for years, "m" for months, "w" for weeks,
@@ -169,8 +170,8 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
  * minimum.Multiple types supported:
  * 
  * 	* Date: A date object containing the minimum date.
- * 	* Number: A number of days from today. For example 2 represents two
- * days from today and -1 represents yesterday.
+ * 	* Number: A number of days from today. For example, 2 represents two
+ * days from today and -1 represented yesterday.
  * 	* String: A string in the format defined by the dateFormat option,
  * or a relative date. Relative dates must contain value and period
  * pairs; valid periods are "y" for years, "m" for months, "w" for weeks,
@@ -190,14 +191,14 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
  * @property boolean $NavigationAsDateFormat
  * Whether the currentText, prevText and nextText options should be
  * parsed as dates by the formatDate function, allowing them to display
- * the target month names for example.
+ * the target month names, for example.
  *
  * @property string $NextText
  * The text to display for the next month link. With the standard
  * ThemeRoller styling, this value is replaced by an icon.
  *
  * @property mixed $NumberOfMonths
- * The number of months to show at once.Multiple types supported:
+ * The number of months to show at once.Multiple types are supported:
  * 
  * 	* Number: The number of months to display in a single row.
  * 	* Array: An array defining the number of rows and columns to
@@ -208,17 +209,17 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
  * @property mixed $OnChangeMonthYear
  * Called when the datepicker moves to a new month and/or year. The
  * function receives the selected year, month (1-12), and the datepicker
- * instance as parameters. this refers to the associated input field.
+ * instance as parameters. This refers to the associated input field.
  *
  * @property mixed $OnClose
  * Called when the datepicker is closed, whether or not a date is
  * selected. The function receives the selected date as text ("" if none)
- * and the datepicker instance as parameters. this refers to the
+ * and the datepicker instance as parameters. This refers to the
  * associated input field.
  *
  * @property mixed $OnSelect
  * Called when the datepicker is selected. The function receives the
- * selected date as text and the datepicker instance as parameters. this
+ * selected date as text and the datepicker instance as parameters. This
  * refers to the associated input field.
  *
  * @property string $PrevText
@@ -244,14 +245,14 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
 
  *
  * @property string $ShowAnim
- * The name of the animation used to show and hide the datepicker. Use
+ * The name of the animation is used to show and hide the datepicker. Use
  * "show" (the default), "slideDown", "fadeIn", any of the jQuery UI
  * effects. Set to an empty string to disable animation.
  *
  * @property boolean $ShowButtonPanel
  * Whether to display a button pane underneath the calendar. The button
  * pane contains two buttons, a Today button that links to the current
- * day, and a Done button that closes the datepicker. The buttons text
+ * day, and a Done button that closes the datepicker. The button text
  * can be customized using the currentText and closeText options
  * respectively.
  *
@@ -274,7 +275,7 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
  *
  * @property boolean $ShowOtherMonths
  * Whether to display dates in other months (non-selectable) at the start
- * or end of the current month. To make these days selectable use the
+ * or end of the current month. To make these days selectable, use the
  * selectOtherMonths option.
  *
  * @property boolean $ShowWeek
@@ -290,8 +291,8 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
  * showWeek option to display this column.
  *
  * @property string $YearRange
- * The range of years displayed in the year drop-down: either relative to
- * todays year ("-nn:+nn"), relative to the currently selected year
+ * The range of years displayed in the year drops-down: either relative to
+ * today's year ("-nn:+nn"), relative to the currently selected year
  * ("c-nn:c+nn"), absolute ("nnnn:nnnn"), or combinations of these
  * formats ("nnnn:-nn"). Note that this option only affects what appears
  * in the drop-down, to restrict which dates may be selected use the
@@ -300,121 +301,121 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
  * @property string $YearSuffix
  * Additional text to display after the year in the month headers.
  *
- * @was QDatepickerGen
-
  */
 
 class DatepickerGen extends QCubed\Control\Panel
 {
-    protected $strJavaScripts = QCUBED_JQUI_JS;
-    protected $strStyleSheets = QCUBED_JQUI_CSS;
+    protected string $strJavaScripts = QCUBED_JQUI_JS;
+    protected string $strStyleSheets = QCUBED_JQUI_CSS;
+
     /** @var mixed */
-    protected $mixAltField = null;
-    /** @var string */
-    protected $strAltFormat = null;
-    /** @var string */
-    protected $strAppendText = null;
+    protected mixed $mixAltField = null;
+    /** @var string|null */
+    protected ?string $strAltFormat = null;
+    /** @var string|null */
+    protected ?string $strAppendText = null;
     /** @var boolean */
-    protected $blnAutoSize = null;
+    protected ?bool $blnAutoSize = null;
     /** @var mixed */
-    protected $mixBeforeShow = null;
+    protected mixed $mixBeforeShow = null;
     /** @var mixed */
-    protected $mixBeforeShowDay = null;
-    /** @var string */
-    protected $strButtonImage = null;
+    protected mixed $mixBeforeShowDay = null;
+    /** @var string|null */
+    protected ?string $strButtonImage = null;
     /** @var boolean */
-    protected $blnButtonImageOnly = null;
-    /** @var string */
-    protected $strButtonText;
+    protected ?bool $blnButtonImageOnly = null;
+    /** @var string|null */
+    protected ?string $strButtonText = null;
     /** @var mixed */
-    protected $mixCalculateWeek;
+    protected mixed $mixCalculateWeek = null;
     /** @var boolean */
-    protected $blnChangeMonth = null;
+    protected ?bool $blnChangeMonth = null;
     /** @var boolean */
-    protected $blnChangeYear = null;
-    /** @var string */
-    protected $strCloseText = null;
+    protected ?bool $blnChangeYear = null;
+    /** @var string|null */
+    protected ?string $strCloseText = null;
     /** @var boolean */
-    protected $blnConstrainInput = null;
-    /** @var string */
-    protected $strCurrentText = null;
-    /** @var string */
-    protected $strJqDateFormat = null;
-    /** @var array */
-    protected $arrDayNames = null;
-    /** @var array */
-    protected $arrDayNamesMin = null;
-    /** @var array */
-    protected $arrDayNamesShort = null;
+    protected ?bool $blnConstrainInput = null;
+    /** @var string|null */
+    protected ?string $strCurrentText = null;
+    /** @var string|null */
+    protected ?string $strJqDateFormat = null;
+    /** @var array|null */
+    protected ?array $arrDayNames = null;
+    /** @var array|null */
+    protected ?array $arrDayNamesMin = null;
+    /** @var array|null */
+    protected ?array $arrDayNamesShort = null;
     /** @var mixed */
-    protected $mixDefaultDate = null;
+    protected mixed $mixDefaultDate = null;
     /** @var mixed */
-    protected $mixDuration = null;
-    /** @var integer */
-    protected $intFirstDay;
+    protected mixed $mixDuration = null;
+    /** @var integer|null */
+    protected ?int $intFirstDay = null;
     /** @var boolean */
-    protected $blnGotoCurrent = null;
+    protected ?bool $blnGotoCurrent = null;
     /** @var boolean */
-    protected $blnHideIfNoPrevNext = null;
+    protected ?bool $blnHideIfNoPrevNext = null;
     /** @var boolean */
-    protected $blnIsRTL = null;
+    protected ?bool $blnIsRTL = null;
     /** @var mixed */
-    protected $mixMaxDate = null;
+    protected mixed $mixMaxDate = null;
     /** @var mixed */
-    protected $mixMinDate = null;
-    /** @var array */
-    protected $arrMonthNames = null;
-    /** @var array */
-    protected $arrMonthNamesShort = null;
+    protected mixed $mixMinDate = null;
+    /** @var array|null */
+    protected ?array $arrMonthNames = null;
+    /** @var array|null */
+    protected ?array $arrMonthNamesShort = null;
     /** @var boolean */
-    protected $blnNavigationAsDateFormat = null;
-    /** @var string */
-    protected $strNextText = null;
+    protected ?bool $blnNavigationAsDateFormat = null;
+    /** @var string|null */
+    protected ?string $strNextText = null;
     /** @var mixed */
-    protected $mixNumberOfMonths = null;
+    protected mixed $mixNumberOfMonths = null;
     /** @var mixed */
-    protected $mixOnChangeMonthYear = null;
+    protected mixed $mixOnChangeMonthYear = null;
     /** @var mixed */
-    protected $mixOnClose = null;
+    protected mixed $mixOnClose = null;
     /** @var mixed */
-    protected $mixOnSelect = null;
-    /** @var string */
-    protected $strPrevText = null;
+    protected mixed $mixOnSelect = null;
+    /** @var string|null */
+    protected ?string $strPrevText = null;
     /** @var boolean */
-    protected $blnSelectOtherMonths = null;
+    protected ?bool $blnSelectOtherMonths = null;
     /** @var mixed */
-    protected $mixShortYearCutoff = null;
-    /** @var string */
-    protected $strShowAnim = null;
+    protected mixed $mixShortYearCutoff = null;
+    /** @var string|null */
+    protected ?string $strShowAnim = null;
     /** @var boolean */
-    protected $blnShowButtonPanel = null;
-    /** @var integer */
-    protected $intShowCurrentAtPos;
+    protected ?bool $blnShowButtonPanel = null;
+    /** @var integer|null */
+    protected ?int $intShowCurrentAtPos = null;
     /** @var boolean */
-    protected $blnShowMonthAfterYear = null;
-    /** @var string */
-    protected $strShowOn = null;
+    protected ?bool $blnShowMonthAfterYear = null;
+    /** @var string|null */
+    protected ?string $strShowOn = null;
     /** @var mixed */
-    protected $mixShowOptions = null;
+    protected mixed $mixShowOptions = null;
     /** @var boolean */
-    protected $blnShowOtherMonths = null;
+    protected ?bool $blnShowOtherMonths = null;
     /** @var boolean */
-    protected $blnShowWeek = null;
-    /** @var integer */
-    protected $intStepMonths = null;
-    /** @var string */
-    protected $strWeekHeader = null;
-    /** @var string */
-    protected $strYearRange = null;
-    /** @var string */
-    protected $strYearSuffix = null;
+    protected ?bool $blnShowWeek = null;
+    /** @var integer|null */
+    protected ?int $intStepMonths = null;
+    /** @var string|null */
+    protected ?string $strWeekHeader = null;
+    /** @var string|null */
+    protected ?string $strYearRange = null;
+    /** @var string|null */
+    protected ?string $strYearSuffix = null;
 
     /**
      * Builds the option array to be sent to the widget constructor.
      *
      * @return array key=>value array of options
      */
-    protected function makeJqOptions() {
+    protected function makeJqOptions(): array
+    {
         $jqOptions = parent::MakeJqOptions();
         if (!is_null($val = $this->AltField)) {$jqOptions['altField'] = $val;}
         if (!is_null($val = $this->AltFormat)) {$jqOptions['altFormat'] = $val;}
@@ -474,11 +475,10 @@ class DatepickerGen extends QCubed\Control\Panel
      *
      * @return string
      */
-    public function getJqSetupFunction()
+    public function getJqSetupFunction(): string
     {
         return 'datepicker';
     }
-
 
     /**
      * Removes the datepicker functionality completely. This will return the
@@ -486,146 +486,159 @@ class DatepickerGen extends QCubed\Control\Panel
      * 
      * 	* This method does not accept any arguments.
      */
-    public function destroy()
+    public function destroy(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "destroy", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "destroy", ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Opens the datepicker in a dialog box.
-     * 
-     * 	* date Type: String or Date The initial date.
-     * 	* onSelect Type: Function() A callback function when a date is
-     * selected. The function receives the date text and date picker instance
-     * as parameters.
-     * 	* options Type: Options The new options for the date picker.
-     * 	* pos Type: Number[2] or MouseEvent The position of the top/left of
-     * the dialog as [x, y] or a MouseEvent that contains the coordinates. If
-     * not specified the dialog is centered on the screen.
-     * @param $date
-     * @param $onSelect
-     * @param $options
-     * @param $pos
+     * *
+     * *    * date Type: String or Date The initial date.
+     * *    * onSelect Type: Function() A callback function when a date is
+     * * selected. The function receives the date text and date picker instance
+     * * as parameters.
+     * *    * option Type: Options The new options for the date picker.
+     * *    * pos Type: Number[2] or MouseEvent The position of the top/left of
+     * * the dialog as [x, y] or a MouseEvent that contains the coordinates. If
+     *  * is not specified, the dialog is centered on the screen.
+ *
+     * @param mixed $date The date value or identifier to initialize or update the dialog.
+     * @param callable|null $onSelect Optional callback function executed when a selection occurs.
+     * @param mixed|null $options Optional configuration options for the dialog.
+     * @param mixed|null $pos Optional position information for the dialog.
+     * @return void
      */
-    public function dialog($date, $onSelect = null, $options = null, $pos = null)
+    public function dialog(mixed $date, ?callable $onSelect = null, mixed $options = null, mixed $pos = null): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "dialog", $date, $onSelect, $options, $pos, Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "dialog", $date, $onSelect, $options, $pos, ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Returns the current date for the datepicker or null if no date has
      * been selected.
      * 
      * 	* This method does not accept any arguments.
      */
-    public function getDate()
+    public function getDate(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "getDate", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "getDate", ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Close a previously opened date picker.
      * 
      * 	* This method does not accept any arguments.
      */
-    public function hide()
+    public function hide(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "hide", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "hide", ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Determine whether a date picker has been disabled.
      * 
      * 	* This method does not accept any arguments.
      */
-    public function isDisabled()
+    public function isDisabled(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "isDisabled", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "isDisabled", ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Gets the value currently associated with the specified optionName.
-     * 
+     *
      * Note: For options that have objects as their value, you can get the
      * value of a specific key by using dot notation. For example, "foo.bar"
      * would get the value of the bar property on the foo option.
-     * 
-     * 	* optionName Type: String The name of the option to get.
-     * @param $optionName
+     *
+     *    * optionName Type: String The name of the option to get.
+     * @param string $optionName
      */
-    public function option($optionName)
+    public function option(string $optionName): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $optionName, Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $optionName, ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Gets an object containing key/value pairs representing the current
      * datepicker options hash.
      * 
      * 	* This signature does not accept any arguments.
      */
-    public function option1()
+    public function option1(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Sets the value of the datepicker option associated with the specified
      * optionName.
-     * 
+     *
      * Note: For options that have objects as their value, you can set the
      * value of just one property by using dot notation for optionName. For
      * example, "foo.bar" would update only the bar property of the foo
      * option.
-     * 
-     * 	* optionName Type: String The name of the option to set.
-     * 	* value Type: Object A value to set for the option.
-     * @param $optionName
-     * @param $value
+     *
+     *    * optionName Type: String The name of the option to set.
+     *    * value Type: Object A value to set for the option.
+     * @param string $optionName
+     * @param string $value
      */
-    public function option2($optionName, $value)
+    public function option2(string $optionName, string $value): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $optionName, $value, Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $optionName, $value, ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Sets one or more options for the datepicker.
-     * 
-     * 	* options Type: Object A map of option-value pairs to set.
-     * @param $options
+     *
+     *    * options Type: Object A map of option-value pairs to set.
+     * @param array $options
      */
-    public function option3($options)
+    public function option3(array $options): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $options, Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $options, ApplicationBase::PRIORITY_LOW);
     }
+
     /**
-     * Redraw the date picker, after having made some external modifications.
+     * Redraw the date picker after having made some external modifications.
      * 
      * 	* This method does not accept any arguments.
      */
-    public function refresh()
+    public function refresh(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "refresh", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "refresh", ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Sets the date for the datepicker. The new date may be a Date object or
      * a string in the current date format (e.g., "01/26/2009"), a number of
      * days from today (e.g., +7) or a string of values and periods ("y" for
      * years, "m" for months, "w" for weeks, "d" for days, e.g., "+1m +7d"),
      * or null to clear the selected date.
-     * 
-     * 	* date Type: String or Date The new date.
-     * @param $date
+     *
+     * @param mixed $date The date value to set. Can be a string, Date object, or any valid date representation.
+     * @return void
      */
-    public function setDate($date)
+    public function setDate(mixed $date): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "setDate", $date, Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "setDate", $date, ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Open the date picker. If the datepicker is attached to an input, the
      * input must be visible for the datepicker to be shown.
      * 
      * 	* This method does not accept any arguments.
      */
-    public function show()
+    public function show(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "show", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "show", ApplicationBase::PRIORITY_LOW);
     }
 
 
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             case 'AltField': return $this->mixAltField;
@@ -688,7 +701,7 @@ class DatepickerGen extends QCubed\Control\Panel
         }
     }
 
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             case 'AltField':
@@ -1134,48 +1147,50 @@ class DatepickerGen extends QCubed\Control\Panel
     }
 
     /**
-    * If this control is attachable to a codegenerated control in a ModelConnector, this function will be
-    * used by the ModelConnector designer dialog to display a list of options for the control.
-    * @return QModelConnectorParam[]
-    **/
-    public static function getModelConnectorParams()
+     * If this control is attachable to a codegenerated control in a ModelConnector, this function will be
+     * used by the ModelConnector designer dialog to display a list of options for the control.
+     * @return QModelConnectorParam[]
+     *
+     * @throws Caller
+     */
+    public static function getModelConnectorParams(): array
     {
         return array_merge(parent::GetModelConnectorParams(), array(
-            new QModelConnectorParam (get_called_class(), 'AltFormat', 'The dateFormat to be used for the altField option. This allows onedate format to be shown to the user for selection purposes, while adifferent format is actually sent behind the scenes. For a full listof the possible formats see the formatDate function', Type::STRING),
-            new QModelConnectorParam (get_called_class(), 'AppendText', 'The text to display after each date field, e.g., to show the requiredformat.', Type::STRING),
-            new QModelConnectorParam (get_called_class(), 'AutoSize', 'Set to true to automatically resize the input field to accommodatedates in the current dateFormat.', Type::BOOLEAN),
-            new QModelConnectorParam (get_called_class(), 'ButtonImage', 'A URL of an image to use to display the datepicker when the showOnoption is set to \"button\" or \"both\". If set, the buttonText optionbecomes the alt value and is not directly displayed.', Type::STRING),
-            new QModelConnectorParam (get_called_class(), 'ButtonImageOnly', 'Whether the button image should be rendered by itself instead ofinside a button element. This option is only relevant if thebuttonImage option has also been set.', Type::BOOLEAN),
-            new QModelConnectorParam (get_called_class(), 'ButtonText', 'The text to display on the trigger button. Use in conjunction with theshowOn option set to \"button\" or \"both\".', Type::STRING),
+            new QModelConnectorParam (get_called_class(), 'AltFormat', 'The dateFormat to be used for the altField option. This allows one date format to be shown to the user for selection purposes, while a different format is actually sent behind the scenes. For a full list of the possible formats, see the formatDate function', Type::STRING),
+            new QModelConnectorParam (get_called_class(), 'AppendText', 'The text to display after each date field, e.g., to show the required format.', Type::STRING),
+            new QModelConnectorParam (get_called_class(), 'AutoSize', 'Set to true to automatically resize the input field to accommodate ates in the current dateFormat.', Type::BOOLEAN),
+            new QModelConnectorParam (get_called_class(), 'ButtonImage', 'A URL of an image to use to display the datepicker when the show Option is set to \"button\" or \"both\". If set, the buttonText option becomes the alt value and is not directly displayed.', Type::STRING),
+            new QModelConnectorParam (get_called_class(), 'ButtonImageOnly', 'Whether the button image should be rendered by itself instead of inside a button element. This option is only relevant if the buttonImage option has also been set.', Type::BOOLEAN),
+            new QModelConnectorParam (get_called_class(), 'ButtonText', 'The text to display on the trigger button. Use in conjunction with the showOn option set to \"button\" or \"both\".', Type::STRING),
             new QModelConnectorParam (get_called_class(), 'ChangeMonth', 'Whether the month should be rendered as a dropdown instead of text.', Type::BOOLEAN),
-            new QModelConnectorParam (get_called_class(), 'ChangeYear', 'Whether the year should be rendered as a dropdown instead of text. Usethe yearRange option to control which years are made available forselection.', Type::BOOLEAN),
-            new QModelConnectorParam (get_called_class(), 'CloseText', 'The text to display for the close link. Use the showButtonPanel optionto display this button.', Type::STRING),
-            new QModelConnectorParam (get_called_class(), 'ConstrainInput', 'When true, entry in the input field is constrained to those charactersallowed by the current dateFormat option.', Type::BOOLEAN),
-            new QModelConnectorParam (get_called_class(), 'CurrentText', 'The text to display for the current day link. Use the showButtonPaneloption to display this button.', Type::STRING),
-            new QModelConnectorParam (get_called_class(), 'JqDateFormat', 'The format for parsed and displayed dates. For a full list of thepossible formats see the formatDate function.', Type::STRING),
-            new QModelConnectorParam (get_called_class(), 'DayNames', 'The list of long day names, starting from Sunday, for use as requestedvia the dateFormat option.', Type::ARRAY_TYPE),
-            new QModelConnectorParam (get_called_class(), 'DayNamesMin', 'The list of minimised day names, starting from Sunday, for use ascolumn headers within the datepicker.', Type::ARRAY_TYPE),
-            new QModelConnectorParam (get_called_class(), 'DayNamesShort', 'The list of abbreviated day names, starting from Sunday, for use asrequested via the dateFormat option.', Type::ARRAY_TYPE),
+            new QModelConnectorParam (get_called_class(), 'ChangeYear', 'Whether the year should be rendered as a dropdown instead of text. Use the yearRange option to control which years are made available for selection.', Type::BOOLEAN),
+            new QModelConnectorParam (get_called_class(), 'CloseText', 'The text to display for the close link. Use the showButtonPanel option to display this button.', Type::STRING),
+            new QModelConnectorParam (get_called_class(), 'ConstrainInput', 'When true, entry in the input field is constrained to those characters allowed by the current dateFormat option.', Type::BOOLEAN),
+            new QModelConnectorParam (get_called_class(), 'CurrentText', 'The text to display for the current-day link. Use the showButtonPanel option to display this button.', Type::STRING),
+            new QModelConnectorParam (get_called_class(), 'JqDateFormat', 'The format for parsed and displayed dates. For a full list of the possible formats, see the formatDate function.', Type::STRING),
+            new QModelConnectorParam (get_called_class(), 'DayNames', 'The list of long day names, starting from Sunday, for use as requested via the dateFormat option.', Type::ARRAY_TYPE),
+            new QModelConnectorParam (get_called_class(), 'DayNamesMin', 'The list of minimised day names, starting from Sunday, for use column headers within the datepicker.', Type::ARRAY_TYPE),
+            new QModelConnectorParam (get_called_class(), 'DayNamesShort', 'The list of abbreviated day names, starting from Sunday, for use requested via the dateFormat option.', Type::ARRAY_TYPE),
             new QModelConnectorParam (get_called_class(), 'FirstDay', 'Set the first day of the week: Sunday is 0, Monday is 1, etc.', Type::INTEGER),
-            new QModelConnectorParam (get_called_class(), 'GotoCurrent', 'When true, the current day link moves to the currently selected dateinstead of today.', Type::BOOLEAN),
-            new QModelConnectorParam (get_called_class(), 'HideIfNoPrevNext', 'Normally the previous and next links are disabled when not applicable(see the minDate and maxDate options). You can hide them altogether bysetting this attribute to true.', Type::BOOLEAN),
+            new QModelConnectorParam (get_called_class(), 'GotoCurrent', 'When true, the current-day link moves to the currently selected date instead of today.', Type::BOOLEAN),
+            new QModelConnectorParam (get_called_class(), 'HideIfNoPrevNext', 'Normally, the previous and next links are disabled when not applicable (see the minDate and maxDate options). You can hide them altogether by setting this attribute to true.', Type::BOOLEAN),
             new QModelConnectorParam (get_called_class(), 'IsRTL', 'Whether the current language is drawn from right to left.', Type::BOOLEAN),
-            new QModelConnectorParam (get_called_class(), 'MonthNames', 'The list of full month names, for use as requested via the dateFormatoption.', Type::ARRAY_TYPE),
-            new QModelConnectorParam (get_called_class(), 'MonthNamesShort', 'The list of abbreviated month names, as used in the month header oneach datepicker and as requested via the dateFormat option.', Type::ARRAY_TYPE),
-            new QModelConnectorParam (get_called_class(), 'NavigationAsDateFormat', 'Whether the currentText, prevText and nextText options should beparsed as dates by the formatDate function, allowing them to displaythe target month names for example.', Type::BOOLEAN),
+            new QModelConnectorParam (get_called_class(), 'MonthNames', 'The list of full month names, for use as requested via the dateFormation.', Type::ARRAY_TYPE),
+            new QModelConnectorParam (get_called_class(), 'MonthNamesShort', 'The list of abbreviated month names, as used in the month header each datepicker and as requested via the dateFormat option.', Type::ARRAY_TYPE),
+            new QModelConnectorParam (get_called_class(), 'NavigationAsDateFormat', 'Whether the currentText, prevText and nextText options should be prepared as dates by the formatDate function, allowing them to display the target month names, for example.', Type::BOOLEAN),
             new QModelConnectorParam (get_called_class(), 'NextText', 'The text to display for the next month link. With the standardThemeRoller styling, this value is replaced by an icon.', Type::STRING),
             new QModelConnectorParam (get_called_class(), 'PrevText', 'The text to display for the previous month link. With the standardThemeRoller styling, this value is replaced by an icon.', Type::STRING),
-            new QModelConnectorParam (get_called_class(), 'SelectOtherMonths', 'Whether days in other months shown before or after the current monthare selectable. This only applies if the showOtherMonths option is setto true.', Type::BOOLEAN),
-            new QModelConnectorParam (get_called_class(), 'ShowAnim', 'The name of the animation used to show and hide the datepicker. Use\"show\" (the default), \"slideDown\", \"fadeIn\", any of the jQuery UIeffects. Set to an empty string to disable animation.', Type::STRING),
-            new QModelConnectorParam (get_called_class(), 'ShowButtonPanel', 'Whether to display a button pane underneath the calendar. The buttonpane contains two buttons, a Today button that links to the currentday, and a Done button that closes the datepicker. The buttons textcan be customized using the currentText and closeText optionsrespectively.', Type::BOOLEAN),
-            new QModelConnectorParam (get_called_class(), 'ShowCurrentAtPos', 'When displaying multiple months via the numberOfMonths option, theshowCurrentAtPos option defines which position to display the currentmonth in.', Type::INTEGER),
+            new QModelConnectorParam (get_called_class(), 'SelectOtherMonths', 'Whether days in other months shown before or after the current month are selectable. This only applies if the showOtherMonths option is set true.', Type::BOOLEAN),
+            new QModelConnectorParam (get_called_class(), 'ShowAnim', 'The name of the animation is used to show and hide the datepicker. Use\"show\" (the default), \"slideDown\", \"fadeIn\", any of the jQuery UEffects. Set to an empty string to disable animation.', Type::STRING),
+            new QModelConnectorParam (get_called_class(), 'ShowButtonPanel', 'Whether to display a button pane underneath the calendar. The button pane contains two buttons, a Today button that links to the current day, and a Done button that closes the datepicker. The button text be customized using the currentText and closeText options respectively.', Type::BOOLEAN),
+            new QModelConnectorParam (get_called_class(), 'ShowCurrentAtPos', 'When displaying multiple months via the numberOfMonths option, the showCurrentAtPos option defines which position to display the current month in.', Type::INTEGER),
             new QModelConnectorParam (get_called_class(), 'ShowMonthAfterYear', 'Whether to show the month after the year in the header.', Type::BOOLEAN),
-            new QModelConnectorParam (get_called_class(), 'ShowOn', 'When the datepicker should appear. The datepicker can appear when thefield receives focus (\"focus\"), when a button is clicked (\"button\"),or when either event occurs (\"both\").', Type::STRING),
-            new QModelConnectorParam (get_called_class(), 'ShowOtherMonths', 'Whether to display dates in other months (non-selectable) at the startor end of the current month. To make these days selectable use theselectOtherMonths option.', Type::BOOLEAN),
-            new QModelConnectorParam (get_called_class(), 'ShowWeek', 'When true, a column is added to show the week of the year. ThecalculateWeek option determines how the week of the year iscalculated. You may also want to change the firstDay option.', Type::BOOLEAN),
+            new QModelConnectorParam (get_called_class(), 'ShowOn', 'When the datepicker should appear. The datepicker can appear when the field receives focus (\"focus\"), when a button is clicked (\"button\"),or when either event occurs (\"both\").', Type::STRING),
+            new QModelConnectorParam (get_called_class(), 'ShowOtherMonths', 'Whether to display dates in other months (non-selectable) at the starter end of the current month. To make these days selectable, use the selectOtherMonths option.', Type::BOOLEAN),
+            new QModelConnectorParam (get_called_class(), 'ShowWeek', 'When true, a column is added to show the week of the year. The calculateWeek option determines how the week of the year is calculated. You may also want to change the firstDay option.', Type::BOOLEAN),
             new QModelConnectorParam (get_called_class(), 'StepMonths', 'Set how many months to move when clicking the previous/next links.', Type::INTEGER),
-            new QModelConnectorParam (get_called_class(), 'WeekHeader', 'The text to display for the week of the year column heading. Use theshowWeek option to display this column.', Type::STRING),
-            new QModelConnectorParam (get_called_class(), 'YearRange', 'The range of years displayed in the year drop-down: either relative totodays year (\"-nn:+nn\"), relative to the currently selected year(\"c-nn:c+nn\"), absolute (\"nnnn:nnnn\"), or combinations of theseformats (\"nnnn:-nn\"). Note that this option only affects what appearsin the drop-down, to restrict which dates may be selected use theminDate and/or maxDate options.', Type::STRING),
+            new QModelConnectorParam (get_called_class(), 'WeekHeader', 'The text to display for the week of the year column heading. Use the showWeek option to display this column.', Type::STRING),
+            new QModelConnectorParam (get_called_class(), 'YearRange', 'The range of years displayed in the year drops-down: either relative today year (\"-nn:+nn\"), relative to the currently selected year(\"c-nn:c+nn\"), absolute (\"nnnn:nnnn\"), or combinations of these formats (\"nnnn:-nn\"). Note that this option only affects what appears in the drop-down, to restrict which dates may be selected use them in Date and/or maxDate options.', Type::STRING),
             new QModelConnectorParam (get_called_class(), 'YearSuffix', 'Additional text to display after the year in the month headers.', Type::STRING),
         ));
     }

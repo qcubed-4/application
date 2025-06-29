@@ -9,14 +9,15 @@
 
 namespace QCubed\Control;
 
-require_once(dirname(dirname(__DIR__)) . '/i18n/i18n-lib.inc.php');
-use QCubed\Application\t;
+require_once(dirname(__DIR__, 2) . '/i18n/i18n-lib.inc.php');
+
 
 use QCubed\Exception\Caller;
 use QCubed\Exception\InvalidCast;
 use QCubed\Project\Control\TextBox;
 use QCubed\QDateTime;
 use QCubed\Type;
+use Throwable;
 
 /**
  * Class DateTimeTextBox
@@ -36,19 +37,19 @@ class DateTimeTextBox extends TextBox
     ///////////////////////////
 
     // MISC
-    protected $dttMinimum = null;
-    protected $dttMaximum = null;
-    protected $strDateTimeFormat = "MMM D, YYYY";
-    protected $dttDateTime = null;
+    protected ?int $dttMinimum = null;
+    protected ?int $dttMaximum = null;
+    protected string $strDateTimeFormat = "MMM D, YYYY";
+    protected ?QDateTime $dttDateTime = null;
 
-    protected $strLabelForInvalid = 'For example, "Mar 20, 4:30pm" or "Mar 20"';
-    protected $calLinkedControl;
+    protected ?string $strLabelForInvalid = 'For example, "Mar 20, 4:30pm" or "Mar 20"';
+    protected mixed $calLinkedControl;
 
     //////////
     // Methods
     //////////
 
-    public function parsePostData()
+    public function parsePostData(): void
     {
         // Check to see if this Control's Value was passed in via the POST data
         if (array_key_exists($this->strControlId, $_POST)) {
@@ -57,20 +58,20 @@ class DateTimeTextBox extends TextBox
         }
     }
 
-    public static function parseForDateTimeValue($strText)
+    public static function parseForDateTimeValue($strText): ?QDateTime
     {
         // Trim and Clean
         $strText = strtolower(trim($strText));
-        while (strpos($strText, '  ') !== false) {
+        while (str_contains($strText, '  ')) {
             $strText = str_replace('  ', ' ', $strText);
         }
         //$strText = str_replace('.', '', $strText);
         $strText = str_replace('@', ' ', $strText);
 
         // Are we ATTEMPTING to parse a Time value?
-        if ((strpos($strText, ':') === false) &&
-            (strpos($strText, 'am') === false) &&
-            (strpos($strText, 'pm') === false)
+        if ((!str_contains($strText, ':')) &&
+            (!str_contains($strText, 'am')) &&
+            (!str_contains($strText, 'pm'))
         ) {
             // There is NO TIME VALUE
             $dttToReturn = new QDateTime($strText);
@@ -82,16 +83,16 @@ class DateTimeTextBox extends TextBox
         }
 
         // Add ':00' if it doesn't exist AND if 'am' or 'pm' exists
-        if ((strpos($strText, 'pm') !== false) &&
-            (strpos($strText, ':') === false)
+        if ((str_contains($strText, 'pm')) &&
+            (!str_contains($strText, ':'))
         ) {
             $strText = str_replace(' pm', ':00 pm', $strText, $intCount);
             if (!$intCount) {
                 $strText = str_replace('pm', ':00 pm', $strText, $intCount);
             }
         } else {
-            if ((strpos($strText, 'am') !== false) &&
-                (strpos($strText, ':') === false)
+            if ((str_contains($strText, 'am')) &&
+                (!str_contains($strText, ':'))
             ) {
                 $strText = str_replace(' am', ':00 am', $strText, $intCount);
                 if (!$intCount) {
@@ -108,7 +109,7 @@ class DateTimeTextBox extends TextBox
         }
     }
 
-    public function validate()
+    public function validate(): bool
     {
         if (parent::validate()) {
             if ($this->strText != "") {
@@ -125,7 +126,7 @@ class DateTimeTextBox extends TextBox
                         $strError = t('in the past');
                     } else {
                         $dttToCompare = $this->dttMinimum;
-                        $strError = t('before ') . (string)$dttToCompare;
+                        $strError = t('before ') . $dttToCompare;
                     }
 
                     if ($dttTest->isEarlierThan($dttToCompare)) {
@@ -140,7 +141,7 @@ class DateTimeTextBox extends TextBox
                         $strError = t('in the future');
                     } else {
                         $dttToCompare = $this->dttMaximum;
-                        $strError = t('after ') . (string)$dttToCompare;
+                        $strError = t('after ') . $dttToCompare;
                     }
 
                     if ($dttTest->isLaterThan($dttToCompare)) {
@@ -159,7 +160,7 @@ class DateTimeTextBox extends TextBox
     /////////////////////////
     // Public Properties: GET
     /////////////////////////
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             // MISC
@@ -186,12 +187,13 @@ class DateTimeTextBox extends TextBox
 
     /**
      * @param string $strName
-     * @param string $mixValue
+     * @param mixed $mixValue
      * @return void
      * @throws Caller
      * @throws InvalidCast
+     * @throws Throwable
      */
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         $this->blnModified = true;
 
@@ -281,7 +283,7 @@ class DateTimeTextBox extends TextBox
      * @param string $strPropName
      * @return string
      */
-    public static function codegen_VarName($strPropName)
+    public static function codegen_VarName(string $strPropName): string
     {
         return 'cal' . $strPropName;
     }

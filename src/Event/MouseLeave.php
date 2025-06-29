@@ -14,7 +14,6 @@ namespace QCubed\Event;
  *
  * When the mouse cursor leaves the control
  *
- * @was QMouseLeaveEvent
  * @package QCubed\Event
  */
 class MouseLeave extends EventBase

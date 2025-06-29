@@ -9,7 +9,7 @@ require_once('../qcubed.inc.php'); ?>
 	
 	<p>Most of the time, <strong>QQuery</strong> selects all the columns from the table and thus populates all the properties of
 	the resulting objects.
-	Normally, this is the right thing to do - the most expensive part of a typical query is hitting the database and
+	Normally, this is the right thing to do—the most expensive part of a typical query is hitting the database and
 	performing the query;</p>
 	
 	<p>However, when some tables have a large number of columns, or some columns that contain large objects (BLOB, TEXT, etc.), this may become expensive,
@@ -17,10 +17,10 @@ require_once('../qcubed.inc.php'); ?>
 	application.</p>
 
 	<p>Also, more and more databases are preventing you from creating SQL queries that might produce ambiguous results when
-		using aggregate clauses. For example, if you create a query that groups employees by last name, and counts how many
-		employees have each last name, but then also tries to select a first name, if there are mulitple employees with the same
+		using aggregate clauses. For example, if you create a query that groups employees by last name and counts how many
+		employees have each last name, but then also tries to select a first name, if there are multiple employees with the same
 		last name, the database will be confused and won't know which first name to show. Most databases will error in this
-		situation. However, it would be perfectly fine to select a last name, because each group has the same last name.
+		situation. However, it would be perfectly fine to select a last name because each group has the same last name.
 		You need a way to specify particular database fields to select.</p>
 	
 	<p><strong>QQ::select</strong> solves this problem by allowing you to pick particular columns to fetch from
@@ -30,10 +30,10 @@ require_once('../qcubed.inc.php'); ?>
 	As shown in the second example below, it can also be passed as an argument to QQ::expand()
 	to pick specific columns to fetch for the object to be expanded.</p>
 	
-	<p>Note, that when QQ::Select is used, by default the primary keys are automatically added to the select list.
+	<p>Note that when QQ::Select is used, by default the primary keys are automatically added to the select list.
 	This is illustrated by the first example below, where QQN::person()->Id is not part of the QQ::Select list,
-	but $objPerson->Id is populated and used afterwards. This behaviour can be changed by using using the <strong>SetSkipPrimaryKey()</strong>
-	method of <strong>QQSelect</strong>, as shown in the second example. This is typically useful for simple queries with the <em>distict</em>
+	but $objPerson->Id is populated and used afterward. This behaviour can be changed by using the <strong>SetSkipPrimaryKey()</strong>
+	method of <strong>QQSelect</strong>, as shown in the second example. This is typically useful for simple queries with the <em>district</em>
 	clause, where the presence of the primary keys would prevent <em>distinct</em> from having the desired effect</p>
 	
 	<p>One QQ::select() can be used to select multiple columns, as shown in the fourth example below:</p>
@@ -41,9 +41,9 @@ require_once('../qcubed.inc.php'); ?>
 
 	<p>The same example also shows the use of QQ::select() in QQ::expandAsArray().</p>
 
-	<p>You may also notice, that many times the QQ::Select clause is passed as the last argument to the query method.
+	<p>You may also notice that many times the QQ::Select clause is passed as the last argument to the query method.
 	Even though this is not ideal (since in SQL the select clause is the first in a statement),
-	it was necessary for backward compatibility reasons with older versions of QCubed.</p>
+	it was necessary for backward compatibility reasons with older versions of QCubed-4.</p>
 </div>
 
 <div id="demoZone">
@@ -77,7 +77,7 @@ require_once('../qcubed.inc.php'); ?>
 
 	<h2>3. Get the last names of all the people, and the amount spent on the project they manage (if any), for Projects that
 	have 'ACME' or 'HR' in it. Sort the result by Last Name, then First Name</h2>
-	<p><i>Notice how some people may be listed twice, if they manage more than one project.</i></p>
+	<p><i>Notice how some people may be listed twice if they manage more than one project.</i></p>
 	<ul>
 <?php
 	$objPersonArray = Person::queryArray(

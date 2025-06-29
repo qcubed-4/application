@@ -10,6 +10,8 @@
 namespace QCubed\Table;
 
 use QCubed\Exception\Caller;
+use QCubed\Exception\InvalidCast;
+use Exception;
 use QCubed\Query\QQ;
 use QCubed\Type;
 
@@ -19,14 +21,21 @@ use QCubed\Type;
  * A column to display a virtual attribute from a database record.
  *
  * @property string $Attribute
- * @was QVirtualAttributeColumn
  * @package QCubed\Table
  */
 class VirtualAttributeColumn extends DataColumn
 {
-    protected $strAttribute;
+    protected mixed $strAttribute;
 
-    public function __construct($strName, $strAttribute = null)
+    /**
+     * Constructor method for initializing the object with a name and an optional attribute.
+     *
+     * @param string $strName The name of the object.
+     * @param string|null $strAttribute An optional attribute to be associated with the object.
+     * @throws Caller
+     * @throws InvalidCast
+     */
+    public function __construct(string $strName, ?string $strAttribute = null)
     {
         parent::__construct($strName);
         if ($strAttribute) {
@@ -37,7 +46,13 @@ class VirtualAttributeColumn extends DataColumn
         $this->ReverseOrderByClause = QQ::orderBy(QQ::virtual($strAttribute), false);
     }
 
-    public function fetchCellObject($item)
+    /**
+     * Fetches the virtual attribute associated with the specified item.
+     *
+     * @param mixed $item The item from which the virtual attribute will be retrieved.
+     * @return mixed The value of the virtual attribute associated with the item.
+     */
+    public function fetchCellObject(mixed $item): mixed
     {
         return $item->getVirtualAttribute($this->strAttribute);
     }
@@ -51,7 +66,7 @@ class VirtualAttributeColumn extends DataColumn
      * @throws Exception
      * @throws Caller
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             case 'Attribute':
@@ -70,14 +85,14 @@ class VirtualAttributeColumn extends DataColumn
      * PHP magic method
      *
      * @param string $strName
-     * @param string $mixValue
+     * @param mixed $mixValue
      *
-     * @return mixed|void
+     * @return void
      * @throws Exception
      * @throws Caller
-     * @throws \QCubed\Exception\InvalidCast
+     * @throws InvalidCast
      */
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             case "Attribute":

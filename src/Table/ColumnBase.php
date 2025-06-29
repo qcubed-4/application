@@ -24,72 +24,74 @@ use QCubed\Control\TableBase;
  * Class ColumnBase
  *
  * Represents a column for a Table control. Different subclasses (see below) allow accessing and fetching the data
- * for each cells in a variety of ways
+ * for each cell in a variety of ways
  *
  * @property string                 $Name           name of the column
- * @property string                 $CssClass       CSS class of the column. This will be applied to every cell in the column. Use ColStyper
+ * @property string                 $CssClass       CSS class of the column. This will be applied to every cell in the column. Use Col type
  * 													to set the class for the actual 'col' tag if using col tags.
  * @property string                 $HeaderCssClass CSS class of the column's cells when it's rendered in a table header
  * @property boolean                $HtmlEntities   if true, cell values will be converted using htmlentities()
  * @property boolean                $RenderAsHeader if true, all cells in the column will be rendered with a <<th>> tag instead of <<td>>
- * @property integer                $Id             HTML id attribute to put in the col tag
+ * @property integer                $Id             HTML Id attribute to put in the col tag
  * @property integer                $Span           HTML span attribute to put in the col tag
  * @property-read TableBase  $ParentTable    parent table of the column
  * @property-write TableBase $_ParentTable   Parent table of this column
- * @property-write callable $CellParamsCallback A callback to set the html parameters of a generated cell
+ * @property-write callable $CellParamsCallback A callback to set the HTML parameters of a generated cell
  * @property boolean                $Visible        Whether the column will be drawn. Defaults to true.
  * @property-read TagStyler		$CellStyler		The tag styler for the cells in the column
  * @property-read TagStyler		$HeaderCellStyler		The tag styler for the header cells in the column
  * @property-read TagStyler		$ColStyler		The tag styler for the col tag in the column
- * @was QAbstractHtmlTableColumn
  * @package QCubed\Table
  */
 abstract class ColumnBase extends ObjectBase
 {
     /** @var string */
-    protected $strName;
-    /** @var string */
-    protected $strCssClass = null;
-    /** @var string */
-    protected $strHeaderCssClass = null;
+    protected string $strName;
+    /** @var string|null */
+    protected ?string $strCssClass = null;
+    /** @var string|null */
+    protected ?string $strHeaderCssClass = null;
     /** @var boolean */
-    protected $blnHtmlEntities = true;
-    /** @var boolean */
-    protected $blnRenderAsHeader = false;
-    /** @var TableBase */
-    protected $objParentTable = null;
+    protected bool $blnHtmlEntities = true;
+    /** @var boolean|null */
+    protected ?bool $blnRenderAsHeader = false;
+    /** @var TableBase|null */
+    protected ?TableBase $objParentTable = null;
     /** @var integer */
-    protected $intSpan = 1;
-    /** @var string optional id for column tag rendering and datatables */
-    protected $strId = null;
+    protected int $intSpan = 1;
+    /** @var string|null an optional ID for column tag rendering and datatables */
+    protected ?string $strId = null;
     /** @var bool Easy way to hide a column without removing the column. */
-    protected $blnVisible = true;
-    /** @var callable Callback to modify the html attributes of the generated cell. */
+    protected bool $blnVisible = true;
+    /** @var callable Callback to modify the HTML attributes of the generated cell. */
     protected $cellParamsCallback = null;
-    /** @var TagStyler Styles for each cell. Usually this should be done in css for efficient code generation. */
-    protected $objCellStyler;
-    /** @var TagStyler Styles for each header cell. Usually this should be done in css for efficient code generation. */
-    protected $objHeaderCellStyler;
-    /** @var TagStyler Styles for each col. Usually this should be done in css for efficient code generation. */
-    protected $objColStyler;
+    /** @var TagStyler Styles for each cell. Usually this should be done in CSS for efficient code generation. */
+    protected TagStyler $objCellStyler;
+    /** @var TagStyler Styles for each header cell. Usually this should be done in CSS for efficient code generation. */
+    protected TagStyler $objHeaderCellStyler;
+    /** @var TagStyler Styles for each col. Usually this should be done in CSS for efficient code generation. */
+    protected TagStyler $objColStyler;
 
     /**
      * @param string $strName Name of the column
      */
-    public function __construct($strName)
+    public function __construct(string $strName)
     {
         $this->strName = $strName;
+
+        $this->objCellStyler = new TagStyler();
+        $this->objHeaderCellStyler = new TagStyler();
     }
 
     /**
      *
      * Render the header cell including opening and closing tags.
      *
-     * This will be called by the data table if ShowHeader is on, and will only
+     * This will be called by the data table if ShowHeader is on and will only
      * be called for the top line item.
      *
      */
-    public function renderHeaderCell()
+    public function renderHeaderCell(): ?string
     {
         if (!$this->blnVisible) {
             return '';
@@ -107,10 +109,10 @@ abstract class ColumnBase extends ObjectBase
     }
 
     /**
-     * Returns the text to print in the header cell, if one is to be drawn. Override if you want
+     * Returns the text to print in the header cell if one is to be drawn. Override if you want
      * something other than the default.
      */
-    public function fetchHeaderCellValue()
+    public function fetchHeaderCellValue(): string
     {
         return $this->strName;
     }
@@ -120,16 +122,13 @@ abstract class ColumnBase extends ObjectBase
      * more if you need them.
      * @return array
      */
-    public function getHeaderCellParams()
+    public function getHeaderCellParams(): array
     {
         $aParams['scope'] = 'col';
         if ($this->strHeaderCssClass) {
             $aParams['class'] = $this->strHeaderCssClass;
         }
-        if ($this->objHeaderCellStyler) {
-            $aParams = $this->objHeaderCellStyler->getHtmlAttributes($aParams);
-        }
-        return $aParams;
+        return $this->objHeaderCellStyler->getHtmlAttributes($aParams);
     }
 
     /**
@@ -142,7 +141,7 @@ abstract class ColumnBase extends ObjectBase
      *
      * @return string
      */
-    public function renderCell($item, $blnAsHeader = false)
+    public function renderCell(mixed $item, ?bool $blnAsHeader = false): string
     {
         if (!$this->blnVisible) {
             return '';
@@ -167,15 +166,15 @@ abstract class ColumnBase extends ObjectBase
 
     /**
      * Return a key/val array of items to insert inside the cell tag.
-     * Handles class, style, and id already. Override to add additional items, like an onclick handler.
+     * Handles class, style, and ID already. Override to add additional items, like an onclick handler.
      *
      * @param mixed $item
      *
      * @return array
      */
-    protected function getCellParams($item)
+    protected function getCellParams(mixed $item): array
     {
-        $aParams = array();
+        $aParams = [];
 
         if ($strClass = $this->getCellClass($item)) {
             $aParams['class'] = $strClass;
@@ -186,22 +185,16 @@ abstract class ColumnBase extends ObjectBase
         }
 
         if ($this->blnRenderAsHeader) {
-            // assume this means it is a row header
             $aParams['scope'] = 'row';
         }
 
+        // We assume that $this->objCellStyler is always available
         $strStyle = $this->getCellStyle($item);
+        $aStyles = $strStyle ? explode(';', $strStyle) : null;
 
-        if ($this->objCellStyler) {
-            $aStyles = null;
-            if ($strStyle) {
-                $aStyles = explode(';', $strStyle);
-            }
-            $aParams = $this->objCellStyler->getHtmlAttributes($aParams, $aStyles);
-        } elseif ($strStyle) {
-            $aParams['style'] = $strStyle;
-        }
+        $aParams = $this->objCellStyler->getHtmlAttributes($aParams, $aStyles);
 
+        // If a callback is specified, we supplement the parameters with it
         if ($this->cellParamsCallback) {
             $a = call_user_func($this->cellParamsCallback, $item);
             $aParams = array_merge($aParams, $a);
@@ -215,9 +208,9 @@ abstract class ColumnBase extends ObjectBase
      *
      * @param mixed $item
      *
-     * @return string
+     * @return string|null
      */
-    protected function getCellClass($item)
+    protected function getCellClass(mixed $item): ?string
     {
         if ($this->strCssClass) {
             return $this->strCssClass;
@@ -226,13 +219,13 @@ abstract class ColumnBase extends ObjectBase
     }
 
     /**
-     * Return the id of the cell.
+     * Return the ID of the cell.
      *
      * @param mixed $item
      *
      * @return string
      */
-    protected function getCellId($item)
+    protected function getCellId(mixed $item): string
     {
         return '';
     }
@@ -244,7 +237,7 @@ abstract class ColumnBase extends ObjectBase
      *
      * @return string
      */
-    protected function getCellStyle($item)
+    protected function getCellStyle(mixed $item): string
     {
         return '';
     }
@@ -254,15 +247,15 @@ abstract class ColumnBase extends ObjectBase
      *
      * @param mixed $item
      */
-    abstract public function fetchCellValue($item);
+    abstract public function fetchCellValue(mixed $item): string;
 
     /**
      * Render the column tag.
-     * This special tag can control specific features of columns, but is generally optional on a table.
+     * This special tag can control specific features of columns but is generally optional on a table.
      *
      * @return string
      */
-    public function renderColTag()
+    public function renderColTag(): string
     {
         return Q\Html::renderTag('col', $this->getColParams(), null, true);
     }
@@ -271,7 +264,7 @@ abstract class ColumnBase extends ObjectBase
      * Return a key/value array of parameters to put in the col tag.
      * Override to add parameters.
      */
-    protected function getColParams()
+    protected function getColParams(): array
     {
         $aParams = array();
         if ($this->intSpan > 1) {
@@ -281,17 +274,13 @@ abstract class ColumnBase extends ObjectBase
             $aParams['id'] = $this->strId;
         }
 
-        if ($this->objColStyler) {
-            $aParams = $this->objColStyler->getHtmlAttributes($aParams);
-        }
-
-        return $aParams;
+        return $this->objColStyler->getHtmlAttributes($aParams);
     }
 
     /**
      * Prepare to serialize references to the form.
      */
-    public function sleep()
+    public function sleep(): void
     {
         $this->cellParamsCallback = ControlBase::sleepHelper($this->cellParamsCallback);
     }
@@ -300,15 +289,15 @@ abstract class ColumnBase extends ObjectBase
      * The object has been unserialized, so fix up pointers to embedded objects.
      * @param FormBase $objForm
      */
-    public function wakeup(FormBase $objForm)
+    public function wakeup(FormBase $objForm): void
     {
         $this->cellParamsCallback = ControlBase::wakeupHelper($objForm, $this->cellParamsCallback);
     }
 
     /**
-     * Override to check for post data in your column if needed.
+     * Override if necessary to check the data for posts in your column.
      */
-    public function parsePostData()
+    public function parsePostData(): void
     {
     }
 
@@ -320,7 +309,7 @@ abstract class ColumnBase extends ObjectBase
      * @return mixed
      * @throws Caller
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             case 'Name':
@@ -342,21 +331,11 @@ abstract class ColumnBase extends ObjectBase
             case 'Visible':
                 return $this->blnVisible;
             case 'CellStyler':
-                if (!$this->objCellStyler) {
-                    $this->objCellStyler = new TagStyler();
-                }
                 return $this->objCellStyler;
             case 'HeaderCellStyler':
-                if (!$this->objHeaderCellStyler) {
-                    $this->objHeaderCellStyler = new TagStyler();
-                }
                 return $this->objHeaderCellStyler;
             case 'ColStyler':
-                if (!$this->objColStyler) {
-                    $this->objColStyler = new TagStyler();
-                }
                 return $this->objColStyler;
-
 
             default:
                 try {
@@ -372,13 +351,13 @@ abstract class ColumnBase extends ObjectBase
      * PHP Magic method
      *
      * @param string $strName
-     * @param string $mixValue
+     * @param mixed $mixValue
      *
-     * @return mixed|void
+     * @return void
      * @throws Caller
      * @throws InvalidCast
      */
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             case "Name":
@@ -430,7 +409,7 @@ abstract class ColumnBase extends ObjectBase
                 try {
                     $this->intSpan = Type::cast($mixValue, Type::INTEGER);
                     if ($this->intSpan < 1) {
-                        throw new Caller("Span must be 1 or greater.");
+                        throw new Caller("The Span must be 1 or greater.");
                     }
                     break;
                 } catch (InvalidCast $objExc) {

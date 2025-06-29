@@ -1,8 +1,11 @@
 <?php
+use QCubed\Action\ActionParams;
 use QCubed\Action\Ajax;
 use QCubed\Control\Panel;
 use QCubed\Control\Proxy;
 use QCubed\Event\MouseOver;
+use QCubed\Exception\Caller;
+use QCubed\Exception\InvalidCast;
 use QCubed\Project\Application;
 use QCubed\Project\Control\FormBase;
 use QCubed\Project\Control\Table;
@@ -11,13 +14,16 @@ require_once('../qcubed.inc.php');
 
 class ExampleForm extends FormBase
 {
-
     /** @var Table */
-    protected $tblProjects;
-    protected $pnlClick;
-    protected $pxyLink;
+    protected Table $tblProjects;
+    protected Panel $pnlClick;
+    protected Proxy $pxyLink;
 
-    protected function formCreate()
+    /**
+     * @throws InvalidCast
+     * @throws Caller
+     */
+    protected function formCreate(): void
     {
         // define the proxy that we will use later
         $this->pxyLink = new Proxy($this);
@@ -26,7 +32,7 @@ class ExampleForm extends FormBase
         // Define the DataGrid
         $this->tblProjects = new Table($this);
 
-        // This css class is used to style alternate rows and the header, all in css
+        // This CSS class is used to style alternate rows and the header, all in CSS
         $this->tblProjects->CssClass = 'simple_table';
 
         // Define Columns
@@ -46,21 +52,21 @@ class ExampleForm extends FormBase
         if (($intId = Application::instance()->context()->queryStringItem('intId')) && ($objProject = Project::load($intId))) {
             $this->pnlClick->Text = 'You clicked on ' . $objProject->Name;
         }
-
     }
 
     /**
-     * Bind the Projects table to the html table.
+     * Bind the Projects table to the HTML table.
+     * @throws Caller
      */
-    protected function tblProjects_Bind()
+    protected function tblProjects_Bind(): void
     {
-        // We load the data source, and set it to the datagrid's DataSource parameter
+        // We load the data source and set it to the datagrid's DataSource parameter
         $this->tblProjects->DataSource = Project::loadAll();
     }
 
-    public function mouseOver($strFormId, $strControlId, $param)
+    public function mouseOver(ActionParams $params): void
     {
-        if ($objProject = Project::load($param)) {
+        if ($objProject = Project::load($params->ActionParameter)) {
             $this->pnlClick->Text = 'You hovered over ' . $objProject->Name;
         }
     }

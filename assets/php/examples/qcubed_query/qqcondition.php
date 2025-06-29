@@ -4,7 +4,7 @@ require_once('../qcubed.inc.php'); ?>
 <?php require('../includes/header.inc.php'); ?>
 
 	<div id="instructions">
-		<h1>QCubed Query Conditions</h1>
+		<h1>QCubed-4 Query Conditions</h1>
 		
 		<p>All <strong>QCubed Query</strong> method calls require a <strong>Condition</strong>. <strong>Conditions</strong> allow you
 		to create a nested/hierarchical set of conditions to describe what essentially becomes your
@@ -28,7 +28,7 @@ require_once('../qcubed.inc.php'); ?>
 		
 		<p>For almost all of the above <strong>Conditions</strong>, you are comparing a column with some value.  The <strong>Node</strong> parameter
 		represents that column.  However, the value can be either a static value (like an integer, a string, a datetime, etc.)
-		<i>or</i> it can be another <strong>Node</strong>.</p>
+		<i>Or</i> it can be another <strong>Node</strong>.</p>
 		
 		<p>And finally, there are three special <strong>Condition</strong> classes which take in any number of additional <strong>Condition</strong> classes:</p>
 		<ul>
@@ -57,7 +57,7 @@ require_once('../qcubed.inc.php'); ?>
 	}
 ?>
 	</ul>
-	<h2>Select all Projects where: the manager's first name is alphabetically "greater than" the last name, or who's name contains "Website"</h2>
+	<h2>Select all Projects where: the manager's first name is alphabetically "greater than" the last name, or whose name contains "Website"</h2>
 	<ul>
 <?php
 	$objProjectArray = Project::queryArray(
@@ -72,7 +72,7 @@ require_once('../qcubed.inc.php'); ?>
 	}
 ?>
 	</ul>
-	<h2>Select all Projects where: the Project ID <= 2 AND (the manager's first name is alphabetically "greater than" the last name, or who's name contains "Website")</h2>
+	<h2>Select all Projects where: the Project ID <= 2 AND (the manager's first name is alphabetically "greater than" the last name, or whose name contains "Website")</h2>
 	<ul>
 <?php
 	$objProjectArray = Project::queryArray(

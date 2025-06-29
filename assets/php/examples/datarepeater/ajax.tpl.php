@@ -13,7 +13,7 @@
 			<li>Subclass the DataRepeater object and override the <strong>GetItemHtml</strong> method, or the
 				<strong>GetItemAttributes</strong> and <strong>GetItemInnerHtml</strong> methods.</li>
 			<li>Provide rendering callbacks, either with the <strong>ItemHtmlCallback</strong>, or the combination of the
-				<strong>ItemAttributesCallback</strong> and  <strong>ItemInnerHtmlCallback</strong> attributes.</li>
+				<strong>ItemAttributesCallback</strong> and <strong>ItemInnerHtmlCallback</strong> attributes.</li>
 		</ul>
 		<p>The <strong>DataRepeaters</strong> each have a <strong>Paginator</strong> defined with them. Note that
 		because the <strong>Paginator</strong> is rendered by the <i>form</i> (as opposed to the example

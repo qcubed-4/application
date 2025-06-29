@@ -24,17 +24,17 @@ require_once('../qcubed.inc.php'); ?>
 			every single output column... Ehh. Plus, not portable across databases.
 		</li>
 		<li>Get a list of all <strong>persons</strong>, then also get a list of all
-			<strong>logins</strong>, then merge the two using PHP. Works with QQuery, but
+			<strong>logins</strong>, then merge the two using PHP. Works with QQuery but
 			incurs an overhead of extra processing.
 		</li>
 	</ol>
 
 	<p>As you'd expect, there's a better way. When
 	you use <strong>QQ::Expand</strong>, you can specify conditions on the table with
-	which you want to join, and get only those values that you care about.
+	which you want to join and get only those values that you care about.
 	<strong>QQ::Expand</strong> clauses produce a
 	<a href="http://en.wikipedia.org/wiki/Join_(SQL)#Left_outer_join">left
-	join</a> - so if a row of a table with which you are joining does not
+	join</a>—so if a row of a table with which you are joining does not
 	have a matching record, the left side of your join will still be there,
 	and the right side will contain nulls.</p>
 
@@ -60,7 +60,7 @@ require_once('../qcubed.inc.php'); ?>
 				QQ::equal(QQN::person()->Login->IsEnabled, 1)
 			),
 			QQ::expandAsArray(
-				// We also want the proejcts that are managed by each person
+				// We also want the projects that are managed by each person
 				QQN::person()->ProjectAsManager,
 				// but only if the project is open
 				QQ::equal(QQN::person()->ProjectAsManager->ProjectStatusTypeId, ProjectStatusType::Open)

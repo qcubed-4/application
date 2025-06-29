@@ -1,21 +1,21 @@
 <?php if (!isset($objTable->Options['CreateFilter']) || $objTable->Options['CreateFilter'] !== false) { ?>
-	/** @var Panel **/
-	protected $pnlFilter;
+    /** @var Panel **/
+    protected Panel $pnlFilter;
 
-	/** @var TextBox **/
-	protected $txtFilter;
+    /** @var TextBox **/
+    protected TextBox $txtFilter;
 <?php } ?>
 
-	/** @var Panel **/
-	protected $pnlButtons;
+    /** @var Panel **/
+    protected Panel $pnlButtons;
 
-	/** @var Button **/
-	protected $btnNew;
+    /** @var Button **/
+    protected Button $btnNew;
 
-	/** @var <?= $strPropertyName ?>List **/
-	protected $<?= $strListVarName ?>;
+    /** @var <?= $strPropertyName ?>List **/
+    protected <?= $strPropertyName ?>List $<?= $strListVarName ?>;
 
 <?php if ($blnUseDialog) { ?>
-	/** @var <?= $objTable->ClassName ?>EditDlg **/
-	protected $dlgEdit;
+    /** @var <?= $objTable->ClassName ?>EditDlg **/
+    protected <?= $objTable->ClassName ?>EditDlg $dlgEdit;
 <?php }

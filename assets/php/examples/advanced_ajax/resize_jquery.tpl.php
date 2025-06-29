@@ -9,12 +9,12 @@
 </div>
 
 <style>
-	.ui-resizable-helper { border: 2px dotted #78000; }
+	.ui-resizable-helper { border: 2px dotted #780000; }
 </style>
 
 <div id="demoZone">
-	<p><?php $this->pnlLeftTop->Render('BackColor=#f6f6f6', 'BorderColor=#dedede', 'BorderWidth=1px 1px 1px 1px'); ?></p>
-	<p><?php $this->txtTextbox->Render(); ?></p>
+	<p><?php $this->pnlLeftTop->render(); ?></p>
+	<p><?php $this->txtTextbox->render(); ?></p>
 </div>
 
 <?php $this->renderEnd(); ?>

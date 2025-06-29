@@ -14,7 +14,7 @@ use QCubed\Control\ControlBase;
 /**
  * Class ToggleCssClass
  *
- * Toggles the given class on the objects identified by the given jQuery selector. If no selector given, then
+ * Toggles the given class on the objects identified by the given jQuery selector. If no selector is given, then
  * the trigger control is toggled.
  *
  * @was QToggleCssClassAction
@@ -22,8 +22,8 @@ use QCubed\Control\ControlBase;
  */
 class ToggleCssClass extends ActionBase
 {
-    protected $strCssClass;
-    protected $strTargetSelector;
+    protected string $strCssClass;
+    protected string $strTargetSelector;
 
     public function __construct($strCssClass, $strTargetSelector = null)
     {
@@ -35,9 +35,9 @@ class ToggleCssClass extends ActionBase
      * @param ControlBase $objControl
      * @return string
      */
-    public function renderScript(ControlBase $objControl)
+    public function renderScript(ControlBase $objControl): string
     {
-        // Specified a Temporary Css Class to use?
+        // Specified a Temporary CSS Class to use?
         if ($this->strTargetSelector) {
             $strSelector = $this->strTargetSelector;
         } else {

@@ -12,10 +12,10 @@
     debugging problems with your form.</p>
 
 	<p>As we mentioned earlier, <strong>Form</strong> objects are stateful, with the state persisting through
-		all the user interactions (e.g. ServerActions, etc.).  But the <strong>Form</strong> objects are also
+		all the user interactions (e.g., ServerActions, etc.).  But the <strong>Form</strong> objects are also
 		event-driven.  This is why we state that <strong>Forms</strong> are a "stateful, event-driven architecture
         for web-based forms."</p>
-    <p>To make this all work, QCubed outputs HTML Form objects so that their actions "post-back" to themselves. In
+    <p>To make this all work, QCubed-4 outputs HTML Form objects so that their actions "post-back" to themselves. In
         other words, they submit all the form data to the same page the form is on. Similarly, all ajax calls also
         call the same page they are on. On every execution of a <strong>Form</strong>, the following actions happen:</p>
 
@@ -30,7 +30,7 @@
 
 		<li>If it is a post-back or ajax call from a previously loaded form, then it will retrieve the form's state from
             the <strong>FormState</strong> in order to reconstruct the entire form object in its previous state from before
-            the submit was processed.
+            the submitting was processed.
 			It will then go through all the controls and update their values according to the user-entered
 			data submitted via the HTML Post or Ajax call.</li>
 		<li>Next, the <strong>formRun()</strong> method will be
@@ -38,7 +38,7 @@
 			re-posted back to the page. <strong>formRun()</strong> is a good place to put code that you need to run every
             time a form is loaded, like code that verifies that the user has permission to view the page.
         </li>
-		<li>Next, if we are viewing the page fresh (e.g. not via a post back), the <strong>formCreate()</strong>
+		<li>Next, if we are viewing the page fresh (e.g., not via a post back), the <strong>formCreate()</strong>
 			method (if defined) will be run. <strong>formCreate()</strong> is typically where you would define and
 			instantiate your various <strong>Form</strong> controls.  Otherwise, the <strong>formLoad()</strong> method will
 			be run.</li>
@@ -46,16 +46,16 @@
 			specific PHP method, the following will happen:
 			<ul>
 				<li>First, if the control that triggered the event has its <strong>CausesValidation</strong> property set, then
-					the form will go through validation.  The form will call <strong>validate()</strong> on the relevent controls,
+					the form will go through validation.  The form will call <strong>validate()</strong> on the relevant controls,
 					and then it will call <strong>formValidate</strong> on itself.  More information on validation can be seen in the upcoming Calculator examples.</li>
 				<li>Next, if validation runs successfully <strong>or</strong> if no validation is requested
 					(because <strong>CausesValidation</strong> was set to false), then the PHP method that the action points to will be run.
-                    This is the typical way that QCubed responds to things like button clicks.</li>
+                    This is the typical way that QCubed-4 responds to things like button clicks.</li>
 			</ul>
 			So in this repeat of the "Hello World" example, when you click on <strong>btnButton</strong>, the <strong>btnButton_Click</strong> method
 			will be executed during this step.</li>
 		<li>The <strong>formPreRender()</strong> method will then be run.</li>
-		<li>The HTML include template file is included (to render out the HTML).</li>
+		<li>The HTML includes a template file is included (to render out the HTML).</li>
 		<li>And finally, the <strong>formExit()</strong> is run after the HTML has been completely outputted.</li>
 	</ol>
 
@@ -74,8 +74,8 @@
 </div>
 
 <div id="demoZone">
-	<p><?php $this->lblMessage->Render(); ?></p>
-	<p><?php $this->btnButton->Render(); ?></p>
+	<p><?php $this->lblMessage->render(); ?></p>
+	<p><?php $this->btnButton->render(); ?></p>
 </div>
 
 <?php $this->renderEnd(); ?>

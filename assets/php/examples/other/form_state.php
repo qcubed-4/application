@@ -17,19 +17,20 @@ require_once('../qcubed.inc.php');
 // which is located at /project/includes/QCubed/Control/FormBase.php
 FormBase::$FormStateHandler = '\QCubed\FormState\SessionHandler';
 
-// Uncommenting this would also encrypt the formstate key. Its not really necessary since we should have control of our session
+// Uncommenting this would also encrypt the formstate key. It's not really necessary since we should have control of our session
 // variables since those are private to our server, but it does add an additional measure of security for the truly paranoid
 //FormBase::$EncryptionKey = '\rSome.Random!Key\0';
 
 // Everything else below should be the exact same as our original Hello, World! example
 class ExampleForm extends FormBase {
 
-	// Local declarations of our Qcontrols
-	protected $lblMessage;
-	protected $btnButton;
+	// Local declarations of our Controls
+	protected Label $lblMessage;
+	protected Button $btnButton;
 
 	// Initialize our Controls during the Form Creation process
-	protected function formCreate() {
+	protected function formCreate(): void
+    {
 		// Define the Label
 		$this->lblMessage = new Label($this);
 		$this->lblMessage->Text = 'Click the button to change my message.';
@@ -43,7 +44,8 @@ class ExampleForm extends FormBase {
 	}
 
 	// The "btnButton_Click" Event handler
-	protected function btnButton_Click($strFormId, $strControlId, $strParameter) {
+	protected function btnButton_Click(string $strFormId, string $strControlId, string $strParameter): void
+    {
 		$this->lblMessage->Text = 'Hello, world!';
 	}
 }

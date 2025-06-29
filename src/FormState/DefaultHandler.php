@@ -9,31 +9,41 @@
 
 namespace QCubed\FormState;
 
+use Exception;
+use QCubed\Cryptography;
+use QCubed\Project\Control\FormBase as QForm;
 use QCubed\ObjectBase;
 
 /**
- * Class QFormStateHandler
+ * Class DefaultHandler
  * This is the default FormState handler, storing the base64 encoded session data
  * (and if requested by QForm, encrypted) as a hidden form variable on the page, itself. It is meant to be a "quick
  * and dirty" handler that works in limited situations.
  *
  * We recommend that you do NOT use this formstate handler in general. It sends the entire formstate back and forth
- * to the client browser on every server and ajax request, which is slow, and could potentially reach limits quickly. It
+ * to the client browser on every server and ajax request, which is slow and could potentially reach limits quickly. It
  * encrypts the data, but there are still potential security problems if the data is sensitive.
  *
- * To change the formstate handler, define the __FORM_STATE_HANDLER__ in your configuration.inc.php file. See that
+ * To change the formstate handler, define the FORM_STATE_HANDLER in your configuration.inc.php file. See that
  * file for more detail.
  *
  * This form state handler is NOT safe to use when making asynchronous AJAX calls. The reason is that since the entire
- * formstate is sent to the browser, each ajax call must wait for the return trip to get the new formstate, before
+ * formstate is sent to the browser, each ajax call must wait for the return trip to get the new formstate before
  * sending the formstate back to the server on the next ajax call.
  *
  * @package QCubed\FormState
- * @was QFormStateHandler
  */
 class DefaultHandler extends ObjectBase
 {
-    public static function Save($strFormState, $blnBackButtonFlag)
+    /**
+     * Saves the form state by compressing and optionally encrypting it.
+     *
+     * @param string $strFormState The serialized form state to be saved.
+     * @param bool $blnBackButtonFlag Indicates whether back button handling is enabled.
+     * @return string The processed form state, either compressed, base64-encoded, or encrypted.
+     * @throws Exception
+     */
+    public static function save(string $strFormState, bool $blnBackButtonFlag): string
     {
         // Compress (if available)
         if (function_exists('gzcompress')) {
@@ -48,14 +58,22 @@ class DefaultHandler extends ObjectBase
             $strFormState = str_replace('+', '-', $strFormState);
             $strFormState = str_replace('/', '_', $strFormState);
         } else {
-            // Use \QCubed\Cryptography to Encrypt
-            $objCrypto = new \QCubed\Cryptography(QForm::$EncryptionKey, true);
-            $strFormState = $objCrypto->Encrypt($strFormState);
+            // Use \QCubed\Cryptography to encrypt
+            $objCrypto = new Cryptography(QForm::$EncryptionKey, true);
+            $strFormState = $objCrypto->encrypt($strFormState);
         }
         return $strFormState;
     }
 
-    public static function Load($strPostDataState)
+    /**
+     * Loads and processes a serialized form state by performing decryption, base64 decoding,
+     * and decompression, if applicable.
+     *
+     * @param string $strPostDataState The serialized form state data to be loaded.
+     * @return string The processed and deserialized form state data.
+     * @throws \QCubed\Exception\Cryptography
+     */
+    public static function load(string $strPostDataState): string
     {
         $strSerializedForm = $strPostDataState;
 
@@ -66,9 +84,9 @@ class DefaultHandler extends ObjectBase
 
             $strSerializedForm = base64_decode($strSerializedForm);
         } else {
-            // Use \QCubed\Cryptography to Decrypt
-            $objCrypto = new \QCubed\Cryptography(QForm::$EncryptionKey, true);
-            $strSerializedForm = $objCrypto->Decrypt($strSerializedForm);
+            // Use \QCubed\Cryptography to decrypt
+            $objCrypto = new Cryptography(QForm::$EncryptionKey, true);
+            $strSerializedForm = $objCrypto->decrypt($strSerializedForm);
         }
 
         // Uncompress (if available)

@@ -11,17 +11,17 @@ require_once('../qcubed.inc.php');
 class ExamplesForm extends FormBase
 {
     // Local declarations of our Controls
-    protected $lblMessage;
-    protected $btnButton;
+    protected Label $lblMessage;
+    protected Button $btnButton;
 
     // Initialize our Controls during the Form Creation process
-    protected function formCreate()
+    protected function formCreate(): void
     {
         // Define the Label
         $this->lblMessage = new Label($this);
         $this->lblMessage->Text = 'Click the button to change my message.';
 
-        // Definte the Button
+        // Define the Button
         $this->btnButton = new Button($this);
         $this->btnButton->Text = 'Click Me!';
 
@@ -31,7 +31,7 @@ class ExamplesForm extends FormBase
     }
 
     // The "btnButton_Click" Event handler
-    protected function btnButton_Click($strFormId, $strControlId, $strParameter)
+    protected function btnButton_Click(string $strFormId, string $strControlId, string $strParameter): void
     {
         $this->lblMessage->Text = 'Hello, world!';
     }

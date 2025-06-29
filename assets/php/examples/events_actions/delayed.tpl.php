@@ -13,8 +13,8 @@
 	<p>Basically, this allows the action to be triggered only after the user is done typing in the data.</p>
 
 	<p>Note that we maybe could have used a Change on the textbox to achieve a similar effect.  But
-	realize that Change (which utilizes a javascript <strong>onchange</strong> event handler) will only be
-	triggered after the control <em>loses focus</em> and has been changed -- it won't be triggered purely
+	realize that Change (which utilizes a JavaScript <strong>onchange</strong> event handler) will only be
+	triggered after the control <em>loses focus</em> and has been changed—it won't be triggered purely
 	by the fact that the text in the textbox has been changed.</p>
 </div>
 

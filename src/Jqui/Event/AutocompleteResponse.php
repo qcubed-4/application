@@ -14,16 +14,16 @@ namespace QCubed\Jqui\Event;
  *
  * The abstract AutocompleteResponse class defined here is
  * code-generated. The code to generate this file is
- * in the /tools/jquery_ui_gen/jq_control_gen.php file
+ * in the /tools/jquery_ui_gen/jq_control_gen.php file,
  * and you can regenerate the files if you need to.
  *
  * The comments in this file are taken from the api reference site, so they do
  * not always make sense with regard to QCubed. They are simply provided
  * as reference.
- * Triggered after a search completes, before the menu is shown. Useful
+ * Triggered after a search is completed, before the menu is shown. Useful
  * for local manipulation of suggestion data, where a custom source
  * option callback is not required. This event is always triggered when a
- * search completes, even if the menu will not be shown because there are
+ * search completes, even if the menu is not shown because there are
  * no results or the Autocomplete is disabled.
  * 
  * 	* event Type: Event 
@@ -36,7 +36,6 @@ namespace QCubed\Jqui\Event;
  * and label properties for each item.
  * 
  *
- * @was QAutocomplete_ResponseEvent
  */
 class AutocompleteResponse extends EventBase
 {

@@ -14,7 +14,7 @@ namespace QCubed\Jqui\Event;
  *
  * The abstract DraggableStop class defined here is
  * code-generated. The code to generate this file is
- * in the /tools/jquery_ui_gen/jq_control_gen.php file
+ * in the /tools/jquery_ui_gen/jq_control_gen.php file,
  * and you can regenerate the files if you need to.
  *
  * The comments in this file are taken from the api reference site, so they do
@@ -26,15 +26,14 @@ namespace QCubed\Jqui\Event;
  * 
  * 	* ui Type: Object 
  * 
- * 	* helper Type: jQuery The jQuery object representing the helper thats
+ * 	* helper Type: jQuery The jQuery object representing the helper that's
  * being dragged.
- * 	* position Type: Object Current CSS position of the helper as { top,
- * left } object.
+ * 	* position Type: Object Current CSS position of the helper as a { top,
+ * a left } object.
  * 	* offset Type: Object Current offset position of the helper as {
- * top, left } object.
+ * a top, left } object.
  * 
  *
- * @was QDraggable_StopEvent
  */
 class DraggableStop extends EventBase
 {

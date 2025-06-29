@@ -14,7 +14,7 @@ namespace QCubed\Jqui\Event;
  *
  * The abstract ResizableStop class defined here is
  * code-generated. The code to generate this file is
- * in the /tools/jquery_ui_gen/jq_control_gen.php file
+ * in the /tools/jquery_ui_gen/jq_control_gen.php file,
  * and you can regenerate the files if you need to.
  *
  * The comments in this file are taken from the api reference site, so they do
@@ -29,7 +29,7 @@ namespace QCubed\Jqui\Event;
  * 	* element Type: jQuery The jQuery object representing the element to
  * be resized
  * 	* helper Type: jQuery The jQuery object representing the helper
- * thats being resized
+ * that's being resized
  * 	* originalElement Type: jQuery The jQuery object representing the
  * original element before it is wrapped
  * 	* originalPosition Type: Object The position represented as { left,
@@ -42,7 +42,6 @@ namespace QCubed\Jqui\Event;
  * }
  * 
  *
- * @was QResizable_StopEvent
  */
 class ResizableStop extends EventBase
 {

@@ -5,18 +5,18 @@
 	<h1>Using a Proxy to Receive Events</h1>
 
 	<p>Sometimes you may want to create buttons, links or other HTML items which can "trigger" a Server or Ajax
-		action without actually creating a QControl.  The typical example of this is if you want to dynamically
-		create a large number of links or buttons (e.g. in a <strong>DataGrid</strong> or <strong>DataRepeater</strong>) which would trigger
-		an action, but because the link/button doesn't have any other state (e.g. you'll never want to
-		change its value or style, or you're comfortable doing this in pure javascript), you don't want to
+		action without actually creating a Control.  The typical example of this is if you want to dynamically
+		create a large number of links or buttons (e.g., in a <strong>DataGrid</strong> or <strong>DataRepeater</strong>) which would trigger
+		an action, but because the link/button doesn't have any other state (e.g., you'll never want to
+		change its value or style, or you're comfortable doing this in pure JavaScript), you don't want to
 		incur the overhead of creating a whole <strong>Control</strong> for each of these links or buttons.</p>
 
 	<p>The way you can do this is by creating a <strong>Proxy</strong> on your <strong>Form</strong>, and attaching
-		it to a link, button or other html item by rendering it specially.</p>
+		it to a link, button or other HTML item by rendering it specially.</p>
 
 	<p>The example below illustrates the manual creation (see the code for more information) of a list of
-		links which makes use of a single <strong>Proxy</strong> to trigger our event.  Notice that while there are many links
-		and buttons which each trigger Ajax-based Actions, there is actually only 1 <strong>Proxy</strong>
+		links which makes use of a single <strong>Proxy</strong> to trigger our event. Notice that while there are many links
+		and buttons that each trigger Ajax-based Actions, there is actually only 1 <strong>Proxy</strong>
 		defined to handle all these events.</p>
 </div>
 

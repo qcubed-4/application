@@ -18,14 +18,13 @@ use QCubed\Type;
  * Show a control (if it's hidden) using additional visual effects.
  *
  * @package QCubed\Jqui\Action
- * @was QJQShowEffectAction
  */
 class ShowEffect extends ActionBase
 {
-    protected $strOptions = null;
-    protected $intSpeed = null;
+    protected mixed $strOptions = null;
+    protected mixed $intSpeed = null;
 
-    public function __construct(ControlBase $objControl, $strMethod = "default", $strOptions = "", $intSpeed = 1000)
+    public function __construct(ControlBase $objControl, string $strMethod = "default", ?string $strOptions = "", int $intSpeed = 1000)
     {
         $this->strOptions = Type::cast($strOptions, Type::STRING);
         $this->intSpeed = Type::cast($intSpeed, Type::INTEGER);
@@ -33,7 +32,7 @@ class ShowEffect extends ActionBase
         parent::__construct($objControl, $strMethod);
     }
 
-    public function renderScript(ControlBase $objControl)
+    public function renderScript(ControlBase $objControl): string
     {
         return sprintf('$j("#%s").show("%s", {%s}, %d);', $this->strControlId, $this->strMethod, $this->strOptions, $this->intSpeed);
     }

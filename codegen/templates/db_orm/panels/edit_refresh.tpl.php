@@ -1,9 +1,13 @@
-	/**
-     * Refresh the objects in the panel, optionally loading from saved data in the database.
-     *
-     * @param boolean $blnReload
-	 **/
-	public function refresh ($blnReload = false) {
+    /**
+    * Refreshes the current state of the object, optionally reloading the data.
+    *
+    * @param bool $blnReload Determines whether to reload the data or not.
+    * @return void
+    * @throws Caller
+    * @throws DateMalformedStringException
+    * @throws InvalidCast
+    */
+    public function refresh(bool $blnReload = false): void
+    {
         $this->mct<?= $strPropertyName  ?>->refresh($blnReload);
-	}
-
+    }

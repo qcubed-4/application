@@ -4,11 +4,11 @@
 <div id="instructions">
 	<h1>Spinners!</h1>
 
-	<p>In this Hello World example, we add a <strong>WaitIcon</strong>, sometimes also known as "Spinners", or "Throbbers",
+	<p>In this Hello World example, we add a <strong>WaitIcon</strong>, sometimes also known as "Spinners," or "Throbbers,"
 	which will be displayed during the entire Ajax call.</p>
 
 	<p>To add the <strong>WaitIcon</strong>, you can define a <strong>DefaultWaitIcon</strong> in your form,
-	passing in a <strong>WaitIcon</strong> object.  At this point forward, every <strong>Ajax</strong>
+	passing in a <strong>WaitIcon</strong> object. From this point forward, every <strong>Ajax</strong>
 	will, by default, use the defined wait icon to be displayed during your Ajax call.</p>
 
 	<p>This display can be overridden by either passing in <strong>null</strong> for the wait icon to your

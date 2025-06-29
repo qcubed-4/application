@@ -13,58 +13,66 @@ use QCubed as Q;
 use QCubed\Control\ListItem;
 use QCubed\Exception\Caller;
 use QCubed\Exception\InvalidCast;
+use QCubed\Js\Closure;
 use QCubed\Project\Application;
 use QCubed\Control\ControlBase;
-use QCubed\Control\FormBase;
 use QCubed\Type;
+use Throwable;
 
 /**
  * Class AutocompleteBase
  *
  * Implements the JQuery UI Autocomplete widget
  *
- * The Autocomplete is JQuery UIs version of a field with an attached drop down menu. As you type in
+ * The Autocomplete is the JQuery UIs version of a field with an attached drop-down menu. As you type in
  * the field, the menu appears, and the items in the menu are filtered by what the user types. This class allows
  * you to use an array of QListItems, or an array of database objects as the source. You can also pass this array
  * statically in the Source parameter at creation time, or dynamically via Ajax by using SetDataBinder, and then
  * in your data binder function, setting the DataSource parameter.
  *
  * @property string $SelectedId the id of the selected item. When QAutocompleteListItem objects are used for the DataSource, this corresponds to the Value of the item
- * @property boolean $MustMatch if true, non matching values are not accepted by the input
+ * @property boolean $MustMatch if true, non-matching values are not accepted by the input
  * @property string $MultipleValueDelimiter if set, the Autocomplete will keep appending the new selections to the previous term, delimited by this string.
- *    This is useful when making QAutocomplete handle multiple values (see http://jqueryui.com/demos/autocomplete/#multiple ).
- * @property boolean $DisplayHtml if set, the Autocomplete will treat the 'label' portion of each data item as Html.
+ *    This is useful when making QAutocomplete handle multiple values (see http://jqueryui.com/demos/autocomplete/#multiple).
+ * @property boolean $DisplayHtml if set, the Autocomplete will treat the 'label' portion of each data item as HTML.
  * @property-write array $Source an array of strings, QListItem's, or data objects. To be used at creation time. {@inheritdoc }
  * @property-write array $DataSource an array of strings, QListItem's, or data objects
  * @link http://jqueryui.com/autocomplete/
  * @access private
  * @package Controls\Base
- * @was QAutocompleteBase
  * @package QCubed\Jqui
  */
 class AutocompleteBase extends AutocompleteGen
 {
-    /** @var string */
-    protected $strSelectedId = null;
+    /** @var string|null */
+    protected ?string $strSelectedId = null;
     /** @var boolean */
-    protected $blnUseAjax = false;
+    protected bool $blnUseAjax = false;
 
     /* Moved to QAutoComplete2 plugin */
     //protected $blnMustMatch = false;
     //protected $strMultipleValueDelimiter = null;
     //protected $blnDisplayHtml = false;
 
-    public function __construct($objParentObject, $strControlId = null)
+    /**
+     * Constructor for the class.
+     *
+     * @param mixed $objParentObject The parent object for the current control.
+     * @param string|null $strControlId Optional control ID for the current control.
+     * @return void
+     * @throws Caller
+     */
+    public function __construct(mixed$objParentObject, ?string $strControlId = null)
     {
         parent::__construct($objParentObject, $strControlId);
 
         $this->addJavascriptFile(QCUBED_JS_URL . '/qcubed.autocomplete.js');
 
         /**
-         * Fixing a problem with placing an autocomplete in a modal that is not a jquery ui modal (like a bootstrap modal)
+         * Fixing a problem with placing autocomplete in a modal that is not a jquery ui modal (like a bootstrap modal),
          * We must append the menu to the modal, or the modal will obscure the menu.
          */
-        while ($objParentObject && $objParentObject instanceof ControlBase) {
+        while ($objParentObject instanceof ControlBase) {
             if ($objParentObject->AutoRender) {
                 $this->AppendTo = '#' . $objParentObject->ControlId; // selector for that control
                 break;
@@ -75,7 +83,7 @@ class AutocompleteBase extends AutocompleteGen
 
     /**
      * When this filter is passed to QAutocomplete::UseFilter, only the items in the source list that contain the typed term will be shown in the drop-down
-     * This is the default filter used by the jQuery autocomplete. Useful when resetting from a previousely set filter.
+     * This is the default filter used by the jQuery autocomplete. Useful when resetting from a previously set filter.
      * @see QAutocomplete::UseFilter
      */
     const FILTER_CONTAINS = 'return $j.ui.autocomplete.escapeRegex(term);'; // this is the default filter
@@ -86,27 +94,27 @@ class AutocompleteBase extends AutocompleteGen
     const FILTER_STARTS_WITH = 'return ("^" + $j.ui.autocomplete.escapeRegex(term));';
 
     /**
-     * Set a filter to use when using a simple array as a source (in non-ajax mode). Note that ALL non-ajax autocompletes on the page
+     * Set a filter to use when using a simple array as a source (in non-ajax mode). Note that ALL non-ajax autocompleted on the page
      * will use the new filter.
      *
      * @static
-     * @throws Caller
-     * @param string|\QCubed\Js\Closure $filter represents a closure that will be used as the global filter function for jQuery autocomplete.
-     * The closure should take two arguments - array and term. array is the list of all available choices, term is what the user typed in the input box.
+     * @param string|Closure $filter represents a closure that will be used as the global filter function for jQuery autocomplete.
+     * The closure should take two arguments - array and term. Array is the list of all available choices, term is what the user typed in the input box.
      * It should return an array of suggestions to show in the drop-down.
      * <b>Example:</b> <code>QAutocomplete::useFilter(QAutocomplete::FILTER_STARTS_WITH)</code>
      * @return void
      *
+     * @throws Caller
      * @see QAutocomplete::FILTER_CONTAINS
      * @see QAutocomplete::FILTER_STARTS_WITH
      */
-    public static function useFilter($filter)
+    public static function useFilter(Closure|string $filter): void
     {
         if (is_string($filter)) {
-            $filter = new Q\Js\Closure($filter, ['term']);
+            $filter = new Closure($filter, ['term']);
         } else {
-            if (!($filter instanceof Q\Js\Closure)) {
-                throw new Caller("filter must be either a string or an instance of \\QCubed\\Js\\Closure");
+            if (!($filter instanceof Closure)) {
+                throw new Caller("the filter must be either a string or an instance of \\QCubed\\Js\\Closure");
             }
         }
         Application::executeJsFunction('qcubed.acUseFilter', $filter);
@@ -122,9 +130,10 @@ class AutocompleteBase extends AutocompleteGen
      * The 'param' value in the params item passed to the action in particular will be the term that you should use for filtering.
      *
      * @param string $strMethodName Name of the method which has to be bound
-     * @param FormBase|ControlBase $objParentControl The parent control on which the action is to be bound
+     * @param object|null $objParentControl The parent control on which the action is to be bound
+     * @throws Caller
      */
-    public function setDataBinder($strMethodName, $objParentControl = null)
+    public function setDataBinder(string $strMethodName, ?object $objParentControl = null): void
     {
         if ($objParentControl) {
             $objAction = new Q\Action\AjaxControl($objParentControl, $strMethodName, 'default', null, 'ui');
@@ -139,33 +148,33 @@ class AutocompleteBase extends AutocompleteGen
         $this->blnModified = true;
     }
 
-    // These functions are used to keep track of the selected value, and to implement
+    // These functions are used to keep track of the selected value and to implement
     // optional autocomplete functionality.
     /**
-     * Gets the Javascript part of the control which is sent to the client side upon the completion of Render
+     * Gets the JavaScript part of the control which is sent to the client side upon the completion of Render
      */
-    protected function makeJqWidget()
+    protected function makeJqWidget(): void
     {
         parent::makeJqWidget();
 
-        Application::executeJsFunction('qc.autocomplete', $this->getJqControlId(), Application::PRIORITY_HIGH);
+        Application::executeJsFunction('qc.autocomplete', $this->getJqControlId(), Q\ApplicationBase::PRIORITY_HIGH);
     }
 
 
     // Response to an ajax request for data
-    protected function prepareAjaxList($dataSource)
+    protected function prepareAjaxList(array $dataSource): void
     {
         if (!$dataSource) {
             $dataSource = array();
         }
         Application::executeJsFunction('qc.acSetData', $this->getJqControlId(), $dataSource,
-            Application::PRIORITY_EXCLUSIVE);
+            Q\ApplicationBase::PRIORITY_EXCLUSIVE);
     }
 
     /**
      *
      */
-    public function setEmpty()
+    public function setEmpty(): void
     {
         $this->Text = '';
         $this->SelectedId = null;
@@ -173,9 +182,9 @@ class AutocompleteBase extends AutocompleteGen
 
     /**
      * Control subclasses should return their state data that they will use to restore later.
-     * @return mixed
+     * @return array|null
      */
-    protected function getState()
+    protected function getState(): ?array
     {
         $state = parent::getState();
         $state['selectedId'] = $this->SelectedId;
@@ -188,7 +197,7 @@ class AutocompleteBase extends AutocompleteGen
      * available.
      * @param mixed $state
      */
-    protected function putState($state)
+    protected function putState(mixed $state): void
     {
         parent::putState($state);
         if (isset($state['selectedId'])) {
@@ -200,11 +209,13 @@ class AutocompleteBase extends AutocompleteGen
     /**
      * PHP __set Magic method
      * @param string $strName Property Name
-     * @param string $mixValue Property Value
+     * @param mixed $mixValue Property Value
      *
+     * @throws Caller
      * @throws InvalidCast
+     * @throws Throwable
      */
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             case 'DataSource':
@@ -222,7 +233,7 @@ class AutocompleteBase extends AutocompleteGen
             case "Value":
             case 'SelectedId':
                 // Set this at creation time to initialize the selected id.
-                // This is also set by the javascript above to keep track of subsequent selections made by the user.
+                // This is also set by the JavaScript above to keep track of subsequent selections made by the user.
                 try {
                     if ($mixValue == 'null') {
                         $this->strSelectedId = null;
@@ -271,7 +282,7 @@ class AutocompleteBase extends AutocompleteGen
      * @return mixed
      * @throws Caller
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             case "SelectedValue":    // mirror list control
@@ -293,8 +304,10 @@ class AutocompleteBase extends AutocompleteGen
      * If this control is attachable to a codegenerated control in a ModelConnector, this function will be
      * used by the ModelConnector designer dialog to display a list of options for the control.
      * @return Q\ModelConnector\Param[]
-     **/
-    public static function getModelConnectorParams()
+     *
+     * @throws Caller
+     */
+    public static function getModelConnectorParams(): array
     {
         return array_merge(parent::getModelConnectorParams(), array(
             new Q\ModelConnector\Param(Q\ModelConnector\Param::GENERAL_CATEGORY, 'NoAutoLoad',

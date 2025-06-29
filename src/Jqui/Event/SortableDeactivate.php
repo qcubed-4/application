@@ -14,7 +14,7 @@ namespace QCubed\Jqui\Event;
  *
  * The abstract SortableDeactivate class defined here is
  * code-generated. The code to generate this file is
- * in the /tools/jquery_ui_gen/jq_control_gen.php file
+ * in the /tools/jquery_ui_gen/jq_control_gen.php file,
  * and you can regenerate the files if you need to.
  *
  * The comments in this file are taken from the api reference site, so they do
@@ -31,11 +31,11 @@ namespace QCubed\Jqui\Event;
  * sorted.
  * 	* item Type: jQuery The jQuery object representing the current
  * dragged element.
- * 	* offset Type: Object The current absolute position of the helper
+ * 	* offset Type: Object The current absolute position of the helper is
  * represented as { top, left }.
- * 	* position Type: Object The current position of the helper
+ * 	* position Type: Object The current position of the helper is
  * represented as { top, left }.
- * 	* originalPosition Type: Object The original position of the element
+ * 	* originalPosition Type: Object The original position of the element is
  * represented as { top, left }.
  * 	* sender Type: jQuery The sortable that the item comes from if
  * moving from one sortable to another.
@@ -43,7 +43,6 @@ namespace QCubed\Jqui\Event;
  * element being used as a placeholder.
  * 
  *
- * @was QSortable_DeactivateEvent
  */
 class SortableDeactivate extends EventBase
 {

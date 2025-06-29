@@ -1,32 +1,41 @@
 <?php
+
+use QCubed\Exception\Caller;
+use QCubed\Exception\InvalidCast;
 use QCubed\Project\Control\DataGrid;
+use QCubed\Project\Control\FormBase;
 use QCubed\Project\Control\Paginator;
 
 require_once('../qcubed.inc.php');
 
-class ExampleForm extends \QCubed\Project\Control\FormBase
+class ExampleForm extends FormBase
 {
 
     // Declare the DataGrid
-    protected $dtgPersons;
+    protected DataGrid $dtgPersons;
 
-    protected function formCreate()
+    /**
+     * @throws InvalidCast
+     * @throws Caller
+     */
+    protected function formCreate(): void
     {
+        //print ('TOTAL ITEMS: ' . Person::countAll());
+
         // Define the DataGrid
         $this->dtgPersons = new DataGrid($this);
 
         // Using Ajax for Pagination
         $this->dtgPersons->UseAjax = true;
 
-        // To create pagination, we will create a new paginator, and specify the datagrid
-        // as the paginator's parent.  (We do this because the datagrid is the control
+        // To create pagination, we will create a new paginator and specify the datagrid
+        // as the pagination's parent.  (We do this because the datagrid is the control
         // who is responsible for rendering the paginator, as opposed to the form.)
         $objPaginator = new Paginator($this->dtgPersons);
         $this->dtgPersons->Paginator = $objPaginator;
 
-        // Now, with a paginator defined, we can set up some additional properties on
-        // the datagrid.  For purposes of this example, let's make the datagrid show
-        // only 5 items per page.
+        // Now that the pagination is defined, we can set some additional properties for the data grid.
+        // For this example, we will display only 5 elements per a page in the data grid.
         $this->dtgPersons->ItemsPerPage = 5;
 
         // Define Columns
@@ -44,11 +53,16 @@ class ExampleForm extends \QCubed\Project\Control\FormBase
         $this->dtgPersons->setDataBinder('dtgPersons_Bind');
     }
 
-    protected function dtgPersons_Bind()
+    /**
+     * @throws Caller
+     */
+    protected function dtgPersons_Bind(): void
     {
         // We must first let the datagrid know how many total items there are
         // IMPORTANT: Do not pass a limit clause here to CountAll
         $this->dtgPersons->TotalItemCount = Person::countAll();
+
+        //print ('TOTAL ITEMS: ' . Person::countAll());
 
         // Ask the datagrid for the sorting information for the currently active sort column
         $clauses[] = $this->dtgPersons->OrderByClause;
@@ -57,7 +71,7 @@ class ExampleForm extends \QCubed\Project\Control\FormBase
         $clauses[] = $this->dtgPersons->LimitClause;
 
         // Next, we must be sure to load the data source, passing in the datagrid's
-        // limit info into our loadall method.
+        // limit info into our load all methods.
         $this->dtgPersons->DataSource = Person::loadAll($clauses);
     }
 

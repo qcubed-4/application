@@ -15,7 +15,6 @@ namespace QCubed\Event;
  *
  * When a pressed key goes up while the focus is on the control
  *
- * @was QKeyUpEvent
  * @package QCubed\Event
  */
 class KeyUp extends EventBase

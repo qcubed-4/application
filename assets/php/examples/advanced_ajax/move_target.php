@@ -5,16 +5,17 @@ use QCubed\Project\Control\TextBox;
 
 require_once('../qcubed.inc.php');
 
-// Define the \QCubed\Project\Control\FormBase with all our Qcontrols
+// Define the \QCubed\Project\Control\FormBase with all our Controls
 class ExamplesForm extends FormBase {
 
-	// Local declarations of our Qcontrols
-	protected $lblHandle;
-	protected $txtTextbox;
-	protected $pnlParent;
+	// Local declarations of our Controls
+	protected Panel $lblHandle;
+	protected TextBox $txtTextbox;
+	protected Panel $pnlParent;
 
 	// Initialize our Controls during the Form Creation process
-	protected function formCreate() {
+	protected function formCreate(): void
+    {
 		$this->pnlParent = new Panel($this);
 		$this->pnlParent->AutoRenderChildren = true;
 

@@ -43,10 +43,10 @@ class DataBind extends Caller
     }
 
     /**
-     * @param $strName
+     * @param string $strName
      * @return mixed
      */
-    public function __get($strName)
+    public function __get(string $strName)
     {
         switch ($strName) {
             case "Offset":

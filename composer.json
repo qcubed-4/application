@@ -11,13 +11,12 @@
       "source": "https://github.com/qcubed-4/common"
   },
   "require": {
-    "php": ">=8.0",
+    "php": ">=8.3",
     "qcubed-4/composer": "dev-master",
     "qcubed-4/cache": "dev-master",
     "qcubed-4/i18n": "dev-master",
     "qcubed-4/orm":"dev-master",
-    "qcubed-4/common":"dev-master",
-    "ext-json": "*"
+    "qcubed-4/common":"dev-master"
   },
   "minimum-stability": "dev",
   "require-dev" : {
@@ -27,12 +26,6 @@
     "psr-4": {
       "QCubed\\": "src/",
       "QCubed\\Codegen\\Generator\\":"codegen/generator/"
-    }
-  },
-  "config": {
-    "vendor-dir": "vendor",
-    "allow-plugins": {
-      "qcubed-4/composer": true
     }
   }
 }

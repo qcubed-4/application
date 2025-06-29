@@ -17,19 +17,17 @@ use QCubed\Control\ControlBase;
  * Prevents the event from bubbling up the DOM tree, preventing any parent
  * handlers from being notified of the event.
  *
- * @was QStopPropagationAction
  * @package QCubed\Action
  */
 class StopPropagation extends ActionBase
 {
     /**
-     * Returns the JavaScript to be executed on the client side
+     * Generates and returns a JavaScript snippet to stop the event's propagation.
      *
-     * @param ControlBase $objControl
-     *
-     * @return string Client side JS
+     * @param ControlBase $objControl The control instance triggering the script rendering.
+     * @return string The JavaScript code to stop the event's propagation.
      */
-    public function renderScript(ControlBase $objControl)
+    public function renderScript(ControlBase $objControl): string
     {
         return 'event.stopPropagation();';
     }

@@ -1,21 +1,22 @@
 <?php
 namespace QCubed\Project\Control;
 
+use QCubed\Control\PaginatorBase;
+use QCubed\Exception\Caller;
 
 /**
  * Class Paginator
  *
- * Class QPaginator - The paginator control which can be attached to a QDataRepeater or QDataGrid
+ * Class Paginator - The paginator control which can be attached to a DataRepeater or DataGrid
  * This class will take care of the number of pages, current page, next/previous links and so on
  * automatically.
  *
  * @package QCubed\Project\Control
- * @was QPaginator
  */
-class Paginator extends \QCubed\Control\PaginatorBase
+class Paginator extends PaginatorBase
 {
     // APPEARANCE
-    protected $intIndexCount = 10;
+    protected int $intIndexCount = 10;
 
     //////////
     // Methods
@@ -23,14 +24,15 @@ class Paginator extends \QCubed\Control\PaginatorBase
     /**
      * Constructor
      * @param ControlBase|FormBase $objParentObject
-     * @param null|string $strControlId
+     * @param string|null $strControlId
+     * @throws Caller
      */
-    public function __construct($objParentObject, $strControlId = null)
+    public function __construct(ControlBase|FormBase $objParentObject, ?string $strControlId = null)
     {
         parent::__construct($objParentObject, $strControlId);
 
         $this->CssClass = 'paginator';
-        //$this->strLabelForPrevious = QApplication::translate('<<');
-        //$this->strLabelForNext = QApplication::translate('>>');
+        //$this->strLabelForPrevious = t('<<');
+        //$this->strLabelForNext = t('>>');
     }
 }

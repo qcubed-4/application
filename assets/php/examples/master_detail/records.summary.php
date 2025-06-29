@@ -6,6 +6,7 @@ Here is the Child \QCubed\Project\Control\DataGrid...
 // Load the QCubed Development Framework
 use QCubed\Control\Panel;
 use QCubed\Exception\Caller;
+use QCubed\Exception\InvalidCast;
 use QCubed\Project\Control\DataGrid;
 use QCubed\Project\Control\Paginator;
 
@@ -13,28 +14,38 @@ require_once('../../qcubed.inc.php');
 
 class RecordsSummary extends Panel
 {
-    public $dtgRecordsSummary;
+    public DataGrid $dtgRecordsSummary;
 
-    protected $objParentObject;
+    protected mixed $objParentObject;
 
     // Protected Objects
-    protected $objProject;
+    protected Project $objProject;
 
-    // in the contructor pass the item bounded too just for other process
-    public function __construct($objParentObject, Project $objProject, $strControlId = null)
+    // in the contractor pass the item bounded too just for another process
+
+    /**
+     * Constructor for setting up the record summary control.
+     *
+     * @param mixed $objParentObject The parent object which contains this control.
+     * @param Project $objProject The project object associated with this control.
+     * @param string|null $strControlId Optional control ID to uniquely identify this control.
+     * @throws Caller
+     * @throws InvalidCast
+     */
+    public function __construct(mixed $objParentObject, Project $objProject, ?string $strControlId = null)
     {
         try {
             parent::__construct($objParentObject, $strControlId);
 
-            // Watch out for template later gonna talk about it,
+            // Watch out for a template later gonna talk about it,
             // need a trick to look good
-            // (insert the child content as row in table already present for Master
-            //   close colums -insert row - insert child - close row - open column
+            // (insert the child content as row in a table already present for Master
+            //   close columns - insert row - insert child - close row - open column
             //  </td> <tr><td> render content of this child </td> </tr> <td> )
             $this->Template = 'records.summary.tpl.php';
 
-            // Setting local the Msster \QCubed\Project\Control\DataGrid to refresh on
-            // Saves on the Child DataGrid..
+            // Setting local the Muster \QCubed\Project\Control\DataGrid to refresh on
+            // Saves on the Child DataGrid.
             $this->objParentObject = $objParentObject;
             $this->objProject = $objProject;
 
@@ -59,7 +70,7 @@ class RecordsSummary extends Panel
         }
     }
 
-    public function render_PersonColumn(Person $objPerson)
+    public function render_PersonColumn(Person $objPerson): string
     {
         return $objPerson->FirstName . ' ' . $objPerson->LastName;
     }
@@ -74,13 +85,13 @@ class RecordsSummary extends Panel
         // add OrderByClause to the $objClauses array
         // if ($objClause = $this->dtgRecordsSummary->OrderByClause){
         if ($objClause = $this->dtgRecordsSummary->OrderByClause) {
-            array_push($objClauses, $objClause);
+            $objClauses[] = $objClause;
         }
 
         // add LimitByClause to the $objClauses array
         //if ($objClause = $this->dtgRecordsSummary->LimitClause)
         if ($objClause = $this->dtgRecordsSummary->LimitClause) {
-            array_push($objClauses, $objClause);
+            $objClauses[] = $objClause;
         }
 
 

@@ -1,7 +1,7 @@
 <?php
 namespace QCubed\Project\Watcher;
 
-use QCubed\Project\Application;
+use QCubed\Watcher\None;
 
 /**
  * Watcher is a controller for allowing controls to watch a database table to detect changes
@@ -11,7 +11,7 @@ use QCubed\Project\Application;
  * Watcher\Database is based on a standard SQL database. See Watcher\Database.php for details on setup.
  * Watcher\Cache uses PSR-16 SimpleCache compatible caches. See the QCubed\Cache library for examples of these.
  *
- * Once you configure the Watcher subclass, to use the Watcher system, do the following:
+ * Once you have configured the Watcher subclass, follow these steps to use the Watcher system.
  * During the creation of a control that needs to watch a database table, call $ctl->Watch($dbNode), where
  *    $dbNode is the node that represents the table you want to watch. For example, to have a datagrid watch the
  *    people table, call:
@@ -31,7 +31,7 @@ use QCubed\Project\Application;
  * @was QWatcher
  */
 
-class Watcher extends \QCubed\Watcher\None {
+class Watcher extends None {
     
 }
 

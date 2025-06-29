@@ -7,19 +7,19 @@ use QCubed\Project\Control\FormBase;
 
 require_once('../qcubed.inc.php');
 
-// Define the \QCubed\Project\Control\FormBase with all our Qcontrols
+// Define the \QCubed\Project\Control\FormBase with all our Controls
 class ExampleForm extends FormBase
 {
 
-    // Local declarations of our Qcontrols
-    protected $lblMessage;
-    protected $btnButton;
+    // Local declarations of our Controls
+    protected Label $lblMessage;
+    protected Button $btnButton;
 
     // Initialize our Controls during the Form Creation process
-    protected function formCreate()
+    protected function formCreate(): void
     {
-        // Define the Label
-        // Even though we are programatically setting the ForeColor property
+        // Define the Label;
+        // Even though we are programmatically setting the ForeColor property
         // to Blue here, it will be overridden to Green in the HTML template.
         $this->lblMessage = new Label($this);
         $this->lblMessage->Text = 'Click the button to change my message.';
@@ -35,7 +35,7 @@ class ExampleForm extends FormBase
     }
 
     // The "btnButton_Click" Event handler
-    protected function btnButton_Click()
+    protected function btnButton_Click(): void
     {
         $this->lblMessage->Text = 'Hello, world!';
     }

@@ -1,7 +1,9 @@
 <?php
 	// The url to send to view_source.php
 	// first encode the basic info
-	$strCatId = Examples::GetCategoryId();
+use QCubed\Project\Application;
+
+$strCatId = Examples::GetCategoryId();
 	$strUrl = QCUBED_EXAMPLES_URL .
 		'/view_source.php/' .
 		$strCatId . '/' .
@@ -11,7 +13,7 @@
 		$strFile = Examples::GetPluginFile();
 		$strUrl .= '/' . $strFile . '/' . $strFile;
 	} else {
-		$strUrl .= '/' . basename(\QCubed\Project\Application::instance()->context()->scriptName());
+		$strUrl .= '/' . basename(Application::instance()->context()->scriptName());
 	}
 ?>
 <?php	if(!isset($mainPage)) { ?>
@@ -23,11 +25,11 @@
 		</footer>
 		
 		<script type="text/javascript">
-			var viewSource = document.getElementById('viewSource');
-			if (viewSource) {
+            const viewSource = document.getElementById('viewSource');
+            if (viewSource) {
 				viewSource.onclick = function (){
-					objWindow = window.open("<?= $strUrl ?>", "ViewSource", "menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes,width=1000,height=750,left=50,top=50");
-					objWindow.focus();
+                    const objWindow = window.open("<?= $strUrl ?>", "ViewSource", "menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes,width=1000,height=750,left=50,top=50");
+                    objWindow.focus();
 					return false;
 				};
 			}			

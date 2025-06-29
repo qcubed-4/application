@@ -9,6 +9,7 @@
 
 namespace QCubed\Event;
 
+use Exception;
 use QCubed\Action\ActionBase;
 use QCubed\Control\ControlBase;
 use QCubed\Control\Proxy;
@@ -23,37 +24,38 @@ use QCubed\Type;
  * Events are used in conjunction with actions to respond to user actions, like clicking, typing, etc.,
  * or even programmable timer events.
  *
- * @property-read string $EventName the javascript event name that will be fired
- * @property-read string $Condition a javascript condition that is tested before the event is sent
+ * @property-read string $EventName the JavaScript event name that will be fired
+ * @property-read string $Condition a JavaScript condition that is tested before the event is sent
  * @property-read integer $Delay ms delay before action is fired
- * @property-read string $JsReturnParam the javascript used to create the strParameter that gets sent to the event handler registered with the event.
- * @property-read string $Selector a jquery selector, causes the event to apply to child items matching the selector, and then get sent up the chain to this object
+ * @property-read string $JsReturnParam the JavaScript used to create the strParameter that gets sent to the event handler registered with the event.
+ * @property-read string $Selector a Jquery selector causes the event to apply to child items matching the selector, and then get sent up the chain to this object
  * @property-read boolean $Block indicates that other events after this event will be thrown away until the browser receives a response from this event.
  * @package QCubed\Event
- * @was QEvent
  */
 abstract class EventBase extends ObjectBase
 {
     /** @var string|null The JS condition in which an event would fire */
-    protected $strCondition = null;
-    /** @var int|mixed The number of second after which the event has to be fired */
-    protected $intDelay = 0;
-    protected $strSelector = null;
+    protected ?string $strCondition = null;
+    /** @var int|mixed The number of seconds after which the event has to be fired */
+    protected int $intDelay = 0;
+
+    protected ?string $strSelector = null;
     /** @var  boolean True to block all other events until a response is received. */
-    protected $blnBlock;
-    /** @var  ActionBase[] Used by the control mechanism to group actions by event. */
-    protected $objActions;
+    protected bool $blnBlock;
+    /** @var  ActionBase[] Used by the control mechanism to group actions by an event. */
+    protected array $objActions;
 
     /**
      * Create an event.
      * @param integer $intDelay ms delay to wait before action is fired
-     * @param string $strCondition javascript condition to check before firing the action
-     * @param string $strSelector jquery selector to cause event to be attached to child items instead of this item
+     * @param string|null $strCondition JavaScript condition to check before firing the action
+     * @param string|null $strSelector Jquery selector to cause an event to be attached to child items instead of this item
      * @param boolean $blnBlockOtherEvents True to "debounce" the event by throwing away all other events until the browser receives a response from this event.
-     *                            Only use this on Server and Ajax events. Do not use on Javascript events, or the browser will stop responding to Ajax and Server events.
+     *                            Only use this on Server and Ajax events. Do not use on JavaScript events, or the browser will stop responding to Ajax and Server events.
      * @throws Caller
+     * @throws Exception
      */
-    public function __construct($intDelay = 0, $strCondition = null, $strSelector = null, $blnBlockOtherEvents = false)
+    public function __construct(int $intDelay = 0, ?string $strCondition = null, ?string $strSelector = null, ?bool $blnBlockOtherEvents = false)
     {
         try {
             if ($intDelay) {
@@ -82,7 +84,7 @@ abstract class EventBase extends ObjectBase
      * @param ActionBase[] $objActions
      * @internal
      */
-    public function setActions(array $objActions)
+    public function setActions(array $objActions): void
     {
         $this->objActions = $objActions;
     }
@@ -92,16 +94,18 @@ abstract class EventBase extends ObjectBase
      *
      * @return ActionBase[]
      */
-    public function getActions() {
+    public function getActions(): array
+    {
         return $this->objActions;
     }
 
     /**
-     * Renders the actions associated with the events as javascript.
+     * Renders the actions associated with the events as JavaScript.
      * @param ControlBase $objControl
      * @return string
      */
-    public function renderActions(ControlBase $objControl) {
+    public function renderActions(ControlBase $objControl): string
+    {
         if (!$this->objActions) {
             return '';
         }
@@ -161,7 +165,6 @@ abstract class EventBase extends ObjectBase
 
     }
 
-
     /**
      * The PHP Magic function for this class
      * @param string $strName Name of the property to fetch
@@ -169,7 +172,7 @@ abstract class EventBase extends ObjectBase
      * @return int|mixed|null|string
      * @throws Caller
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             case 'EventName':
@@ -200,8 +203,3 @@ abstract class EventBase extends ObjectBase
         }
     }
 }
-
-
-
-
-

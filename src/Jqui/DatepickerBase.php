@@ -9,24 +9,26 @@
 
 namespace QCubed\Jqui;
 
+use DateMalformedStringException;
 use QCubed\Control\Calendar;
 use QCubed\Control\ControlBase;
 use QCubed\Control\FormBase;
 use QCubed\Exception\Caller;
 use QCubed\Exception\InvalidCast;
+use QCubed\Js\Closure;
 use QCubed\QDateTime;
 use QCubed\Type;
 
 /**
  * Class DatepickerBase
  *
- * Impelements a JQuery UI Datepicker
+ * Implements a JQuery UI Datepicker
  *
  * The QDatepickerBase class defined here provides an interface between the generated
- * QDatepickerGen class, and QCubed. This file is part of the core and will be overwritten
+ * QDatepickerGen class and QCubed. This file is part of the core and will be overwritten
  * when you update QCubed. To override, make your changes to the QDatepicker.class.php file instead.
  *
- * A Datepicker is a field that is designed to just allow dates, and to popup a calendar for picking dates.
+ * A Datepicker is a field that is designed to just allow dates and to pop up a calendar for picking dates.
  *
  * @property string $DateFormat            The format to use for displaying the date in the field
  * @property string $DateTimeFormat        Alias for DateFormat
@@ -36,38 +38,36 @@ use QCubed\Type;
  * @property string $Text                Textual date to set it to
  *
  * @link http://jqueryui.com/datepicker/
- * @was QDatepickerBase
  * @package QCubed\Jqui
  */
 class DatepickerBase extends DatepickerGen
 {
     /** @var string Default datetime format for the picker */
-    protected $strDateTimeFormat = "MM/DD/YYYY";    // same as default for JQuery UI control
-    /** @var QDateTime variable to hold the date time to be selected (or already selected) */
-    protected $dttDateTime;    // default to no selection
+    protected string $strDateTimeFormat = "MM/DD/YYYY";    // same as default for JQuery UI control
+    /** @var QDateTime|null variable to hold the date time to be selected (or already selected) */
+    protected ?QDateTime $dttDateTime = null;    // default to no selection
 
     /**
      * @param ControlBase|FormBase $objParentObject
-     * @param null|string $strControlId
+     * @param string|null $strControlId
      *
      * @throws Caller|InvalidCast
      */
-    public function __construct($objParentObject, $strControlId = null)
+    public function __construct(FormBase|ControlBase $objParentObject, ?string $strControlId = null)
     {
         parent::__construct($objParentObject, $strControlId);
 
-        parent::__set('OnSelect', new \QCubed\Js\Closure($this->OnSelectJs(), array('dateText','inst')));    // setup a way to detect a selection
+        parent::__set('OnSelect', new Closure($this->OnSelectJs(), array('dateText','inst')));    // set up a way to detect a selection
     }
 
     /**
      * Output JS that will record changes to the datepicker and fire our own select event.
      */
-    protected function OnSelectJs()
+    protected function OnSelectJs(): string
     {
         $strId = $this->getJqControlId();
-        $strJS = sprintf('qcubed.recordControlModification("%s", "_Text", dateText); $j("#%s").trigger("QDatepicker_Select2")',
+        return sprintf('qcubed.recordControlModification("%s", "_Text", dateText); $j("#%s").trigger("QDatepicker_Select2")',
             $strId, $strId);
-        return $strJS;
     }
 
     /////////////////////////
@@ -79,7 +79,7 @@ class DatepickerBase extends DatepickerGen
      * @return mixed|null|string
      * @throws Caller
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             // MISC
@@ -91,7 +91,7 @@ class DatepickerBase extends DatepickerGen
             case 'DateFormat':
                 return $this->strDateTimeFormat;
             case 'DateTime':
-                return $this->dttDateTime ? clone($this->dttDateTime) : null;
+                return !$this->dttDateTime ? null : clone($this->dttDateTime);
 
             default:
                 try {
@@ -109,12 +109,14 @@ class DatepickerBase extends DatepickerGen
      * PHP magic method
      *
      * @param string $strName Property name
-     * @param string $mixValue Property value
+     * @param mixed $mixValue Property value
      *
-     * @return mixed|void
-     * @throws Caller|InvalidCast
+     * @return void
+     * @throws Caller
+     * @throws InvalidCast
+     * @throws DateMalformedStringException
      */
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             case 'MaxDate':
@@ -186,9 +188,9 @@ class DatepickerBase extends DatepickerGen
 
             case 'OnSelect':
                 // Since we are using the OnSelect event already, and Datepicker doesn't allow binding, so there can be
-                // only one event, we will make sure our js is part of any new OnSelect js.
+                // only one event, we will make sure our JS is part of any new OnSelect JS.
                 $strJS = $this->OnSelectJs() . ';' . $mixValue;
-                $objClosure = new \QCubed\Js\Closure($strJS, array('dateText','inst'));
+                $objClosure = new Closure($strJS, array('dateText','inst'));
                 parent::__set('OnSelect', $objClosure);
                 break;
 
@@ -206,13 +208,13 @@ class DatepickerBase extends DatepickerGen
     /* === Codegen Helpers, used during the Codegen process only. === */
 
     /**
-     * Returns the variable name for a control of this type during code generation process
+     * Returns the variable name for a control of this type during a code generation process
      *
      * @param string $strPropName Property name for which the control to be generated is being generated
      *
      * @return string
      */
-    public static function Codegen_VarName($strPropName)
+    public static function Codegen_VarName(string $strPropName): string
     {
         return 'cal' . $strPropName;
     }

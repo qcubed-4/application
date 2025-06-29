@@ -17,7 +17,7 @@ require_once('../qcubed.inc.php'); ?>
 	query in a straight-up QQuery, for this example, we'll use a SubSql
 	mechanism instead just for illustration purposes.</p>
 
-	<p>Important gotcha: you have to define your subquery as a part of a
+	<p>An important gotcha: you have to define your subquery as a part of a
 	<strong>Condition</strong>! To make it available in the returned array as a Virtual
 	Attribute, you also have to put in a <strong>QQ::expand()</strong> clause to have the
 	SELECT clause of the query include the subquery result.
@@ -25,7 +25,7 @@ require_once('../qcubed.inc.php'); ?>
 	<p>Note: the code below generates <a href="http://docs.hp.com/en/36216-90103/ch03s02.html">
 	correlated (dependent) subqueries</a>. These are frequently not the
 	fastest way to run queries against your SQL engine. If there is an
-	opportunity to rewrite your subquery using simple joins, do it - this
+	opportunity to rewrite your subquery using simple joins, do it—this
 	will improve the performance of your applications dramatically.</p>
 
 	<p>In general, it's a good idea to use EXPLAIN statements to determine
@@ -47,7 +47,7 @@ require_once('../qcubed.inc.php'); ?>
 				/* this will be the alias of our virtual attribute */
 				'over_budget_projects',
 
-				/* actual definition of the SQL subquery - note how
+				/* Actual definition of the SQL subquery - note how
 				  we will be using a {1} parameter to connect it with the rest
 				  of the QQuery. Think of the sprintf-like syntax - that's
 				  really what this is.
@@ -73,7 +73,7 @@ require_once('../qcubed.inc.php'); ?>
 
 			/* We want to return the actual number of the over-budget
 			  projects - not just filter based on them. Thus, we have
-			  to put in an expand statement.
+			  to put in an expanded statement.
 			*/
 			QQ::expand(QQ::virtual('over_budget_projects'))
 		)

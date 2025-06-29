@@ -1,10 +1,10 @@
 <?php
-	// This example header.inc.php is intended to be modfied for your application.
+	// This example header.inc.php is intended to be modified for your application.
 
 use QCubed as Q;
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en" class="no-js">
 	<head>
 		<meta charset="<?php echo(QCUBED_ENCODING); ?>" />
 <?php if (isset($strPageTitle)) { ?>

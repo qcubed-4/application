@@ -9,11 +9,13 @@
 
 namespace QCubed\Control;
 
-require_once(dirname(dirname(__DIR__)) . '/i18n/i18n-lib.inc.php');
-use QCubed\Application\t;
+require_once(dirname(__DIR__, 2) . '/i18n/i18n-lib.inc.php');
 
+use HTMLPurifier_Config;
+use QCubed\Codegen\Generator\TextBox;
 use QCubed\Exception\Caller;
 use QCubed\Exception\InvalidCast;
+use Throwable;
 use QCubed\Project\Application;
 use QCubed\QString;
 use QCubed\Type;
@@ -27,10 +29,10 @@ use QCubed as Q;
  * [input type="password"] or [textarea] depending on the TextMode (see below).
  *
  * @package Controls\Base
- * @property integer $Columns               is the "cols" html attribute (applicable for MultiLine textboxes)
+ * @property integer $Columns               is the "cols" HTML attribute (applicable for MultiLine textboxes)
  * @property string $Format
- * @property string $Text                  is the contents of the textbox, itself
- * @property string|null $Value            Returns the value of the text. If the text is empty, will return null.
+ * @property string $Text                  are the contents of the textbox, itself?
+ * @property string|null $Value            Returns the value of the text. If the text is empty, it will return null.
  *                                            Subclasses can use this to return a specific type of data.
  * @property string $LabelForRequired
  * @property string $LabelForRequiredUnnamed
@@ -39,97 +41,106 @@ use QCubed as Q;
  * @property string $LabelForTooLong
  * @property string $LabelForTooLongUnnamed
  * @property string $Placeholder           HTML5 Only. Placeholder text that gets erased once a user types.
- * @property string $CrossScripting        can be Allow, HtmlEntities, or Deny.  Deny is the default. Prevents cross scripting hacks.  HtmlEntities causes framework to automatically call php function htmlentities on the input data.  Allow allows everything to come through without altering at all.  USE "ALLOW" judiciously: using ALLOW on text entries, and then outputting that data WILL allow hackers to perform cross scripting hacks.
- * @property integer $MaxLength             is the "maxlength" html attribute (applicable for SingleLine textboxes)
- * @property integer $MinLength             is the minimum requred length to pass validation
- * @property integer $Rows                  is the "rows" html attribute (applicable for MultiLine textboxes)
- * @property string $TextMode              a TextMode item. Determines if its a single or multi-line textbox, and the "type" property of the input.
- * @property boolean $AutoTrim              to automatically remove white space from beginning and end of data
+ * @property string $CrossScripting        Can be Allow, HtmlEntities or Deny. Default is denied. Prevents cross-scripting hacks.
+ *                                          HtmlEntities automatically calls the php function HTML entities on the input
+ *                                          data of the framework. Allow allows everything to pass through without any modification.
+ *                                          USE "ALLOW" wisely: Using ALLOW on text entries and then outputting that data
+ *                                          allows hackers to perform cross-scripting hacks.
+ * @property integer $MaxLength             is the "maxlength" HTML attribute (applicable for SingleLine textboxes)
+ * @property integer $MinLength             is the minimum required length to pass validation
+ * @property integer $Rows                  is the "rows" HTML attribute (applicable for MultiLine textboxes)
+ * @property string $TextMode              a TextMode item. Determines if it is a single or multi-line textbox, and the "type" property of the input.
+ * @property boolean $AutoTrim              to automatically remove white space from the beginning and end of data
+ * @property boolean $AllowMultipleEmails   to allow multiple emails to be entered into the textbox
  * @property integer $SanitizeFilter        PHP filter constant to apply to incoming data
  * @property mixed $SanitizeFilterOptions PHP filter constants or array to apply to SanitizeFilter option
  * @property integer $ValidateFilter        PHP filter constant to apply to validate with
  * @property mixed $ValidateFilterOptions PHP filter constants or array to apply to ValidateFilter option
  * @property mixed $LabelForInvalid       PHP filter constants or array to apply to ValidateFilter option
  *
- * @was QTextBoxBase
  * @package QCubed\Control
  */
 abstract class TextBoxBase extends Q\Project\Control\ControlBase
 {
     // Text modes
-    const SINGLE_LINE = 'text'; // Single line text inputs INPUT type="text" boxes
-    const MULTI_LINE = 'MultiLine'; // Textareas
-    const PASSWORD = 'password'; //Single line password inputs
-    const SEARCH = 'search';
-    const NUMBER = 'number';
-    const EMAIL = 'email';
-    const TEL = 'tel';
-    const URL = 'url';
+    public const SINGLE_LINE = 'text'; // Single line text inputs INPUT type="text" boxes
+    public const MULTI_LINE = 'MultiLine'; // Textarea
+    public const PASSWORD = 'password'; //Single-line password inputs
+    public const SEARCH = 'search';
+    public const NUMBER = 'number';
+    public const EMAIL = 'email';
+    public const TEL = 'tel';
+    public const URL = 'url';
 
-    const XSS_ALLOW = 'Allow';
-    const XSS_HTML_ENTITIES = 'HtmlEntities';   // simple entity maker
-    const XSS_HTML_PURIFIER = 'HTMLPurifier'; // use html purifier
-    const XSS_PHP_SANITIZE = 'PhpSanitize'; // Use PHP's built in sanitizer
-    // Legacy and Deny are remvoed. Use something else.
+    public const XSS_ALLOW = 'Allow';
+    public const XSS_HTML_ENTITIES = 'HtmlEntities';   // simple entity maker
+    public const XSS_HTML_PURIFIER = 'HTMLPurifier'; // use html purifier
+    public const XSS_PHP_SANITIZE = 'PhpSanitize'; // Use PHP's built-in cleaner
+    // Legacy and Deny are removed. Use something else.
 
-    public static $DefaultCrossScriptingMode = self::XSS_PHP_SANITIZE;
+    public static string $DefaultCrossScriptingMode = self::XSS_PHP_SANITIZE;
 
 /** @var int */
-    protected $intColumns = 0;
+    protected int $intColumns = 0;
+    /** @var string|null */
+    protected ?string $strText = null;
+    /** @var string|null */
+    protected ?string $strLabelForRequired = null;
+    /** @var string|null */
+    protected ?string $strLabelForRequiredUnnamed = null;
+    /** @var string|null */
+    protected ?string $strLabelForTooShort = null;
+    /** @var string|null */
+    protected ?string $strLabelForTooShortUnnamed = null;
+    /** @var string|null */
+    protected ?string $strLabelForTooLong = null;
+    /** @var string|null */
+    protected ?string $strLabelForTooLongUnnamed = null;
+    /** @var string|null */
+    protected ?string $strPlaceholder = '';
     /** @var string */
-    protected $strText = null;
-    /** @var string */
-    protected $strLabelForRequired;
-    /** @var string */
-    protected $strLabelForRequiredUnnamed;
-    /** @var string */
-    protected $strLabelForTooShort;
-    /** @var string */
-    protected $strLabelForTooShortUnnamed;
-    /** @var string */
-    protected $strLabelForTooLong;
-    /** @var string */
-    protected $strLabelForTooLongUnnamed;
-    /** @var string */
-    protected $strPlaceholder = '';
-    /** @var string */
-    protected $strFormat = '%s';
+    protected string $strFormat = '%s';
 
     // BEHAVIOR
-    /** @var int */
-    protected $intMaxLength = 0;
-    /** @var int */
-    protected $intMinLength = 0;
-    /** @var int */
-    protected $intRows = 0;
-    /** @var string Subclasses should not set this directly, but rather use the TextMode accessor */
-    protected $strTextMode = self::SINGLE_LINE;
-    /** @var string */
-    protected $strCrossScripting;
-    /** @var null */
-    protected $objHTMLPurifierConfig = null;
+    /** @var int|null */
+    protected ?int $intMaxLength = null;
+    /** @var int|null */
+    protected ?int $intMinLength = null;
+    /** @var int|null */
+    protected ?int $intRows = null;
+    /** @var string Subclasses should not set this directly but rather use the TextMode accessor */
+    protected string $strTextMode = self::SINGLE_LINE;
+    /** @var string|null */
+    protected ?string $strCrossScripting = null;
+    /** @var object|null */
+    protected ?object $objHTMLPurifierConfig = null;
 
     // Sanitization and validating
     /** @var bool */
-    protected $blnAutoTrim = false;
-    /** @var int */
-    protected $intSanitizeFilter = null;
-    /** @var mixed */
-    protected $mixSanitizeFilterOptions = null;
-    /** @var int */
-    protected $intValidateFilter = null;
-    /** @var mixed */
-    protected $mixValidateFilterOptions = null;
-    /** @var string */
-    protected $strLabelForInvalid = null;
+    protected ?bool $blnAutoTrim = false;
+    /** @var int|null */
+    protected ?int $intSanitizeFilter = null;
+    /** @var bool */
+    protected ?bool $blnAllowMultipleEmails = false;
 
+    /** @var mixed */
+    protected mixed $mixSanitizeFilterOptions = null;
+    /** @var int|null */
+    protected ?int $intValidateFilter = null;
+    /** @var mixed */
+    protected mixed $mixValidateFilterOptions = null;
+    /** @var string|null */
+    protected ?string $strLabelForInvalid = null;
 
     /**
-     * TextBoxBase constructor.
-     * @param ControlBase|FormBase $objParentObject
-     * @param null $strControlId
+     * Constructor for the class.
+     *
+     * @param FormBase|ControlBase $objParentObject The parent object of the control or form.
+     * @param string|null $strControlId An optional control ID. If not provided, an ID will be auto-generated.
+     * @return void
+     * @throws Caller
      */
-    public function __construct($objParentObject, $strControlId = null)
+    public function __construct(FormBase|ControlBase $objParentObject, ?string $strControlId = null)
     {
         parent::__construct($objParentObject, $strControlId);
 
@@ -144,29 +155,28 @@ abstract class TextBoxBase extends Q\Project\Control\ControlBase
     }
 
     /**
-     * This function allows to set the Configuration for HTMLPurifier
-     * similar to the HTMLPurifierConfig::set() method from the HTMLPurifier API. This creates a custom purifier just
-     * for this textbox. See the Purifier class for setting global options.
+     *  This function allows setting the Configuration for HTMLPurifier
+     *  similar to the HTMLPurifierConfig::set() method from the HTMLPurifier API. This creates a custom purifier just
+     *  for this textbox. See the Purifier class for setting global options.
      *
-     * @param strParameter : The parameter to set for HTMLPurifier
-     * @param mixValue : Value of the parameter.
-     *                     NOTE: THERE IS NO SUPPORT FOR THE DEPRECATED API OF HTMLPURIFIER, HENCE NO THIRD ARGUMENT TO THE
-     *                     FUNCTION CAN BE PASSED.
-     *                     Visit http://htmlpurifier.org/live/configdoc/plain.html for the list of parameters and their effects.
+     * Set a configuration parameter for the HTML Purifier.
+     *
+     * @param string $strParameter The name of the configuration parameter to set.
+     * @param mixed $mixValue The value to assign to the configuration parameter.
+     * @return void
      */
-    public function setPurifierConfig($strParameter, $mixValue)
+    public function setPurifierConfig(string $strParameter, mixed $mixValue): void
     {
-        if ($this->objHTMLPurifierConfig == null) {
-            $this->objHTMLPurifierConfig = \HTMLPurifier_Config::createDefault();
-        }
+        $this->objHTMLPurifierConfig = HTMLPurifier_Config::createDefault();
         $this->objHTMLPurifierConfig->set($strParameter, $mixValue);
     }
 
     /**
      * Parse the data posted back via the control.
-     * This function basically test for the Crossscripting rules applied to the TextBox
+     * This function basically tests for the Crossscripting rules applied to the TextBox
+     * @throws Caller
      */
-    public function parsePostData()
+    public function parsePostData(): void
     {
         // Check to see if this Control's Value was passed in via the POST data
         if (array_key_exists($this->strControlId, $_POST)) {
@@ -185,35 +195,39 @@ abstract class TextBoxBase extends Q\Project\Control\ControlBase
                     $this->strText = QString::htmlEntities($this->strText);
                     break;
                 case self::XSS_HTML_PURIFIER: // Very advanced filtering
-                    $this->strText = Application::purify($this->strText, $this->objHTMLPurifierConfig); // don't save data as html entities! Encode at display time.
+                    $this->strText = Application::purify($this->strText, $this->objHTMLPurifierConfig); // don't save data as HTML entities! Encode at display time.
                     break;
                 default:
-                    throw new \Exception("Unknown cross scripting setting. Legacy purifier is not supported any more. Try XSS_PHP_SANITIZE");
-                    break;
+                    throw new Caller("Unknown cross-scripting setting. Legacy purifier is not supported anymore. Try XSS_PHP_SANITIZE");
             }
         }
     }
 
     /**
-     * Sanitizes the current value.
+     * Sanitizes the input text based on configured properties.
+     *
+     * The method trims the text if auto-trim is enabled and applies the configured sanitized filter
+     * if a filter is specified and multiple email entries are not allowed.
+     *
+     * @return void
      */
-    protected function sanitize()
+    protected function sanitize(): void
     {
         if ($this->blnAutoTrim) {
             $this->strText = trim($this->strText);
         }
 
-        if ($this->intSanitizeFilter) {
+        if ($this->intSanitizeFilter && !$this->blnAllowMultipleEmails) {
             $sanitizeOptions = $this->mixSanitizeFilterOptions ?? 0;
             $this->strText = filter_var($this->strText, $this->intSanitizeFilter, $sanitizeOptions);
         }
     }
 
     /**
-     * Returns the HTML formatted string for the control
+     * Returns the HTML-formatted string for the control
      * @return string HTML string
      */
-    protected function getControlHtml()
+    protected function getControlHtml(): string
     {
         $attrOverride = array('name' => $this->strControlId);
 
@@ -238,18 +252,17 @@ abstract class TextBoxBase extends Q\Project\Control\ControlBase
         }
     }
 
-
     /**
      * Render HTML attributes for the purpose of drawing the tag. Text objects have a number of parameters specific
-     * to them, some of which we use for validation, and some of which are dual purpose.
-     * We render those here, rather than setting the attributes when those are set.
+     * to them, some of which we use for validation, and some of which are for dual purposes.
+     * We render those here rather than setting the attributes when those are set.
      *
      * @param null $attributeOverrides
      * @param null $styleOverrides
      *
      * @return string
      */
-    public function renderHtmlAttributes($attributeOverrides = null, $styleOverrides = null)
+    public function renderHtmlAttributes($attributeOverrides = null, $styleOverrides = null): string
     {
         if ($this->intMaxLength) {
             $attributeOverrides['maxlength'] = $this->intMaxLength;
@@ -263,7 +276,7 @@ abstract class TextBoxBase extends Q\Project\Control\ControlBase
             }
             //if (!$this->blnWrap) {
             /**
-             * $strToReturn .= 'wrap="off" '; Note that this is not standard HTML5 and not supported by all browsers
+             * $strToReturn .= 'wrap="off"' Please note that this is not standard HTML5 and is not supported by all browsers
              * In fact, HTML5 has completely changed its meaning to mean whether the text itself has embedded
              * hard returns inserted when the textarea wraps. Deprecating. We will have to wait for another solution.
              */
@@ -272,7 +285,11 @@ abstract class TextBoxBase extends Q\Project\Control\ControlBase
             if ($this->intColumns) {
                 $attributeOverrides['size'] = $this->intColumns;
             }
-            $typeStr = $this->strTextMode ? $this->strTextMode : 'text';
+            if ($this->strTextMode) {
+                $typeStr = $this->strTextMode;
+            } else {
+                $typeStr = 'text';
+            }
             $attributeOverrides['type'] = $typeStr;
         }
 
@@ -285,14 +302,16 @@ abstract class TextBoxBase extends Q\Project\Control\ControlBase
 
 
     /**
-     * Tests that the value given inside the textbox passes the rules set for the input
-     * Tests it does:
-     * (1) Checks if the textbox was empty while 'Required' property was set to true
-     * (2) Checks for length contrainsts set by 'MaxLength' and 'MinLength' properties
+     * Validates the input of the object based on predefined rules.
      *
-     * @return bool whether or not the control is valid
+     * This function checks whether the input meets certain conditions, such as
+     * whether the input is required and not empty, and whether the input string
+     * length satisfies the configured minimum length. If validation fails, an
+     * appropriate error message is assigned to the ValidationError property.
+     *
+     * @return bool Returns true if the input satisfies all validation rules, otherwise false.
      */
-    public function validate()
+    public function validate(): bool
     {
         // Copy the text
         $strText = $this->strText;
@@ -309,7 +328,7 @@ abstract class TextBoxBase extends Q\Project\Control\ControlBase
         $requiredMessage = $this->strName ? sprintf($this->strLabelForRequired, $this->strName) : $this->strLabelForRequiredUnnamed;
 
         // Check if required is true and the string length is 0
-        if ($this->blnRequired && mb_strlen($strText, Application::encodingType()) == 0) {
+        if ($this->blnRequired && mb_strlen($strText ?? '', Application::encodingType()) == 0) {
             $this->ValidationError = $requiredMessage;
             return false;
         }
@@ -320,30 +339,46 @@ abstract class TextBoxBase extends Q\Project\Control\ControlBase
         }
 
         // Check if the string length is less than the configured minimum length
-        if ($this->intMinLength > 0 && mb_strlen($strText, Application::encodingType()) < $this->intMinLength) {
+        if ($this->intMinLength > 0 && mb_strlen($strText ?? '', Application::encodingType()) < $this->intMinLength) {
             $this->ValidationError = $this->strName
                 ? sprintf($this->strLabelForTooShort, $this->strName, $this->intMinLength)
                 : sprintf($this->strLabelForTooShortUnnamed, $this->intMinLength);
             return false;
         }
 
+        // If a validation filter is set, use filter_var validation
+        if ($this->intValidateFilter && $this->strText !== '') {
+            $isValid = filter_var(
+                $this->strText,
+                $this->intValidateFilter,
+                is_array($this->mixValidateFilterOptions) ? $this->mixValidateFilterOptions : []
+            );
+            if ($isValid === false) {
+                $this->ValidationError = $this->strLabelForInvalid ?? t('Invalid value!');
+                return false;
+            }
+        }
+
         // Additional validations and actions only here if needed
 
         return true;
     }
+
     /**
      * This will focus on and do a "select all" on the contents of the textbox
+     * @throws Caller
      */
-    public function select()
+    public function select(): void
     {
         Application::executeJavaScript(sprintf('qc.getW("%s").select();', $this->strControlId));
     }
 
     /**
-     * Returns the current state of the control to be able to restore it later.
-     * @return mixed
+     * Retrieves the state of the object.
+     *
+     * @return array|null An associative array containing the state information, or null if no state is available.
      */
-    protected function getState()
+    protected function getState(): ?array
     {
         return array('text' => $this->Text);
     }
@@ -352,7 +387,7 @@ abstract class TextBoxBase extends Q\Project\Control\ControlBase
      * Restore the state of the control.
      * @param mixed $state Previously saved state as returned by GetState above.
      */
-    protected function putState($state)
+    protected function putState(mixed $state): void
     {
         if (isset($state['text'])) {
             $this->Text = $state['text'];
@@ -369,7 +404,7 @@ abstract class TextBoxBase extends Q\Project\Control\ControlBase
      * @return mixed
      * @throws Caller
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             // APPEARANCE
@@ -420,14 +455,16 @@ abstract class TextBoxBase extends Q\Project\Control\ControlBase
      * PHP __set magic method implementation
      *
      * @param string $strName Name of the property
-     * @param string $mixValue Value of the property
+     * @param mixed $mixValue Value of the property
      *
      * @return void
-     * @throws Caller|InvalidCast
+     * @throws Caller
+     * @throws InvalidCast
+     * @throws Throwable Exception
      */
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
-        // Setters that do not cause a complete redraw
+        // Setters that do not cause a complete redrawing
         switch ($strName) {
             case "Text":
             case "Value":
@@ -532,7 +569,7 @@ abstract class TextBoxBase extends Q\Project\Control\ControlBase
                 try {
                     $this->strCrossScripting = Type::cast($mixValue, Type::STRING);
                     if ($this->strCrossScripting == self::XSS_PHP_SANITIZE) {
-                        $this->intSanitizeFilter = FILTER_SANITIZE_SPECIAL_CHARS;  // Use PHP's built in sanitizer
+                        $this->intSanitizeFilter = FILTER_SANITIZE_SPECIAL_CHARS;  // Use PHP's built-in sanitizer
                     }
                     break;
                 } catch (InvalidCast $objExc) {
@@ -584,11 +621,6 @@ abstract class TextBoxBase extends Q\Project\Control\ControlBase
                     throw $objExc;
                 }
 
-            // LAYOUT
-            //case "Wrap":
-            // Deprecated. HTML5 has changed the meaning of this, and wrap=off is not consistenly implemented
-            // across browers.
-
             // FILTERING and VALIDATING, no redraw needed
             case "AutoTrim":
                 try {
@@ -609,13 +641,11 @@ abstract class TextBoxBase extends Q\Project\Control\ControlBase
                 }
 
             case "SanitizeFilterOptions":
-                try {
-                    $this->mixSanitizeFilterOptions = $mixValue; // can be integer or array. See PHP doc.
-                    break;
-                } catch (InvalidCast $objExc) {
-                    $objExc->incrementOffset();
-                    throw $objExc;
+                if (!is_int($mixValue) && !is_array($mixValue)) {
+                    throw new InvalidCast("SanitizeFilterOptions should be an integer or an array.");
                 }
+                $this->mixSanitizeFilterOptions = $mixValue;
+                break;
 
             case "ValidateFilter":
                 try {
@@ -627,13 +657,11 @@ abstract class TextBoxBase extends Q\Project\Control\ControlBase
                 }
 
             case "ValidateFilterOptions":
-                try {
-                    $this->mixValidateFilterOptions = $mixValue; // can be integer or array. See PHP doc.
-                    break;
-                } catch (InvalidCast $objExc) {
-                    $objExc->incrementOffset();
-                    throw $objExc;
+                if (!is_int($mixValue) && !is_array($mixValue)) {
+                    throw new InvalidCast("ValidateFilterOptions should be an integer or an array.");
                 }
+                $this->mixValidateFilterOptions = $mixValue;
+                break;
 
             case "LabelForInvalid":
                 try {
@@ -656,14 +684,15 @@ abstract class TextBoxBase extends Q\Project\Control\ControlBase
     }
 
     /**
-     * Returns an description of the options available to modify by the designer for the code generator.
+     * Returns a description of the options that can be modified by the code generator designer.
      *
      * @return QModelConnectorParam[]
+     * @throws Caller
      */
-    public static function getModelConnectorParams()
+    public static function getModelConnectorParams(): array
     {
         return array_merge(parent::getModelConnectorParams(), array(
-            new QModelConnectorParam(get_called_class(), 'Columns', 'Width of field', Type::INTEGER),
+            new QModelConnectorParam(get_called_class(), 'Columns', 'Width of a field', Type::INTEGER),
             new QModelConnectorParam(get_called_class(), 'Rows', 'Height of field for multirow field',
                 Type::INTEGER),
             new QModelConnectorParam(get_called_class(), 'Format', 'printf format string to use',
@@ -690,12 +719,13 @@ abstract class TextBoxBase extends Q\Project\Control\ControlBase
     }
 
     /**
-     * Returns the generator corresponding to this control.
+     * Retrieves an instance of the code generator.
      *
-     * @return Q\Codegen\Generator\GeneratorBase
+     * @return TextBox An instance of the TextBox code generator.
      */
-    public static function getCodeGenerator() {
-        return new Q\Codegen\Generator\TextBox();
+    public static function getCodeGenerator(): Q\Codegen\Generator\TextBox
+    {
+        return new Q\Codegen\Generator\TextBox(__CLASS__);
     }
 
 }

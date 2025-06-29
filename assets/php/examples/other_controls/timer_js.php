@@ -1,11 +1,12 @@
 <?php
 use QCubed\Action\Ajax;
-use QCubed\Action\AjaxControl;
 use QCubed\Action\Server;
 use QCubed\Action\ServerControl;
 use QCubed\Event\Click;
 use QCubed\Event\TimerExpired;
-use QCubed\Project\Control\Button;
+use QCubed\Exception\Caller;
+//use QCubed\Project\Control\Button;
+use QCubed\Project\Jqui\Button;
 use QCubed\Project\Control\DataGrid;
 use QCubed\Project\Control\FormBase;
 use QCubed\Project\Control\JsTimer;
@@ -14,29 +15,29 @@ require_once('../qcubed.inc.php');
 
 class Order
 {
-    public $Id;
-    public $Items;
+    public int $Id;
+    public string $Items;
 }
 
 class ExampleForm extends FormBase
 {
     // Declare the DataGrid
-    protected $dtgOrders;
-    public $objOrdersArray = array();
+    protected DataGrid $dtgOrders;
+    public array $objOrdersArray = array();
 
-    protected $intOrderCnt = 0;
+    protected int $intOrderCnt = 0;
 
-    protected $btnServerAction;
-    protected $btnRestartOnServerAction;
+    protected Button $btnServerAction;
+    protected Button $btnRestartOnServerAction;
 
-    protected $ctlTimer;
+    protected JsTimer $ctlTimer;
 
-    protected $btnStart;
-    protected $btnStop;
+    protected Button $btnStart;
+    protected Button $btnStop;
 
-    protected $objRandomProductsArray = array();
+    protected array $objRandomProductsArray = array();
 
-    protected function formCreate()
+    protected function formCreate(): void
     {
 
         $this->objRandomProductsArray[0] = '1x Sandwich, 2x Coke, 1x Big Pekahuna Burger';
@@ -63,8 +64,8 @@ class ExampleForm extends FormBase
 
         $this->dtgOrders->createPropertyColumn('Order-Id', 'Id');
         $this->dtgOrders->createPropertyColumn('Products', 'Items');
-        $col = $this->dtgOrders->createCallableColumn('Remove', [$this, 'renderRemoveButton']);
-        $col->HtmlEntities = false;
+        //$col = $this->dtgOrders->createCallableColumn('Remove', [$this, 'renderRemoveButton']);
+        //$col->HtmlEntities = false;
         $this->dtgOrders->setDataBinder('dtgOrders_Bind');
 
         $this->btnServerAction->addAction(new Click(), new Server('OnServerAction'));
@@ -84,12 +85,12 @@ class ExampleForm extends FormBase
     }
 
     //the timer callback function for updating the orders
-    public function onUpdateDtg()
+    public function onUpdateDtg(): void
     {
         //fetch new orders
         $randProdNum = rand(0, 3);
         $this->intOrderCnt++;
-        // Limit the amount of items in a table to 10
+        // Limit the number of items in a table to 10
         // There is no paging for this datagrid,
         // so many items here can consume CPU greatly
         if ($this->intOrderCnt > 10) {
@@ -103,7 +104,7 @@ class ExampleForm extends FormBase
         $this->dtgOrders->markAsModified();
     }
 
-    public function onToggleRestartOnServerAction()
+    public function onToggleRestartOnServerAction(): void
     {
         $blnRestart = $this->ctlTimer->RestartOnServerAction;
         if ($blnRestart) {
@@ -115,17 +116,24 @@ class ExampleForm extends FormBase
         $this->ctlTimer->RestartOnServerAction = !$blnRestart;
     }
 
-    public function onServerAction()
+    public function onServerAction(): void
     {
         //ServerAction test
     }
 
-    public function renderRemoveButton($item)
+    /**
+     * Renders a remove button for a given item. If the button does not exist, it initializes and configures it.
+     *
+     * @param object $item The item for which the remove button is being rendered. The item must have an Id property.
+     * @return string The rendered HTML string for the remove button.
+     * @throws Caller
+     */
+    public function renderRemoveButton(mixed $item): string
     {
         $objControlId = "removeButton" . $item->Id;
         $objControl = $this->getControl($objControlId);
         if (!$objControl) {
-            $objControl = new \QCubed\Project\Jqui\Button($this->dtgOrders, $objControlId);
+            $objControl = new Button($this->dtgOrders, $objControlId);
             $objControl->Text = true;
             $objControl->ActionParameter = $item->Id;
             $objControl->addAction(new Click(), new Ajax("removeButton_Click"));
@@ -139,15 +147,15 @@ class ExampleForm extends FormBase
     }
 
 
-    public function removeButton_Click($strFormId, $strControlId, $strParameter)
+    public function removeButton_Click(string $strFormId, string $strControlId, string $strParameter): void
     {
         unset($this->objOrdersArray[$strParameter]);
         $this->dtgOrders->markAsModified();
     }
 
-    protected function dtgOrders_Bind()
+    protected function dtgOrders_Bind(): void
     {
-        // We load the data source, and set it to the datagrid's DataSource parameter
+        // We load the data source and set it to the datagrid's DataSource parameter
         $this->dtgOrders->DataSource = $this->objOrdersArray;
     }
 }

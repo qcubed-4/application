@@ -17,7 +17,7 @@ use QCubed\Query\Node\NodeBase;
  * Class WatcherBase
  *
  * Watcher is a helper class that allows controls and forms to watch database tables
- * and automatically redraw when changes are detected. It works together with the codegened
+ * and automatically redraw when changes are detected. It works together with the codegen
  * model classes, the controls, and the QForm class to draw or refresh when needed.
  *
  * Static functions handle the database updating, while member variables store the current state
@@ -27,19 +27,22 @@ use QCubed\Query\Node\NodeBase;
  * See Watcher to select the caching mechanism you would like to use.
  *
  * @package QCubed\Watcher
- * @was QWatcherBase
  */
 abstract class WatcherBase extends ObjectBase
 {
-    /** @var  boolean */
-    private static $blnWatcherChanged;
+    public const QCUBED_WATCHER_CLASS = 'Watcher';
 
-    protected $strWatchedKeys = array();    // gets saved with form state
+    /** @var  boolean */
+    private static bool $blnWatcherChanged = false;
+
+    protected array $strWatchedKeys = array();    // gets saved with form state
 
     /**
-     * Optional initialization step. Called at application startup time.
+     * Initializes the required components or settings for the application or system.
+     *
+     * @return void
      */
-    public static function initialize()
+    public static function initialize(): void
     {
     }
 
@@ -47,14 +50,14 @@ abstract class WatcherBase extends ObjectBase
      * Returns a unique key corresponding to the given table in the given database.
      * Override this function to return a key value that will define a subset of the table to
      * watch. For example, if you have records associated with User Ids,
-     * combine the user id with the table name, and then
-     * only records associated with that user id will be watched.
+     * combine the user ID with the table name, and then
+     * only records associated with that user ID will be watched.
      *
      * @param string $strDbName
      * @param string $strTableName
      * @return string
      */
-    protected static function getKey($strDbName, $strTableName)
+    protected static function getKey(string $strDbName, string $strTableName): string
     {
         return $strDbName . '.' . $strTableName;
     }
@@ -62,10 +65,10 @@ abstract class WatcherBase extends ObjectBase
     /**
      * Call from control to watch a node. Watches all tables associated with the node.
      *
-     * @param \QCubed\Query\Node\NodeBase $objNode
+     * @param NodeBase $objNode
      * @throws Caller
      */
-    public function watch(NodeBase $objNode)
+    public function watch(NodeBase $objNode): void
     {
         $strClassName = $objNode->_ClassName;
 
@@ -90,7 +93,7 @@ abstract class WatcherBase extends ObjectBase
      * @param string $strDbName
      * @param string $strTableName
      */
-    protected function registerTable($strDbName, $strTableName)
+    protected function registerTable(string $strDbName, string $strTableName): void
     {
         $key = static::getKey($strDbName, $strTableName);
         if (empty($this->strWatchedKeys[$key])) {
@@ -103,14 +106,14 @@ abstract class WatcherBase extends ObjectBase
      * to the current state of the database.
      *
      */
-    abstract public function makeCurrent();
+    abstract public function makeCurrent(): void;
 
     /**
      * QControlBase uses this from IsModified to detect if it should redraw.
      * Returns false if the database has been changed since the last draw.
      * @return bool
      */
-    abstract public function isCurrent();
+    abstract public function isCurrent(): bool;
 
     /**
      * Models call into here to mark a particular table modified.
@@ -118,7 +121,7 @@ abstract class WatcherBase extends ObjectBase
      * @param string $strDbName
      * @param string $strTableName
      */
-    public static function markTableModified($strDbName, $strTableName)
+    public static function markTableModified(string $strDbName, string $strTableName): void
     {
         self::$blnWatcherChanged = true;
     }
@@ -126,12 +129,12 @@ abstract class WatcherBase extends ObjectBase
     /**
      * Support function for the FormBase to determine if any of the watchers have changed since the last time
      * it checked. Since this is relying on a global variable, the variable is reset upon program entry, including
-     * ajax entry. So really, we are just detecting if any operation we have currently done has changed a watcher, so
+     * ajax entry. So really, we are just detecting if any operation we have currently done has changed a watcher so
      * that the form can broadcast that fact to other browser windows that might be looking.
      *
      * @return bool
      */
-    static public function watchersChanged()
+    static public function watchersChanged(): bool
     {
         $blnChanged = self::$blnWatcherChanged;
         self::$blnWatcherChanged = false;

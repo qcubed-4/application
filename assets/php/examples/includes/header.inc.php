@@ -1,9 +1,11 @@
-<?php require(QCUBED_EXAMPLES_DIR . '/includes/examples.inc.php'); ?>
+<?php use QCubed\Project\Application;
+
+require(QCUBED_EXAMPLES_DIR . '/includes/examples.inc.php'); ?>
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta charset="<?php _p(\QCubed\Project\Application::encodingType()); ?>" />
-		<title><?php _p(Examples::PageName(), false); ?> - QCubed PHP 5 Development Framework - Examples</title>
+		<meta charset="<?php _p(Application::encodingType()); ?>" />
+		<title><?php _p(Examples::PageName(), false); ?> - QCubed PHP 8.3+ Development Framework - Examples</title>
 		<link rel="stylesheet" type="text/css" href="<?php _p(QCUBED_CSS_URL . '/qcubed.css', false); ?>" />
 		<link rel="stylesheet" type="text/css" href="<?php _p(QCUBED_CSS_URL . '/jquery-ui.min.css', false); ?>" />
 		<link rel="stylesheet" type="text/css" href="<?php _p(QCUBED_EXAMPLES_URL . '/includes/examples.css', false); ?>" />

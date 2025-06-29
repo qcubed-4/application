@@ -12,7 +12,6 @@ namespace QCubed\Event;
 /**
  * Class Focus
  *
- * @was QFocusEvent
  * @package QCubed\Event
  */
 class Focus extends EventBase

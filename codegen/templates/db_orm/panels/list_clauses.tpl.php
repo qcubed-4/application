@@ -1,3 +1,3 @@
-	protected function getDataListClauses() {
-		return null;
-	}
+    protected function getDataListClauses() {
+        return null;
+    }

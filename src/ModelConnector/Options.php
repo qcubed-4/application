@@ -9,21 +9,19 @@
 
 namespace QCubed\ModelConnector;
 
-use QCubed;
 use QCubed\ObjectBase;
 
 /**
- * Interface to the ModelConnector options that let you specify various options per field to be placed in the codegened
- * ModelConnectorrolGen classes.
+ * Interface to the ModelConnector options that let you specify various options per a field to be placed in the codegen
+ * ModelConnectorGen classes.
  *
- * Note that this ties table and field names in the database to options iModelConnectorontrol. If the table or field name
+ * Note that this ties table and field names in the database to options iModelCruiseControl. If the table or field name
  * changes in the database, the options will be lost. We can try to guess as to whether changes were made based upon
- * the index of the changes in the field list, but not entirely easy to do. Best would be for developer to hand-code
- * the changes in the json file in this case.
+ * the index of the changes in the field list, but not entirely easy to do. Best would be for a developer to hand-code
+ * the changes in the JSON file in this case.
  *
  * This will be used by the designer to record the changes in preparation for codegen.
  *
- * @was QModelConnectorOptions
  * @package QCubed\ModelConnector
  */
 class Options extends ObjectBase
@@ -37,8 +35,8 @@ class Options extends ObjectBase
     const CREATE_ON_RECORD_NOT_FOUND = 2;
     const EDIT_ONLY = 3;
 
-    protected $options = array();
-    protected $blnChanged = false;
+    protected array $options = array();
+    protected ?bool $blnChanged = false;
 
     const TABLE_OPTIONS_FIELD_NAME = '*';
 
@@ -56,9 +54,11 @@ class Options extends ObjectBase
     }
 
     /**
-     * Save the current configuration into the options file.
+     * Saves the current options to a configuration file if changes have been made.
+     *
+     * @return void
      */
-    public function save()
+    public function save(): void
     {
         if (!$this->blnChanged) {
             return;
@@ -74,7 +74,12 @@ class Options extends ObjectBase
     }
 
     /**
-     * Makes sure save is the final step.
+     * Destructor method to handle cleanup operations.
+     *
+     * Calls the save() method to ensure any necessary data is persisted
+     * before the object is destroyed.
+     *
+     * @return void
      */
     public function __destruct()
     {
@@ -83,27 +88,29 @@ class Options extends ObjectBase
 
 
     /**
-     * Set an option for a widget associated with the given table and field.
+     * Set an option value.
      *
-     * @param $strTableName
-     * @param $strFieldName
-     * @param $strOptionName
-     * @param $mixValue
+     * @param string $strTableName The name of the table to configure.
+     * @param string $strFieldName The name of the field within the table.
+     * @param string $strOptionName The name of the option to be set.
+     * @param mixed $mixValue The value to assign to the specified option.
+     * @return void
      */
-    public function setOption($strTableName, $strFieldName, $strOptionName, $mixValue)
+    public function setOption(string $strTableName, string $strFieldName, string $strOptionName, mixed $mixValue): void
     {
         $this->options[$strTableName][$strFieldName][$strOptionName] = $mixValue;
         $this->blnChanged = true;
     }
 
     /**
-     * Bulk option setting.
+     * Sets or updates an option value. Removes the option if the provided value is empty.
      *
-     * @param $strClassName
-     * @param $strFieldName
-     * @param $mixValue
+     * @param string $strClassName The name of the class associated with the option.
+     * @param string $strFieldName The name of the field associated with the option.
+     * @param mixed $mixValue The value to set for the specified option.
+     * @return void
      */
-    public function setOptions($strClassName, $strFieldName, $mixValue)
+    public function setOptions(string $strClassName, string $strFieldName, mixed $mixValue): void
     {
         if (empty($mixValue)) {
             unset($this->options[$strClassName][$strFieldName]);
@@ -114,47 +121,41 @@ class Options extends ObjectBase
     }
 
     /**
-     * Remove the option
+     * Unset an option.
      *
-     * @param $strClassName
-     * @param $strFieldName
-     * @param $strOptionName
+     * @param string $strClassName Name of the class.
+     * @param string $strFieldName Name of the field.
+     * @param string $strOptionName Name of the option to be unset.
+     * @return void
      */
-    public function unsetOption($strClassName, $strFieldName, $strOptionName)
+    public function unsetOption(string $strClassName, string $strFieldName, string $strOptionName): void
     {
         unset($this->options[$strClassName][$strFieldName][$strOptionName]);
         $this->blnChanged = true;
     }
 
     /**
-     * Lookup an option.
+     * Retrieves the value of a specific option for the given class, field, and option name.
      *
-     * @param $strClassName
-     * @param $strFieldName
-     * @param $strOptionName
-     * @return mixed
+     * @param string $strClassName The name of the class associated with the option.
+     * @param string $strFieldName The name of the field associated with the option.
+     * @param string $strOptionName The specific option name to retrieve.
+     * @return mixed The value of the specified option if it exists, otherwise null.
      */
-    public function getOption($strClassName, $strFieldName, $strOptionName)
+    public function getOption(string $strClassName, string $strFieldName, string $strOptionName): mixed
     {
-        if (isset($this->options[$strClassName][$strFieldName][$strOptionName])) {
-            return $this->options[$strClassName][$strFieldName][$strOptionName];
-        } else {
-            return null;
-        }
+        return $this->options[$strClassName][$strFieldName][$strOptionName] ?? null;
     }
 
     /**
-     * Return all the options associated with the given table and field.
-     * @param $strClassName
-     * @param $strFieldName
-     * @return mixed
+     * Retrieves the options associated with a given class and field.
+     *
+     * @param string $strClassName The name of the class for which options are retrieved.
+     * @param string $strFieldName The name of the field for which options are retrieved.
+     * @return array The options for the specified class and field, or an empty array if none exist.
      */
-    public function getOptions($strClassName, $strFieldName)
+    public function getOptions(string $strClassName, string $strFieldName): array
     {
-        if (isset($this->options[$strClassName][$strFieldName])) {
-            return $this->options[$strClassName][$strFieldName];
-        } else {
-            return array();
-        }
+        return $this->options[$strClassName][$strFieldName] ?? array();
     }
 }

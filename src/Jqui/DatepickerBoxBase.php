@@ -9,23 +9,25 @@
 
 namespace QCubed\Jqui;
 
-require_once(dirname(dirname(__DIR__)) . '/i18n/i18n-lib.inc.php');
+require_once(dirname(__DIR__, 2) . '/i18n/i18n-lib.inc.php');
+
+use DateMalformedStringException;
 use QCubed\Control\Calendar;
 use QCubed\Exception\Caller;
 use QCubed\Exception\InvalidCast;
 use QCubed\QDateTime;
 use QCubed\Type;
 use QCubed as Q;
-
+use Throwable;
 
 /**
  * Class DatepickerBoxBase
  *
  * The QDatepickerBoxBase class defined here provides an interface between the generated
- * QDatepickerBoxGen class, and QCubed. This file is part of the core and will be overwritten
+ * QDatepickerBoxGen class and QCubed. This file is part of the core and will be overwritten
  * when you update QCubed. To override, make your changes to the QDatepickerBox.class.php file instead.
  *
- * A Datepicker Box is similar to a Datepicker, but its not associated with a field. It
+ * A Datepicker Box is similar to a Datepicker, but it's not associated with a field. It
  * just displays a calendar for picking a date.
  *
  * @property string $DateFormat             The format to use for displaying the date
@@ -37,21 +39,20 @@ use QCubed as Q;
  * @property-write string $MinDateErrorMsg  Message to display if we are before the minimum date
  * @property-write string $MaxDateErrorMsg  Message to display if we are after the maximum date
  * @link    http://jqueryui.com/datepicker/#inline
- * @was QDatepickerBoxBase
  * @package QCubed\Jqui
  */
 class DatepickerBoxBase extends DatepickerBoxGen
 {
     /** @var string Format for the datetime to pick */
-    protected $strDateTimeFormat = "MM/DD/YYYY"; // matches default of JQuery UI control
-    /** @var QDateTime variable to store the picked value */
-    protected $dttDateTime;
-    /** @var  string */
-    protected $strMinDateErrorMsg;
-    /** @var  string */
-    protected $strMaxDateErrorMsg;
+    protected string $strDateTimeFormat = "MM/DD/YYYY"; // matches default of JQuery UI control
+    /** @var QDateTime|null variable to store the picked value */
+    protected ?QDateTime $dttDateTime = null;
+    /** @var  string|null */
+    protected ?string $strMinDateErrorMsg = null;
+    /** @var  string|null */
+    protected ?string $strMaxDateErrorMsg = null;
 
-    public function parsePostData()
+    public function parsePostData(): void
     {
         // Check to see if this Control's Value was passed in via the POST data
         if (array_key_exists($this->strControlId, $_POST)) {
@@ -66,8 +67,10 @@ class DatepickerBoxBase extends DatepickerBoxGen
     /**
      * Validate the control.
      * @return bool
+     * @throws Caller
+     * @throws DateMalformedStringException
      */
-    public function validate()
+    public function validate(): bool
     {
         if (!parent::validate()) {
             return false;
@@ -84,7 +87,7 @@ class DatepickerBoxBase extends DatepickerBoxGen
                     if ($this->strMinDateErrorMsg) {
                         $this->ValidationError = $this->strMinDateErrorMsg;
                     } else {
-                        $this->ValidationError = t("Date is earlier than minimum allowed");
+                        $this->ValidationError = t("Date is earlier than the minimum allowed");
                     }
                     return false;
                 }
@@ -95,7 +98,7 @@ class DatepickerBoxBase extends DatepickerBoxGen
                     if ($this->strMaxDateErrorMsg) {
                         $this->ValidationError = $this->strMaxDateErrorMsg;
                     } else {
-                        $this->ValidationError = t("Date is later than maximum allowed");
+                        $this->ValidationError = t("Date is later than the maximum allowed");
                     }
                     return false;
                 }
@@ -115,7 +118,7 @@ class DatepickerBoxBase extends DatepickerBoxGen
      * @return mixed
      * @throws Caller
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             // MISC
@@ -146,11 +149,14 @@ class DatepickerBoxBase extends DatepickerBoxGen
      * PHP magic method implementation
      *
      * @param string $strName Property name
-     * @param string $mixValue Property value to be set
+     * @param mixed $mixValue Property value to be set
      *
-     * @throws Caller|InvalidCast
+     * @throws Caller
+     * @throws DateMalformedStringException
+     * @throws InvalidCast
+     * @throws Throwable
      */
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             case 'MaxDate':
@@ -256,8 +262,9 @@ class DatepickerBoxBase extends DatepickerBoxGen
 
     /**
      * @return Q\ModelConnector\Param[]
+     * @throws Caller
      */
-    public static function getModelConnectorParams()
+    public static function getModelConnectorParams(): array
     {
         return array_merge(parent::getModelConnectorParams(), array(
             new Q\ModelConnector\Param (get_called_class(), 'DateFormat', 'How to format the date. Default: MM/DD/YY',

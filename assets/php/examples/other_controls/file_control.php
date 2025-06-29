@@ -1,5 +1,7 @@
 <?php
 use QCubed\Action\ActionParams;
+use QCubed\Action\Ajax;
+use QCubed\Action\Server;
 use QCubed\Control\FileControl;
 use QCubed\Control\Image;
 use QCubed\Folder;
@@ -12,13 +14,13 @@ require_once('../qcubed.inc.php');
 class ExampleForm extends FormBase
 {
     /** @var  Image */
-    protected $lblImage;
+    protected Image $lblImage;
     /** @var  Button */
-    protected $btnUpload;
+    protected Button $btnUpload;
     /** @var  FileControl */
-    protected $flcImage;
+    protected FileControl $flcImage;
 
-    protected function formCreate()
+    protected function formCreate(): void
     {
         $this->lblImage = new Image($this);
         if (isset($_SESSION['file_control'])) {
@@ -27,14 +29,23 @@ class ExampleForm extends FormBase
         $this->lblImage->AlternateText = "File Control Picture";
 
         $this->btnUpload = new Button($this);
-        $this->btnUpload->Text = "Upload";
-        $this->btnUpload->OnClick(new \QCubed\Action\Server("btnUpload_Click")); // MUST be a Server action, and not an Ajax action!
+        $this->btnUpload->Text = t("Upload");
+        $this->btnUpload->OnClick(new Server("btnUpload_Click")); // MUST be a Server action, and not an Ajax action!
 
-        $this->flcImage = new \QCubed\Control\FileControl($this);
+        $this->flcImage = new FileControl($this);
+        $this->flcImage->OnChange(new Ajax("btnUpload_Change")); // MUST be a Server action, and not an Ajax action!
         $this->flcImage->Required = true;
+
     }
 
-    protected function btnUpload_Click(ActionParams $params)
+    protected function btnUpload_Change(ActionParams $params): void
+    {
+
+            $this->btnUpload->Enabled = true;
+
+    }
+
+    protected function btnUpload_Click(ActionParams $params): void
     {
         $file = $this->flcImage->File;
 
@@ -43,8 +54,8 @@ class ExampleForm extends FormBase
         Folder::makeDirectory($imageDir, 0700);
 
         // Our strategy here is just for managing the demo on a shared server. We allow the directory to fill with 100
-        // files at most, and then clear it out.
-        if (Folder::countItems($imageDir) > 100) {
+        // files at most and then clear it out.
+        if (Folder::countItems($imageDir) > 10) {
             Folder::emptyContents($imageDir);
         }
 
@@ -57,14 +68,15 @@ class ExampleForm extends FormBase
         $this->lblImage->ImageUrl = "../images/files/" . $_SESSION['file_control'];
     }
 
-    protected function formValidate() {
+    protected function formValidate(): bool
+    {
         $blnValid = parent::formValidate();
 
         if (is_array($this->flcImage->File)) {
             $this->flcImage->Warning = "Select only a single file.";
             $blnValid = false;
         }
-        // Just checking for mime type is not enough for complete security, but its a good first start for users trying to
+        // Just checking for a mime type is not enough for complete security, but its good first start for users trying to
         // do the right thing.
         elseif ($this->flcImage->Type != "image/jpeg" &&
             $this->flcImage->Type != "image/jpg") {
@@ -73,7 +85,7 @@ class ExampleForm extends FormBase
             $blnValid = false;
         }
 
-        // Here you might use exif to further check for a jpeg file, or use the PHP image functions to attempt to copy the image.
+        // Here you might use exif to further check for a JPEG file or use the PHP image functions to attempt to copy the image.
         return $blnValid;
     }
 

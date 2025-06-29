@@ -28,16 +28,16 @@
 <div id="demoZone">
 	<table border="0">
 		<tr>
-			<td><?php $this->objCounter1->Render(); ?></td>
+			<td><?php $this->objCounter1->render(); ?></td>
 			<td align="center" style="width:40px;font-weight: bold; font-size: 28px;">+</td>
-			<td><?php $this->objCounter2->Render(); ?></td>
+			<td><?php $this->objCounter2->render(); ?></td>
 			<td align="center" style="width:40px;font-weight: bold; font-size: 28px;">+</td>
-			<td><?php $this->objCounter3->Render(); ?></td>
+			<td><?php $this->objCounter3->render(); ?></td>
 		</tr>
 	</table>
 
-	<p><?php $this->btnButton->Render(); ?></p>
-	<p><?php $this->lblMessage->Render(); ?></p>
+	<p><?php $this->btnButton->render(); ?></p>
+	<p><?php $this->lblMessage->render(); ?></p>
 </div>
 
 <?php $this->renderEnd(); ?>

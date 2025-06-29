@@ -9,6 +9,7 @@
 
 namespace QCubed\Table;
 
+use Exception;
 use QCubed\Exception\Caller;
 use QCubed\Exception\InvalidCast;
 use QCubed\Query\QQ;
@@ -17,30 +18,34 @@ use QCubed\Type;
 /**
  * Class PropertyColumn
  *
- * Column to dispay a  property of an object, as in $object->Property
+ * Column to display a property of an object, as in $object->Property
  * If your DataSource is an array of objects, use this column to display a particular property of each object.
- * Can search with depth to, as in $obj->Prop1->Prop2.
- *
- * @property string $Property the property to use when accessing the objects in the DataSource array. Can be a s
- *  series of properties separated with '->', i.e. 'Prop1->Prop2->Prop3' will find the Prop3 item inside the Prop2 object,
- *  inside the Prop1 object, inside the current object.
- * @property boolean $NullSafe if true the value fetcher will check for nulls before accessing the properties
- * @was QHtmlTablePropertyColumn
+ * Can search with depth too, as in $obj->Prop1->Prop2
+ * @property string $Property Attribute to use when accessing objects in the DataSource array. Can be s
+ *  a series of attributes separated by '->', i.e. 'Prop1->Prop2->Prop3' finds Prop3 within Prop2,
+ *  within Prop1, within the current object.
+ * @property boolean $NullSafe if true, the value fetcher will check for nulls before accessing the properties
  * @package QCubed\Table
  */
 class PropertyColumn extends DataColumn
 {
-    protected $strProperty;
-    protected $strPropertiesArray;
-    protected $blnNullSafe = true;
+    protected string $strProperty;
+    protected array $strPropertiesArray = [];
+    /**
+     * Indicates whether the operation should be performed in a null-safe manner.
+     */
+    protected bool $blnNullSafe = true;
 
     /**
-     * @param string $strName name of the column
-     * @param string|null $strProperty the property name to use when accessing the DataSource row object.
-     *                                 Can be null, in which case object will have the ->__toString() function called on it.
-     * @param \QCubed\Query\Node\NodeBase $objBaseNode if not null, the OrderBy and ReverseOrderBy clauses will be created using the property path and the given database node
+     * Constructs a new instance of the class.
+     *
+     * @param string $strName The name to initialize the instance with.
+     * @param string $strProperty A specific property related to the instance.
+     * @param object|null $objBaseNode An optional base node to traverse and initialize order clauses.
+     * @throws Caller
+     * @throws InvalidCast
      */
-    public function __construct($strName, $strProperty, $objBaseNode = null)
+    public function __construct(string $strName, string $strProperty, ?object $objBaseNode = null)
     {
         parent::__construct($strName);
         $this->Property = $strProperty;
@@ -55,7 +60,13 @@ class PropertyColumn extends DataColumn
         }
     }
 
-    public function fetchCellObject($item)
+    /**
+     * Retrieves a cell object by traversing the properties of the provided item.
+     *
+     * @param mixed $item The item to traverse and fetch the cell object from. It can be a null or any object with properties.
+     * @return mixed|null Returns the fetched cell object, or null if $item or a traversed property is null and null-safety is enabled.
+     */
+    public function fetchCellObject(mixed $item): mixed
     {
         if ($this->blnNullSafe && $item == null) {
             return null;
@@ -78,7 +89,7 @@ class PropertyColumn extends DataColumn
      * @throws Exception
      * @throws Caller
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             case 'Property':
@@ -99,14 +110,14 @@ class PropertyColumn extends DataColumn
      * PHP magic method
      *
      * @param string $strName
-     * @param string $mixValue
+     * @param mixed $mixValue
      *
-     * @return mixed|void
-     * @throws Exception
+     * @return void
      * @throws Caller
      * @throws InvalidCast
+     * @throws Exception
      */
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             case "Property":

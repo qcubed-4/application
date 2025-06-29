@@ -16,7 +16,6 @@ use QCubed\Css\DisplayType;
  *
  * Panels can be used to create composite controls which are to be rendered as blocks (not inline)
  *
- * @was QPanel
  * @package QCubed\Control
  */
 class Panel extends BlockControl
@@ -25,11 +24,11 @@ class Panel extends BlockControl
     // Protected Member Variables
     ///////////////////////////
     /** @var string HTML tag to the used for the Block Control */
-    protected $strTagName = 'div';
+    protected string $strTagName = 'div';
     /** @var string Default display style for the control */
-    protected $strDefaultDisplayStyle = DisplayType::BLOCK;
+    protected string $strDefaultDisplayStyle = DisplayType::BLOCK;
     /** @var bool Is the control a block element? */
-    protected $blnIsBlockElement = true;
+    protected bool $blnIsBlockElement = true;
     /** @var bool Use htmlentities for the control? */
-    protected $blnHtmlEntities = false;
+    protected bool $blnHtmlEntities = false;
 }

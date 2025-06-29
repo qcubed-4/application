@@ -16,11 +16,9 @@ namespace QCubed\Jqui\Event;
  * datepicker to not function correctly. The problem is related to how the datepicker is implemented on the
  * JQueryUI end. They have been meaning to do a rewrite for quite some time, but have not gotten to that.
  *
- * @was QDatepicker_SelectEvent2
  */
 
 class DatepickerSelect2 extends EventBase {
     /** Event name for the event */
     const EVENT_NAME = 'QDatepicker_Select2';
 }
-

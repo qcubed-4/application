@@ -6,6 +6,7 @@ use QCubed\Event\Blur;
 use QCubed\Event\Click;
 use QCubed\Event\EnterKey;
 use QCubed\Event\EscapeKey;
+use QCubed\Project\Application;
 use QCubed\Project\Control\FormBase;
 use QCubed\Project\Control\TextBox;
 
@@ -14,18 +15,19 @@ require_once('../qcubed.inc.php');
 class SelectableLabel extends Label
 {
     // For Simplicity -- We made this a public member variable
-    // In the future, you might want to make it protected, and make public get/set accessors
-    public $Selected;
-
+    // In the future, you might want to make it protected and make a public get/set accessors
+    public bool $Selected = false;
 }
 
 class ExampleForm extends FormBase
 {
 
-    protected $lblArray;
-    protected $txtArray;
+    /** @var SelectableLabel[] */
+    protected array $lblArray = [];
+    /** @var TextBox[] */
+    protected array $txtArray = [];
 
-    protected function formCreate()
+    protected function formCreate(): void
     {
         for ($intIndex = 0; $intIndex < 10; $intIndex++) {
             // Create the Label
@@ -40,6 +42,10 @@ class ExampleForm extends FormBase
             $this->txtArray[$intIndex]->Visible = false;
             $this->txtArray[$intIndex]->ActionParameter = $intIndex;
 
+            $this->txtArray[$intIndex]->BorderWidth = '1px';
+            $this->txtArray[$intIndex]->BorderColor = 'gray';
+            $this->txtArray[$intIndex]->BorderStyle = 'Solid';
+
             // Create Actions to Save Textbox on Blur or on "Enter" Key
             $this->txtArray[$intIndex]->addAction(new Blur(), new Ajax('TextItem_Save'));
             $this->txtArray[$intIndex]->addAction(new EnterKey(),
@@ -53,7 +59,7 @@ class ExampleForm extends FormBase
         }
     }
 
-    protected function lblArray_Click($strFormId, $strControlId, $strParameter)
+    protected function lblArray_Click(string $strFormId, string $strControlId, string $strParameter): void
     {
         // Is the Label being clicked already selected?
         if ($this->lblArray[$strParameter]->Selected) {
@@ -61,9 +67,9 @@ class ExampleForm extends FormBase
             $this->lblArray[$strParameter]->Visible = false;
             $this->txtArray[$strParameter]->Visible = true;
             $this->txtArray[$strParameter]->Text = html_entity_decode($this->lblArray[$strParameter]->Text, ENT_COMPAT,
-                \QCubed\Project\Application::encodingType());
-            \QCubed\Project\Application::executeControlCommand($this->txtArray[$strParameter]->ControlId, 'select');
-            \QCubed\Project\Application::executeControlCommand($this->txtArray[$strParameter]->ControlId, 'focus');
+                Application::encodingType());
+            Application::executeControlCommand($this->txtArray[$strParameter]->ControlId, 'select');
+            Application::executeControlCommand($this->txtArray[$strParameter]->ControlId, 'focus');
         } else {
             // Nope -- not yet selected
             // First, unselect everything else
@@ -80,11 +86,11 @@ class ExampleForm extends FormBase
         }
     }
 
-    protected function textItem_Save($strFormId, $strControlId, $strParameter)
+    protected function textItem_Save(string $strFormId, string $strControlId, string $strParameter): void
     {
-        $strValue = trim($this->txtArray[$strParameter]->Text);
+        $strValue = $this->txtArray[$strParameter]->Text;
 
-        if (strlen($strValue)) {
+        if (!empty($strValue)) {
             // Copy the Textbox value back to the Label
             $this->lblArray[$strParameter]->Text = $strValue;
         }
@@ -96,7 +102,7 @@ class ExampleForm extends FormBase
         $this->lblArray[$strParameter]->CssClass = 'renamer_item';
     }
 
-    protected function textItem_Cancel($strFormId, $strControlId, $strParameter)
+    protected function textItem_Cancel(string $strFormId, string $strControlId, string $strParameter): void
     {
         // Hide the Textbox, get the label cleaned up and ready to go
         $this->lblArray[$strParameter]->Visible = true;

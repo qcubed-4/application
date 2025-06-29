@@ -4,30 +4,30 @@
 	 * @var QCodeGenBase $objCodeGen
 	 */
 ?>
-
-    /**
+/**
      * @var <?= $objTable->ClassName; ?> <?= $objCodeGen->modelVariableName($objTable->Name); ?>
 
      * @access protected
      */
-    protected $<?= $objCodeGen->modelVariableName($objTable->Name); ?>;
+    protected <?= $objTable->ClassName; ?> $<?= $objCodeGen->modelVariableName($objTable->Name); ?>;
     /**
      * @var FormBase|ControlBase
      * @access protected
      */
-    protected $objParentObject;
+    protected FormBase|ControlBase $objParentObject;
     /**
      * @var string strTitleVerb
      * @access protected
      */
-    protected $strTitleVerb;
+    protected string $strTitleVerb;
     /**
-     * @var boolean blnEditMode
+     * @var bool blnEditMode
      * @access protected
      */
-    protected $blnEditMode;
+    protected bool $blnEditMode;
 
-    // Controls that correspond to <?= $objTable->ClassName ?>'s individual data fields
+    // Controls that correspond to a <?= $objTable->ClassName ?>'s individual data fields
+
 <?php foreach ($objTable->ColumnArray as $objColumn) {
 	if (isset($objColumn->Options['FormGen']) && $objColumn->Options['FormGen'] == \QCubed\ModelConnector\Options::FORMGEN_NONE) continue;
 
@@ -45,9 +45,9 @@
 		if ($objReverseReference->Unique) $blnHasUnique = true;
 	}
 ?>
-<?php if (isset($blnHasUnique) || count($objTable->ManyToManyReferenceArray)) {?>
-
-		// Controls to edit Unique ReverseReferences and ManyToMany References
+<?php if (isset($blnHasUnique) || count($objTable->ManyToManyReferenceArray)) {
+?>
+    // Controls to edit Unique ReverseReferences and ManyToMany References
 
 <?php } ?>
 <?php foreach ($objTable->ReverseReferenceArray as $objReverseReference) {
@@ -71,5 +71,5 @@
 		echo \QCubed\Codegen\Generator\Label::instance()->connectorVariableDeclaration($objCodeGen, $objManyToManyReference);
 	}
 ?>
-    protected $str<?= $objManyToManyReference->ObjectDescription; ?>Glue = ', ';
+    protected string $str<?= $objManyToManyReference->ObjectDescription; ?>Glue = ', ';
 <?php }

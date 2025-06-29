@@ -9,12 +9,13 @@
 
 namespace QCubed\Control;
 
-require_once(dirname(dirname(__DIR__)) . '/i18n/i18n-lib.inc.php');
-use QCubed\Application\t;
+require_once(dirname(__DIR__, 2) . '/i18n/i18n-lib.inc.php');
+//use QCubed\Application\t;
 
 use QCubed as Q;
 use QCubed\Css\TextAlignType;
 use QCubed\Exception\Caller;
+use QCubed\Exception\IndexOutOfRange;
 use QCubed\Exception\InvalidCast;
 use QCubed\Project\Application;
 use QCubed\QString;
@@ -24,21 +25,21 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
 /**
  * Class RadioButtonList
  *
- * This class will render a List of HTML Radio Buttons (inhereting from ListControl).
+ * This class will render a List of HTML Radio Buttons (inherited from ListControl).
  * By definition, radio button lists are single-select ListControls.
  *
  * So assuming you have a list of 10 items, and you have RepeatColumn set to 3:
  *
  *    RepeatDirection::Horizontal would render as:
- *    1    2    3
- *    4    5    6
- *    7    8    9
+ *    1 2 3
+ *    4 5 6
+ *    7 8 9
  *    10
  *
  *    RepeatDirection::Vertical would render as:
- *    1    5    8
- *    2    6    9
- *    3    7    10
+ *    1 5 8
+ *    2 6 9
+ *    3 7 10
  *    4
  *
  * @package Controls
@@ -48,9 +49,8 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
  * @property integer $CellPadding specified the HTML Table's CellPadding
  * @property integer $CellSpacing specified the HTML Table's CellSpacing
  * @property integer $RepeatColumns specifies how many columns should be rendered in the HTML Table
- * @property string $RepeatDirection specifies which direction should the list go first: horizontal or vertical
+ * @property string $RepeatDirection specifies which direction the list should go first: horizontal or vertical
  * @property integer $ButtonMode specifies how to render buttons
- * @was QRadioButtonList
  * @package QCubed\Control
  */
 class RadioButtonList extends ListControl
@@ -61,30 +61,38 @@ class RadioButtonList extends ListControl
     const BUTTON_MODE_LIST = 3;    // just a vanilla list of radio buttons with no row or column styling
 
     /** @var string  */
-    protected $strTextAlign = Q\Html::TEXT_ALIGN_RIGHT;
+    protected string $strTextAlign = Q\Html::TEXT_ALIGN_RIGHT;
 
     /** @var  string The class to use when wrapping a button-label group */
-    protected $strButtonGroupClass;
+    protected string $strButtonGroupClass;
 
     /** @var bool  */
-    protected $blnHtmlEntities = true;
+    protected bool $blnHtmlEntities = true;
 
     /** @var int  */
-    protected $intCellPadding = -1;
+    protected int $intCellPadding = -1;
     /** @var int  */
-    protected $intCellSpacing = -1;
+    protected int $intCellSpacing = -1;
     /** @var int  */
-    protected $intRepeatColumns = 1;
+    protected int $intRepeatColumns = 1;
     /** @var string  */
-    protected $strRepeatDirection = self::REPEAT_VERTICAL;
-    /** @var null|ListItemStyle  */
-    protected $objItemStyle = null;
-    /** @var  int */
-    protected $intButtonMode;
+    protected string $strRepeatDirection = self::REPEAT_VERTICAL;
+    /** @var null|ListItemStyle */
+    protected  null|ListItemStyle $objItemStyle  = null;
+    /** @var  int|null */
+    protected ?int $intButtonMode = null;
     /** @var  string */
-    protected $strMaxHeight; // will create a scroll pane if height is exceeded
+    protected string $strMaxHeight = ''; // will create a scroll pane if height is exceeded
 
-    public function __construct($objParentObject, $strControlId = null)
+    /**
+     * Constructor for the class. Initializes the object and sets up the default item style.
+     *
+     * @param mixed $objParentObject The parent object to which this control belongs.
+     * @param string|null $strControlId An optional control ID for this instance. If not provided, a default ID is generated.
+     * @return void
+     * @throws Caller
+     */
+    public function __construct(mixed $objParentObject, ? string $strControlId = null)
     {
         parent::__construct($objParentObject, $strControlId);
         $this->objItemStyle = new ListItemStyle();
@@ -93,7 +101,7 @@ class RadioButtonList extends ListControl
     //////////
     // Methods
     //////////
-    public function parsePostData()
+    public function parsePostData(): void
     {
         $val = $this->objForm->checkableControlValue($this->strControlId);
         if ($val === null) {
@@ -103,17 +111,26 @@ class RadioButtonList extends ListControl
         }
     }
 
-    public function makeJqWidget()
+    public function makeJqWidget(): void
     {
         $ctrlId = $this->ControlId;
         if ($this->intButtonMode == self::BUTTON_MODE_SET) {
-            Application::executeControlCommand($ctrlId, 'buttonset', Application::PRIORITY_HIGH);
+            Application::executeControlCommand($ctrlId, 'buttonset', Q\ApplicationBase::PRIORITY_HIGH);
         } elseif ($this->intButtonMode == self::BUTTON_MODE_JQ) {
-            Application::executeSelectorFunction(["input:radio", "#" . $ctrlId], 'button', Application::PRIORITY_HIGH);
+            Application::executeSelectorFunction(["input:radio", "#" . $ctrlId], 'button', Q\ApplicationBase::PRIORITY_HIGH);
         }
     }
 
-    protected function getItemHtml($objItem, $intIndex, $strTabIndex, $blnWrapLabel)
+    /**
+     * Generates the HTML for an individual item in the control.
+     *
+     * @param mixed $objItem The item for which HTML is being generated.
+     * @param int $intIndex The index of the item within the control.
+     * @param string|null $strTabIndex The tabindex attribute value for the input element.
+     * @param bool $blnWrapLabel Whether to wrap the label around the input element.
+     * @return string The rendered HTML for the item.
+     */
+    protected function getItemHtml(mixed $objItem, int $intIndex, ?string $strTabIndex, bool $blnWrapLabel): string
     {
         $objLabelStyles = new Q\TagStyler();
         if ($this->objItemStyle) {
@@ -151,34 +168,32 @@ class RadioButtonList extends ListControl
 
         $this->overrideItemAttributes($objItem, $objStyles, $objLabelStyles);
 
-        $strHtml = Q\Html::renderLabeledInput(
+        return Q\Html::renderLabeledInput(
             $strLabelText,
             $this->strTextAlign == TextAlignType::LEFT,
             $objStyles->renderHtmlAttributes(),
             $objLabelStyles->renderHtmlAttributes(),
             $blnWrapLabel);
-
-        return $strHtml;
     }
 
     /**
-     * Provides a way for subclasses to override the attributes on specific items just before they are drawn.
-     *
-     * @param $objItem
-     * @param $objItemAttributes
-     * @param $objLabelAttributes
+     * Override the item attributes, allowing customization for the given item, its attributes, and label attributes.
+     * @param object $objItem The item to override attributes for.
+     * @param Q\TagStyler $objItemAttributes The object containing style attributes for the item.
+     * @param Q\TagStyler $objLabelAttributes The object containing style attributes for the label associated with the item.
+     * @return void
      */
-    protected function overrideItemAttributes($objItem, Q\TagStyler $objItemAttributes, Q\TagStyler $objLabelAttributes)
+    protected function overrideItemAttributes(object $objItem, Q\TagStyler $objItemAttributes, Q\TagStyler $objLabelAttributes): void
     {
     }
 
     /**
-     * Return the escaped text of the label.
+     * Retrieves the label text for a given item. Uses the item's Label property, falling back to the Name property if the Label is empty. Optionally applies HTML entity encoding based on the instance's configuration.
      *
-     * @param $objItem
-     * @return string
+     * @param mixed $objItem The item from which to retrieve the label text. The item must have Label and Name properties.
+     * @return string The processed label text.
      */
-    protected function getLabelText($objItem)
+    protected function getLabelText(mixed $objItem): string
     {
         $strLabelText = $objItem->Label;
         if (empty($strLabelText)) {
@@ -190,7 +205,7 @@ class RadioButtonList extends ListControl
         return $strLabelText;
     }
 
-    protected function getControlHtml()
+    protected function getControlHtml(): string
     {
         $intItemCount = $this->getItemCount();
         if (!$intItemCount) {
@@ -218,8 +233,11 @@ class RadioButtonList extends ListControl
     /**
      * Renders the button group as a table, paying attention to the number of columns wanted.
      * @return string
+     * @throws Caller
+     * @throws InvalidCast
+     * @throws IndexOutOfRange
      */
-    public function renderButtonTable()
+    public function renderButtonTable(): string
     {
         // TODO: Do this without using a table, since this is really not a correct use of html
         $strToReturn = '';
@@ -269,11 +287,14 @@ class RadioButtonList extends ListControl
     }
 
     /**
-     * Renders the checkbox list as a buttonset, rendering just as a list of checkboxes and allowing css or javascript
+     * Renders the checkbox list as a buttonset, rendering just as a list of checkboxes and allowing CSS or JavaScript
      * to format the rest.
      * @return string
+     * @throws Caller
+     * @throws IndexOutOfRange
+     * @throws InvalidCast
      */
-    public function renderButtonSet()
+    public function renderButtonSet(): string
     {
         $count = $this->ItemCount;
         $strToReturn = '';
@@ -290,8 +311,11 @@ class RadioButtonList extends ListControl
     /**
      * Render as a single column. This implementation simply wraps the rows in divs.
      * @return string
+     * @throws Caller
+     * @throws IndexOutOfRange
+     * @throws InvalidCast
      */
-    public function renderButtonColumn()
+    public function renderButtonColumn(): string
     {
         $count = $this->ItemCount;
         $strToReturn = '';
@@ -310,7 +334,7 @@ class RadioButtonList extends ListControl
             $strToReturn);
     }
 
-    public function validate()
+    public function validate(): bool
     {
         if ($this->blnRequired) {
             if ($this->SelectedIndex == -1) {
@@ -323,10 +347,10 @@ class RadioButtonList extends ListControl
     }
 
     /**
-     * Override of superclass that will update the selection using javascript so that the whole control does
+     * Override of superclass that will update the selection using JavaScript so that the whole control does
      * not need to be redrawn.
      */
-    protected function refreshSelection()
+    protected function refreshSelection(): void
     {
         $index = $this->SelectedIndex;
         Application::executeSelectorFunction(['input', '#' . $this->ControlId], 'val', [$index]);
@@ -340,7 +364,7 @@ class RadioButtonList extends ListControl
     /////////////////////////
     // Public Properties: GET
     /////////////////////////
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             // APPEARANCE
@@ -378,7 +402,7 @@ class RadioButtonList extends ListControl
     /////////////////////////
     // Public Properties: SET
     /////////////////////////
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             // APPEARANCE
@@ -472,11 +496,12 @@ class RadioButtonList extends ListControl
     }
 
     /**
-     * Returns an description of the options available to modify by the designer for the code generator.
+     * Returns a description of the options available to modify by the designer for the code generator.
      *
      * @return QModelConnectorParam[]
+     * @throws Caller
      */
-    public static function getModelConnectorParams()
+    public static function getModelConnectorParams(): array
     {
         return array_merge(parent::getModelConnectorParams(), array(
             new QModelConnectorParam(get_called_class(), 'TextAlign', '', QModelConnectorParam::SELECTION_LIST,
@@ -486,7 +511,7 @@ class RadioButtonList extends ListControl
                     '\\QCubed\\Css\\TextAlignType::RIGHT' => 'Right'
                 )),
             new QModelConnectorParam(get_called_class(), 'HtmlEntities',
-                'Set to false to have the browser interpret the labels as HTML', Type::BOOLEAN),
+                'Set too false to have the browser interpret the labels as HTML', Type::BOOLEAN),
             new QModelConnectorParam(get_called_class(), 'RepeatColumns',
                 'The number of columns of checkboxes to display', Type::INTEGER),
             new QModelConnectorParam(get_called_class(), 'RepeatDirection',
@@ -511,9 +536,10 @@ class RadioButtonList extends ListControl
     /**
      * Returns the generator corresponding to this control.
      *
-     * @return Q\Codegen\Generator\GeneratorBase
+     * @return Q\Codegen\Generator\RadioButtonList
      */
-    public static function getCodeGenerator() {
+    public static function getCodeGenerator(): Q\Codegen\Generator\RadioButtonList
+    {
         return new Q\Codegen\Generator\RadioButtonList(__CLASS__);
     }
 

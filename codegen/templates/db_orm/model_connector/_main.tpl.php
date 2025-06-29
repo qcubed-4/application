@@ -1,5 +1,5 @@
 <?php
-	/** @var QSqlTable $objTable */
+	/** @var SqlTable $objTable */
 use QCubed\Project\Codegen\CodegenBase;
 
 /** @var \QCubed\Codegen\DatabaseCodeGen $objCodeGen */
@@ -16,9 +16,9 @@ use QCubed\Project\Codegen\CodegenBase;
 <?php include ("imports.tpl.php"); ?>
 
 /**
- * This is a ModelConnector class, providing a Form or Panel access to event handlers
+ * This is a ModelConnector class, providing Form or Panel access to event handlers
  * and Controls to perform the Create, Edit, and Delete functionality
- * of the <?= $objTable->ClassName ?> class.  This code-generated class
+ * of the <?= $objTable->ClassName ?> class. This code-generated class
  * contains all the basic elements to help a Panel or Form display an HTML form that can
  * manipulate a single <?= $objTable->ClassName ?> object.
  *
@@ -36,31 +36,24 @@ use QCubed\Project\Codegen\CodegenBase;
 
  */
 
-class <?= $objTable->ClassName ?>ConnectorGen extends \QCubed\ObjectBase
+class <?= $objTable->ClassName ?>ConnectorGen extends ObjectBase
 {
     <?php include("variable_declarations.tpl.php"); ?>
-
 
     <?php include("constructor.tpl.php"); ?>
 
 
 <?php include("create_methods.tpl.php"); ?>
-
-
 <?php include("refresh_methods.tpl.php"); ?>
-
 
 <?php include("update_methods.tpl.php"); ?>
 
+<?php include("save_object.tpl.php"); ?>
 
-    <?php include("save_object.tpl.php"); ?>
 
-
-    <?php include("delete_object.tpl.php"); ?>
-
+<?php include("delete_object.tpl.php"); ?>
 
     <?php include("property_get.tpl.php"); ?>
-
 
     <?php include("property_set.tpl.php"); ?>
 

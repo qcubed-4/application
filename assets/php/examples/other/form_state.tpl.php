@@ -8,7 +8,7 @@
 		long <strong>Base64</strong> encoded string.  While this is a very simple
 		approach, it is not secure, can gradually produce performance problems as the formstate grows, and may reach size limitations.
       </p>
-	<p>QCubed resolves this by offering the ability to store/handle the formstate in various ways.  You can store
+	<p>QCubed-4 resolves this by offering the ability to store/handle the formstate in various ways.  You can store
 		the formstate data in PHP Sessions, in a database, in an external cache, or directly on the
 		filesystem.  For all of these methods, you end up only passing a small key back to the user so the form can keep track
         of the location of the data.
@@ -23,14 +23,14 @@
 	<p>If you use your browser's "View Source" functionality, you will see that the <strong>Qform__FormState</strong> hidden
 		form variable is now a <strong>lot</strong> shorter (likely about 20 bytes).  Compare this to the
 		<a href="../basic_qform/intro.php" class="bodyLink">first example</a> where the form state was easily over 1 KB.  This is because
-		the bulk of the form state is being stored as a PHP Session Variable, which is located on the server, itself.</p>
+		the bulk of the form state is being stored as a PHP Session Variable, which is located on the server itself.</p>
 
     <p>The following formstate handlers are available to you:</p>
     <ul>
         <li>DefaultHandler: Stores the formstate as hidden input on the form</li>
-        <li>DatabaseHandler: Places the formstate in a SQL database</li>
+        <li>DatabaseHandler: Places the formstate in an SQL database</li>
         <li>FileHandler: Stores formstates as files in a folder, similar to how PHP stores sessions by default</li>
-        <li>SessionHandler: Stores the formstate as variable in the PHP Session</li>
+        <li>SessionHandler: Stores the formstate as a variable in the PHP Session</li>
         <li>RedisHandler: Stores the formstate in a Redis database</li>
     </ul>
 
@@ -43,8 +43,8 @@
 	// We will override the ForeColor, FontBold and the FontSize.  Note how we can optionally
 	// add quotes around our value.
 	?>
-	<p><?php $this->lblMessage->Render(); ?></p>
-	<p><?php $this->btnButton->Render(); ?></p>
+	<p><?php $this->lblMessage->render(); ?></p>
+	<p><?php $this->btnButton->render(); ?></p>
 </div>
 
 <?php $this->renderEnd(); ?>

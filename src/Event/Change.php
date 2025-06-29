@@ -1,21 +1,15 @@
 <?php
 /**
+ * Class Change
  *
- * Part of the QCubed PHP framework.
+ * Represents a "change" JavaScript event in the QCubed framework.
+ * This event is triggered when the value of an element has been changed.
  *
- * @license MIT
- *
+ * @package QCubed\Event
  */
 
 namespace QCubed\Event;
 
-/**
- * Be careful with change events for listboxes -
- * they don't fire when the user picks a value on many browsers!
- *
- * @was QChangeEvent
- * @package QCubed\Event
- */
 class Change extends EventBase
 {
     /** Event Name */

@@ -1,6 +1,6 @@
 <p><b>Edit Project Name</b></p>
-<?php $_CONTROL->txtName->RenderWithName() ?>
+<p><?= _r($this->txtName) ?></p>
 <p>
-	<?php $_CONTROL->btnSave->Render() ?>
-	<?php $_CONTROL->btnCancel->Render() ?>
+	<?= _r($this->btnSave) ?>
+	<?= _r($this->btnCancel) ?>
 </p>

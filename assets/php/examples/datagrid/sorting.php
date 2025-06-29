@@ -1,4 +1,7 @@
 <?php
+
+use QCubed\Exception\Caller;
+use QCubed\Exception\InvalidCast;
 use QCubed\Project\Control\DataGrid;
 use QCubed\Project\Control\FormBase;
 use QCubed\Query\QQ;
@@ -9,9 +12,13 @@ class ExampleForm extends FormBase
 {
 
     // Declare the DataGrid
-    protected $dtgPersons;
+    protected object $dtgPersons;
 
-    protected function formCreate()
+    /**
+     * @throws InvalidCast
+     * @throws Caller
+     */
+    protected function formCreate(): void
     {
         // Define the DataGrid
         $this->dtgPersons = new DataGrid($this);
@@ -45,14 +52,17 @@ class ExampleForm extends FormBase
         $this->dtgPersons->setDataBinder('dtgPersons_Bind');
     }
 
-    protected function dtgPersons_Bind()
+    /**
+     * @throws Caller
+     */
+    protected function dtgPersons_Bind(): void
     {
         // We must be sure to load the data source
 
         // Ask the datagrid for the sorting clause that corresponds to the currently active sort column.
         $clauses[] = $this->dtgPersons->OrderByClause;
 
-        // Give that clause to our sql query so it returns sorted data
+        // Give this clause to our SQL query so that it returns sorted data
         $this->dtgPersons->DataSource = Person::loadAll($clauses);
     }
 }

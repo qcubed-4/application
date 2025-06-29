@@ -18,8 +18,8 @@ use QCubed\Type;
  * Class Fieldset
  *
  * Encapsulates a fieldset, which has a legend that acts as a label. HTML5 defines a new Name element, which
- * is not yet supported in IE of this writing, but other browsers support it. So, if its defined, we will output
- * it in the html, but it will not affect what appears on the screen unless you draw the Name too.
+ * is not yet supported in IE of this writing, but other browsers support it. So, if it's defined, we will output
+ * it in the HTML, but it will not affect what appears on the screen unless you draw the Name too.
  *
  * @package Controls\Base
  *
@@ -30,20 +30,20 @@ use QCubed\Type;
 class Fieldset extends BlockControl
 {
     /** @var string HTML tag to the used for the Block Control */
-    protected $strTagName = 'fieldset';
-    /** @var string Default display style for the control. See QCubed\Css\Display class for available list */
-    protected $strDefaultDisplayStyle = DisplayType::BLOCK;
+    protected string $strTagName = 'fieldset';
+    /** @var string Default display style for the control. See QCubed\Css\Display class for an available list */
+    protected string $strDefaultDisplayStyle = DisplayType::BLOCK;
     /** @var bool Is the control a block element? */
-    protected $blnIsBlockElement = true;
+    protected bool $blnIsBlockElement = true;
     /** @var bool Use htmlentities for the control? */
-    protected $blnHtmlEntities = false;
+    protected bool $blnHtmlEntities = false;
     /** @var  string legend */
-    protected $strLegend;
+    protected string $strLegend;
 
     /**
-     * We will output style tags and such, but fieldset styling is not well supported across browsers.
+     * We will output style tags and such, but fieldset styling is not well-supported across browsers.
      */
-    protected function getInnerHtml()
+    protected function getInnerHtml(): string
     {
         $strHtml = parent::getInnerHtml();
 
@@ -57,7 +57,7 @@ class Fieldset extends BlockControl
     /////////////////////////
     // Public Properties: GET
     /////////////////////////
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             // APPEARANCE
@@ -77,7 +77,7 @@ class Fieldset extends BlockControl
     /////////////////////////
     // Public Properties: SET
     /////////////////////////
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             // APPEARANCE

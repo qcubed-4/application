@@ -4,19 +4,19 @@
 <div id="instructions">
 	<h1>Combining Multiple Actions on Events</h1>
 	
-	<p>We can combine mulitple actions together for events, and we can also use the same set of
-	actions for on multiple events or controls.</p>
+	<p>We can combine multiple actions together for events, and we can also use the same set of
+	actions for multiple events or controls.</p>
 	
 	<p>In this example, we have a listbox, and we allow the user to dynamically add items to that
 	listbox.  On submitting, we want to perform the following actions:</p>
 	<ul>
-		<li>Disable the Listbox (via Javascript)</li>
-		<li>Disable the Textbox (via Javascript)</li>
-		<li>Disable the Button (via Javascript)</li>
+		<li>Disable the Listbox (via JavaScript)</li>
+		<li>Disable the Textbox (via JavaScript)</li>
+		<li>Disable the Button (via JavaScript)</li>
 		<li>Make an AJAX call to the PHP method <b>AddListItem</b></li>
 	</ul>
 	
-	<p>The PHP method <strong>addListItem()</strong> will then proceed to add the item into the listbox, and re-enable all
+	<p>The PHP method <strong>addListItem()</strong> will then proceed to add the item into the listbox and re-enable all
 	the controls that were disabled.</p>
 	
 	<p>Note that what we are doing is combining multiple actions together into an action array (e.g. <strong>ActionBase[]</strong>).
@@ -26,8 +26,8 @@
 	<p>Also note that we also add a <strong>Terminate</strong> action to the textbox in response to
 	the <strong>EnterKey</strong>.  The reason for this is that on some browsers, hitting the enter
 	key in a textbox would cause the form to do a traditional form.submit() call.  Given the way
-	Forms operates with named actions, and especially given the fact that this Form is using AJAX-based
-	actions, we do <em>not</em> want the browser to be haphazardly performing submits.</p>
+	Forms operate with named actions, and especially given the fact that this Form is using AJAX-based
+	actions, we do <em>not</em> want the browser to be haphazardly performing submitting.</p>
 	
 	<p>Finally, while this example uses <strong>Ajax</strong> to make that an AJAX-based call to the PHP
 	<strong>addListItem()</strong> method, note that this example can just as easily have made the call to

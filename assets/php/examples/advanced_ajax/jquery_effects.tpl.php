@@ -8,7 +8,7 @@
 <div id="instructions">
 	<h1>JQuery UI Effects</h1>
 
-	<p>QCubed comes with built-in support of jQuery UI effects.
+	<p>QCubed-4 comes with built-in support of jQuery UI effects.
 
 
 	<p>To see this in action: in the example below, use the buttons to apply

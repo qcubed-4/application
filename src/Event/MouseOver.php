@@ -14,7 +14,6 @@ namespace QCubed\Event;
  *
  * When the mouse is over the control or an element inside it
  *
- * @was QMouseOverEvent
  * @package QCubed\Event
  */
 class MouseOver extends EventBase

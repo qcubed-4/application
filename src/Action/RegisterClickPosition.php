@@ -16,13 +16,12 @@ use QCubed\Control\ControlBase;
  *
  * Registers the click position on an ImageInput control.
  *
- * @was QRegisterClickPositionAction
  * @package QCubed\Action
  */
 class RegisterClickPosition extends ActionBase
 {
     /** @var null|string Control ID of the control on which the click position has to be registered */
-    protected $strControlId = null;
+    protected ?string $strControlId = null;
 
     /**
      * Returns the JavaScript to be executed on the client side
@@ -31,7 +30,7 @@ class RegisterClickPosition extends ActionBase
      *
      * @return string
      */
-    public function renderScript(ControlBase $objControl)
+    public function renderScript(ControlBase $objControl): string
     {
         return sprintf("qc.getW('%s').registerClickPosition(event);", $objControl->ControlId);
     }

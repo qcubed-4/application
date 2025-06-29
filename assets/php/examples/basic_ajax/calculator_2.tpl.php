@@ -6,10 +6,10 @@
 
 		<p>To show the ease of Ajax in a slightly more complex Form, we take our <strong>Calculator Example
 		with Validation</strong> from before... and we only change <em>one word</em>.</p>
-		
-		<p>We change the <strong>Server</strong> call to a <strong>Ajax</strong> call, and now, we've
-		created an Ajax-based calculator.  Note that even things like validation messages, etc.,
-		will appear via Ajax and without a page refresh.</p>
+
+        <p>We changed the <strong>Server</strong> call to an <strong>Ajax</strong> call, and now we have created an
+            Ajax-based calculator. Note that even things like validation messages, etc.,
+            are rendered via Ajax and without a page refresh.</p>
 	</div>
 
 	<div id="demoZone">

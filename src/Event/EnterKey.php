@@ -12,13 +12,12 @@ namespace QCubed\Event;
 /**
  * Class EnterKey
  *
- * When enter key is pressed while the control is in focus
+ * When an enter key is pressed while the control is in focus
  *
- * @was QEnterKeyEvent
  * @package QCubed\Event
  */
 class EnterKey extends KeyDown
 {
-    /** @var string Condition JS */
-    protected $strCondition = 'event.keyCode == 13';
+    /** @var string|null Condition JS */
+    protected ?string $strCondition = 'event.keyCode == 13';
 }

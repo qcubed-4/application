@@ -14,7 +14,6 @@ namespace QCubed\Event;
  *
  * Detects right clicks
  *
- * @was QContextMenuEvent
  * @package QCubed\Event
  */
 class ContextMenu extends EventBase

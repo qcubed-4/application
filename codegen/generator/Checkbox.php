@@ -12,17 +12,17 @@ namespace QCubed\Codegen\Generator;
 use QCubed\Codegen\ColumnInterface;
 use QCubed\Codegen\DatabaseCodeGen;
 use QCubed\Codegen\SqlTable;
-use QCubed as Q;
+use QCubed\Exception\Caller;
+use QCubed\Exception\InvalidCast;
 
 /**
  * Class Checkbox
  *
  * @package QCubed\Codegen\Generator
- * @was QCheckBoxBase_CodeGenerator
  */
 class Checkbox extends Control
 {
-    public function __construct($strControlClassName = 'QCubed\\Project\\Control\\Checkbox')
+    public function __construct(string $strControlClassName = 'QCubed\\Project\\Control\\Checkbox')
     {
         parent::__construct($strControlClassName);
     }
@@ -31,7 +31,7 @@ class Checkbox extends Control
      * @param string $strPropName
      * @return string
      */
-    public function varName($strPropName)
+    public function varName(string $strPropName): string
     {
         return 'chk' . $strPropName;
     }
@@ -45,8 +45,10 @@ class Checkbox extends Control
      * @param SqlTable $objTable
      * @param ColumnInterface $objColumn
      * @return string
+     * @throws Caller
+     * @throws InvalidCast
      */
-    public function connectorCreate(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn)
+    public function connectorCreate(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn): string
     {
         $strObjectName = $objCodeGen->modelVariableName($objTable->Name);
         $strControlVarName = $objCodeGen->modelConnectorVariableName($objColumn);
@@ -55,43 +57,50 @@ class Checkbox extends Control
         // Read the control type in case we are generating code for a subclass
         $strControlType = $objCodeGen->getControlCodeGenerator($objColumn)->getControlClass();
 
+        $displayType = $strControlType;
+        if ($strControlType === 'QCubed\Project\Control\Checkbox') {
+            $displayType = 'Checkbox';
+        }
+
         $strRet = <<<TMPL
-		/**
-		 * Create and setup a $strControlType $strControlVarName
-		 * @param string \$strControlId optional ControlId to use
-		 * @return $strControlType
-		 */
-		public function {$strControlVarName}_Create(\$strControlId = null) {
+    /**
+     * Create and set up a $displayType $strControlVarName
+     * @param string|null \$strControlId optional ControlId to use
+     * @return $displayType
+     * @throws Caller
+     */
+    public function {$strControlVarName}_Create(?string \$strControlId = null): $displayType 
+    {
 
 TMPL;
         $strControlIdOverride = $objCodeGen->generateControlId($objTable, $objColumn);
 
         if ($strControlIdOverride) {
             $strRet .= <<<TMPL
-			if (!\$strControlId) {
-				\$strControlId = '$strControlIdOverride';
-			}
+            if (!\$strControlId) {
+                \$strControlId = '$strControlIdOverride';
+            }
 
 TMPL;
         }
         $strRet .= <<<TMPL
-			\$this->{$strControlVarName} = new \\{$strControlType}(\$this->objParentObject, \$strControlId);
-			\$this->{$strControlVarName}->Name = t('$strLabelName');
-			\$this->{$strControlVarName}->Checked = \$this->{$strObjectName}->{$objColumn->PropertyName};
+        \$this->{$strControlVarName} = new {$displayType}(\$this->objParentObject, \$strControlId);
+        \$this->{$strControlVarName}->Name = t('$strLabelName');
+        \$this->{$strControlVarName}->Checked = \$this->{$strObjectName}->{$objColumn->PropertyName};
 
 TMPL;
 
         if ($strMethod = DatabaseCodeGen::$PreferredRenderMethod) {
             $strRet .= <<<TMPL
-			\$this->{$strControlVarName}->PreferredRenderMethod = '$strMethod';
+        \$this->{$strControlVarName}->PreferredRenderMethod = '$strMethod';
 
 TMPL;
         }
         $strRet .= $this->connectorCreateOptions($objCodeGen, $objTable, $objColumn, $strControlVarName);
 
         $strRet .= <<<TMPL
-			return \$this->{$strControlVarName};
-		}
+        return \$this->{$strControlVarName};
+    }
 
 
 TMPL;
@@ -108,13 +117,13 @@ TMPL;
      * @param bool $blnInit
      * @return string
      */
-    public function connectorRefresh(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn, $blnInit = false)
+    public function connectorRefresh(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn, ?bool $blnInit = false): string
     {
         $strObjectName = $objCodeGen->modelVariableName($objTable->Name);
         $strPropName = $objColumn->Reference ? $objColumn->Reference->PropertyName : $objColumn->PropertyName;
         $strControlVarName = $this->varName($strPropName);
 
-        $strRet = "\t\t\tif (\$this->{$strControlVarName}) \$this->{$strControlVarName}->Checked = \$this->{$strObjectName}->{$strPropName};";
+        $strRet = "        \$this->{$strControlVarName}->Checked = \$this->{$strObjectName}->{$strPropName};";
         return $strRet . "\n";
     }
 
@@ -124,15 +133,14 @@ TMPL;
      * @param ColumnInterface $objColumn
      * @return string
      */
-    public function connectorUpdate(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn)
+    public function connectorUpdate(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn): string
     {
         $strObjectName = $objCodeGen->modelVariableName($objTable->Name);
         $strPropName = $objColumn->Reference ? $objColumn->Reference->PropertyName : $objColumn->PropertyName;
         $strControlVarName = $this->varName($strPropName);
-        $strRet = <<<TMPL
-				if (\$this->{$strControlVarName}) \$this->{$strObjectName}->{$objColumn->PropertyName} = \$this->{$strControlVarName}->Checked;
+        return <<<TMPL
+            \$this->{$strObjectName}->{$objColumn->PropertyName} = \$this->{$strControlVarName}->Checked;
 
 TMPL;
-        return $strRet;
     }
 }

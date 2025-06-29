@@ -12,8 +12,8 @@
 		utilizes the MVC architecture.</p>
 
 	<p>Please note that it is <em>very important</em> that you have a good understanding of
-		<strong>Form</strong> and <strong>Controls</strong> before moving forward, otherwise this section will
-		be difficult to understand, and even more difficult to utilize.</p>
+		<strong>Form</strong> and <strong>Controls</strong> before moving forward; otherwise this section will
+		be difficult to understand and even more difficult to utilize.</p>
 
 	<p>The next couple of pages will discuss the three main <strong>Form</strong>- and <strong>Control</strong>-related
 		components that the Code Generator generates code for:</p>

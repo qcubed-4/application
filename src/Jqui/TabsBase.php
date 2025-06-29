@@ -20,38 +20,37 @@ use QCubed\Type;
  * Class TabsBase
  *
  * The QTabsBase class defined here provides an interface between the generated
- * QTabsGen class, and QCubed. This file is part of the core and will be overwritten
+ * QTabsGen class and QCubed. This file is part of the core and will be overwritten
  * when you update QCubed. To override, make your changes to the QTabs.class.php file instead.
  *
  * Tabs are similar to an Accordion, but tabs along the top are used to switch between panels. The top
- * level html items in the panel will become the items that are switched.
+ * level HTML items in the panel will become the items that are switched.
  *
- * Specify the names of the tabs either in the TabHeadersArray, or assign a Name attribute to the top
- * level child controls and those names will be used as the tab names.
+ * Specify the names of the tabs either in the TabHeadersArray or assign a Name attribute to the top
+ * level child controls, and those names will be used as the tab names.
  *
  * @property-write array $Headers    Array of names for the tabs. You can also specify by assigning the Name attribute of each pane.
  * @property-read array $SelectedId    Control Id of the selected pane. Use ->Active to get the zero-based index of the selected pane.
  *
  * @link http://jqueryui.com/tabs/
- * @was QTabsBase
  * @package QCubed\Jqui
  */
 class TabsBase extends TabsGen
 {
     /** @var array Names of tabs. Can also specify with Name attribute of child controls. */
-    protected $objTabHeadersArray = array();
+    protected array $objTabHeadersArray = array();
     /** @var bool Automatically render the children by default, since these are the tabs. */
-    protected $blnAutoRenderChildren = true;
-    /** @var string ControlId of currently selected child item. Use ->Active to get the index of the current selection. */
-    protected $strSelectedId = null;
+    protected ?bool $blnAutoRenderChildren = true;
+    /** @var string|null ControlId of the currently selected child item. Use ->Active to get the index of the current selection. */
+    protected ?string $strSelectedId = null;
 
     /**
-     * Return the javascript associated with the control.
+     * Return the JavaScript associated with the control.
      */
-    protected function makeJqWidget()
+    protected function makeJqWidget(): void
     {
         parent::makeJqWidget();
-        Application::executeJsFunction('qcubed.tabs', $this->getJqControlId(), Application::PRIORITY_HIGH);
+        Application::executeJsFunction('qcubed.tabs', $this->getJqControlId(), Q\ApplicationBase::PRIORITY_HIGH);
     }
 
     /**
@@ -59,7 +58,7 @@ class TabsBase extends TabsGen
      * @param bool $blnDisplayOutput
      * @return null|string
      */
-    protected function renderChildren($blnDisplayOutput = true)
+    protected function renderChildren(bool $blnDisplayOutput = true): ?string
     {
         $strToReturn = $this->getTabHeaderHtml();
 
@@ -84,7 +83,7 @@ class TabsBase extends TabsGen
      *
      * @return string
      */
-    protected function getTabHeaderHtml()
+    protected function getTabHeaderHtml(): string
     {
         $strHtml = '';
         $childControls = $this->getChildControls();
@@ -115,13 +114,13 @@ class TabsBase extends TabsGen
      *
      * Give it a control and a name to set the header
      *
-     * TBD: impelment ajax fetch of tab content
+     * TBD: implement ajax fetch of tab content
      *
-     * @param integer|ControlBase|string $mixHeaderIndicator either the 0-based index of the header, or the section control or that control's id
+     * @param integer|string|ControlBase $mixHeaderIndicator either the 0-based index of the header, or the section control or that control's id
      * @param string|ControlBase $mixHeader string or control to render as the tab header
      * @return void
      */
-    public function setHeader($mixHeaderIndicator, $mixHeader)
+    public function setHeader(int|string|ControlBase $mixHeaderIndicator, string|ControlBase $mixHeader): void
     {
         $key = ($mixHeaderIndicator instanceof ControlBase) ? $mixHeaderIndicator->ControlId : $mixHeaderIndicator;
         $this->objTabHeadersArray[$key] = $mixHeader;
@@ -131,18 +130,17 @@ class TabsBase extends TabsGen
      * Generated method overrides the built-in Control method, causing it to not redraw completely. We restore
      * its functionality here.
      */
-    public function refresh()
+    public function refresh(): void
     {
         parent::refresh();
         ControlBase::refresh();
     }
 
-
     /**
      * Overrides default so that if a tab does not pass validation, it will be visible.
      * @return bool
      */
-    public function validateControlAndChildren()
+    public function validateControlAndChildren(): bool
     {
         // Initially Assume Validation is True
         $blnToReturn = true;
@@ -171,12 +169,12 @@ class TabsBase extends TabsGen
 
     /**
      * Given a tab name, index or control ID, returns its index. If invalid, returns false;
-     * @param string|integer $mixTab
-     * @return bool|int
+     * @param integer|string $mixTab
+     * @return float|bool|int|string
      */
-    protected function findTabIndex($mixTab)
+    protected function findTabIndex(int|string $mixTab): float|bool|int|string
     {
-        if ($mixTab === null) {
+        if ($mixTab == null) {
             return false;
         }
 
@@ -193,7 +191,7 @@ class TabsBase extends TabsGen
             }
         }
 
-        // If there is a headers array, check for a name in there
+        // If there is a header array, check for a name in there
         if ($this->objTabHeadersArray) {
             for ($i = 0, $cnt = $count; $i < $cnt; ++$i) {
                 if ($this->objTabHeadersArray[$i] == $mixTab) {
@@ -218,9 +216,9 @@ class TabsBase extends TabsGen
     /**
      * Activate the tab with the given name, number or controlId.
      *
-     * @param string|integer $mixTab The tab name, tab index number or control ID
+     * @param integer|string $mixTab The tab name, tab index number or control ID
      */
-    public function activateTab($mixTab)
+    public function activateTab(int|string $mixTab): void
     {
         if (false !== ($i = $this->findTabIndex($mixTab))) {
             parent::option2('active', $i);
@@ -230,10 +228,10 @@ class TabsBase extends TabsGen
     /**
      * Enable or disable a tab, or all tabs.
      *
-     * @param null|string|integer $mixTab If null, enables or disables all tabs. Otherwise, the name or index of a tab.
+     * @param string|null $mixTab If null, enables or disables all tabs. Otherwise, the name or index of a tab.
      * @param bool $blnEnable True to enable tabs. False to disable.
      */
-    public function enableTab($mixTab = null, $blnEnable = true)
+    public function enableTab(?string $mixTab = null, bool $blnEnable = true): void
     {
         if (is_null($mixTab)) {
             if ($blnEnable) {
@@ -256,7 +254,7 @@ class TabsBase extends TabsGen
      * Overriding to keep info in sync.
      * @param ControlBase $objControl
      */
-    public function addChildControl(ControlBase $objControl)
+    public function addChildControl(ControlBase $objControl): void
     {
         parent::addChildControl($objControl);
         if (count($this->objChildControlArray) == 1) {
@@ -267,9 +265,9 @@ class TabsBase extends TabsGen
 
     /**
      * Returns the state data to restore later.
-     * @return mixed
+     * @return array|null
      */
-    protected function getState()
+    protected function getState(): ?array
     {
         return ['active' => $this->Active, 'selectedId' => $this->strSelectedId];
     }
@@ -278,7 +276,7 @@ class TabsBase extends TabsGen
      * Restore the state of the control.
      * @param mixed $state
      */
-    protected function putState($state)
+    protected function putState(mixed $state): void
     {
         if (isset($state['active'])) {
             $this->Active = $state['active'];
@@ -286,8 +284,7 @@ class TabsBase extends TabsGen
         }
     }
 
-
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             case "SelectedId":
@@ -303,7 +300,7 @@ class TabsBase extends TabsGen
         }
     }
 
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             case 'Headers':

@@ -9,6 +9,8 @@
 
 namespace QCubed\Control;
 
+use Exception;
+use QCubed\Event\Click;
 use QCubed\Exception\Caller;
 use QCubed\Exception\InvalidCast;
 use QCubed\Project\Application;
@@ -17,6 +19,7 @@ use QCubed as Q;
 use QCubed\Type;
 use QCubed\Action\ActionBase as QAction;
 use QCubed\Event\EventBase as QEvent;
+use Throwable;
 
 /**
  * Class Calendar
@@ -37,26 +40,25 @@ use QCubed\Event\EventBase as QEvent;
  * @property-write string DateTimeFormat
  * @property string JqDateFormat
  * @property boolean ShowButtonPanel
- * @was QCalendar
  * @package QCubed\Control
  */
 class Calendar extends DateTimeTextBox
 {
-    protected $strJavaScripts = QCUBED_JQUI_JS;
-    protected $strStyleSheets = QCUBED_JQUI_CSS;
-    protected $datMinDate = null;
-    protected $datMaxDate = null;
-    protected $datDefaultDate = null;
-    protected $intFirstDay = null;
-    protected $mixNumberOfMonths = null;
-    protected $blnAutoSize = false;
-    protected $blnGotoCurrent = false;
-    protected $blnIsRTL = false;
-    protected $blnModified = false;
-    protected $strJqDateFormat = 'M d yy';
-    protected $blnShowButtonPanel = true;
+    protected string $strJavaScripts = QCUBED_JQUI_JS;
+    protected string $strStyleSheets = QCUBED_JQUI_CSS;
+    protected ?QDateTime $datMinDate = null;
+    protected ?QDateTime $datMaxDate = null;
+    protected ?QDateTime  $datDefaultDate = null;
+    protected ?int $intFirstDay = null;
+    protected mixed $mixNumberOfMonths = null;
+    protected ?bool $blnAutoSize = false;
+    protected ?bool $blnGotoCurrent = false;
+    protected ?bool $blnIsRTL = false;
+    protected bool $blnModified = false;
+    protected string $strJqDateFormat = 'M d yy';
+    protected bool $blnShowButtonPanel = true;
 
-    // map the JQuery datepicker format specs to QCubed \QCubed\QDateTime format specs.
+    // Map the JQuery datepicker format specs to QCubed \QCubed\QDateTime format specs.
     //QCubed	JQuery		PHP	Description
     //-------------------------------------------------
     //MMMM	    MM			F	Month as full name (e.g., March)
@@ -70,7 +72,7 @@ class Calendar extends DateTimeTextBox
     //YYYY	    yy			Y	Year as a four-digit integer (e.g., 1977)
     //YY	    y			y	Year as a two-digit integer (e.g., 77)
     /** @var array QCubed to JQuery Map of date formates */
-    private static $mapQC2JQ = array(
+    private static array $mapQC2JQ = array(
         'MMMM' => 'MM',
         'MMM' => 'M',
         'MM' => 'mm',
@@ -82,43 +84,70 @@ class Calendar extends DateTimeTextBox
         'YYYY' => 'yy',
         'YY' => 'y',
     );
-    private static $mapJQ2QC = null;
 
-    public static function qcFrmt($jqFrmt)
+    private static ?array $mapJQ2QC = null;
+
+    /**
+     * Converts a jQuery format string to a QCubed format string
+     *
+     * @param string $jqFrmt The jQuery format string to be converted
+     *
+     * @return string The converted QCubed format string
+     */
+    public static function qcFrmt(string $jqFrmt): string
     {
         if (!static::$mapJQ2QC) {
             static::$mapJQ2QC = array_flip(static::$mapQC2JQ);
         }
 
-        return strtr($jqFrmt, static::$mapJQ2QC);
+        return strtr($jqFrmt, (array)static::$mapJQ2QC);
     }
 
-    public static function jqFrmt($qcFrmt)
+    /**
+     * Converts a QC format string to a jQuery-compatible format string
+     * using a predefined mapping.
+     *
+     * @param string $qcFrmt The QC format strings to be converted.
+     *
+     * @return string The jQuery-compatible format string.
+     */
+    public static function jqFrmt(string $qcFrmt): string
     {
         return strtr($qcFrmt, static::$mapQC2JQ);
     }
 
     /**
-     * @deprecated Use \QCubed\Js\Helper::toJsObject
-     * @param QDateTime $dt
-     * @return string
+     * Converts a QDateTime object to a JavaScript date object
+     *
+     * @param QDateTime $dt The date and time object to be converted
+     *
+     * @return string The JavaScript date object representation
      */
-    public static function jsDate(QDateTime $dt)
+    public static function jsDate(QDateTime $dt): string
     {
         return Q\Js\Helper::toJsObject($dt);
     }
 
     /**
-     * Validates the control (default: returns true)
+     * Validates the current state or input
      *
-     * @return bool
+     * @return bool True if the validation passes, otherwise false
      */
-    public function validate()
+    public function validate(): bool
     {
         return true;
     }
 
-    protected function makeJsProperty($strProp, $strKey)
+    /**
+     * Converts a PHP property to a JavaScript property string
+     * This method generates a JavaScript property assignment string based on the given PHP property and key
+     *
+     * @param string $strProp The name of the PHP property to be converted
+     * @param string $strKey The key to associate with the JavaScript property
+     *
+     * @return string A JavaScript property assignment string or an empty string if the property value is null
+     */
+    protected function makeJsProperty(string $strProp, string $strKey): string
     {
         $objValue = $this->$strProp;
         if (null === $objValue) {
@@ -131,14 +160,14 @@ class Calendar extends DateTimeTextBox
     /**
      * Returns the HTML for the control
      *
-     * @return string The HTML which can be sent to browser
+     * @return string The HTML, which can be sent to the browser
+     * @throws Caller
      */
-    public function getControlHtml()
+    public function getControlHtml(): string
     {
         $strToReturn = parent::getControlHtml();
 
-        $strJqOptions = '';
-        $strJqOptions .= $this->makeJsProperty('ShowButtonPanel', 'showButtonPanel');
+        $strJqOptions = $this->makeJsProperty('ShowButtonPanel', 'showButtonPanel');
         $strJqOptions .= $this->makeJsProperty('JqDateFormat', 'dateFormat');
         $strJqOptions .= $this->makeJsProperty('AutoSize', 'autoSize');
         $strJqOptions .= $this->makeJsProperty('MaxDate', 'maxDate');
@@ -169,7 +198,7 @@ class Calendar extends DateTimeTextBox
      * @return mixed
      * @throws Exception|Caller
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             case "MinDate":
@@ -208,15 +237,20 @@ class Calendar extends DateTimeTextBox
     // Public Properties: SET
     /////////////////////////
     /**
-     * PHP magic method
+     * Sets the value of a property dynamically based on its name.
+     * This method performs type casting and validates the value for specific properties.
+     * It throws exceptions when the casting or the property assignment fails.
      *
-     * @param string $strName
-     * @param string $mixValue
+     * @param string $strName The name of the property to set.
+     * @param mixed $mixValue The value to assign to the property.
      *
      * @return void
-     * @throws Exception|Caller|InvalidCast|Exception
+     *
+     * @throws Caller Thrown for invalid or unrecognized property names.
+     * @throws InvalidCast Thrown when the value cannot be cast to the required type.
+     * @throws Throwable
      */
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             case "MinDate":
@@ -335,9 +369,9 @@ class Calendar extends DateTimeTextBox
      *
      * @throws Caller
      */
-    public function addAction(QEvent $objEvent, QAction $objAction)
+    public function addAction(QEvent $objEvent, QAction $objAction): void
     {
-        if ($objEvent instanceof QClickEvent) {
+        if ($objEvent instanceof Click) {
             throw new Caller('QCalendar does not support click events');
         }
         parent::addAction($objEvent, $objAction);

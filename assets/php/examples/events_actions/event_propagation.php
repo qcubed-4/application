@@ -9,12 +9,13 @@ use QCubed\Project\Control\FormBase;
 require_once('../qcubed.inc.php');
 
     class ExampleForm extends FormBase {
-        protected $objPanel1;
-        protected $objPanel2;
-        protected $objPanel3;
-        protected $objPanel4;
+        protected Panel $objPanel1;
+        protected Panel $objPanel2;
+        protected Panel $objPanel3;
+        protected Panel $objPanel4;
 
-        protected function formCreate() {
+        protected function formCreate(): void
+        {
             /*
             * These two panels here will demonstrate even bubbling
             */
@@ -31,7 +32,7 @@ require_once('../qcubed.inc.php');
             $this->objPanel2->addAction(new Click(), new Ajax('objPanel2_Click'));
 
             /*
-            * These two panels here will demenstrate how to STOP even bubbling
+            * These two panels here will demonstrate how to STOP even bubbling
             */
             $this->objPanel3 = new Panel($this);
             $this->objPanel3->CssClass = 'container';
@@ -49,19 +50,23 @@ require_once('../qcubed.inc.php');
 
         }
 
-        public function objPanel1_Click($strFormId, $strControlId, $strParameter) {
+        public function objPanel1_Click(string $strFormId, string $strControlId, string $strParameter): void
+        {
             Application::displayAlert('Panel 1 Clicked');
         }
 
-        public function objPanel2_Click($strFormId, $strControlId, $strParameter) {
+        public function objPanel2_Click(string $strFormId, string $strControlId, string $strParameter): void
+        {
             Application::displayAlert('Panel 2 Clicked');
         }
 
-        public function objPanel3_Click($strFormId, $strControlId, $strParameter) {
+        public function objPanel3_Click(string $strFormId, string $strControlId, string $strParameter): void
+        {
             Application::displayAlert('Panel 3 Clicked');
         }
 
-        public function objPanel4_Click($strFormId, $strControlId, $strParameter) {
+        public function objPanel4_Click(string $strFormId, string $strControlId, string $strParameter): void
+        {
             Application::displayAlert('Panel 4 Clicked, panel 3 will not trigger a click');
         }
 

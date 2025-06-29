@@ -9,53 +9,55 @@
 
 namespace QCubed\Watcher;
 
+use QCubed\Database\Mysqli5\MysqliException;
+use QCubed\Database\Service;
+use QCubed\Exception\Caller;
+
 /**
  * Class Watcher\Database
  *
  * This is a helper class that allows controls to watch a database table
- * and automatically update the UI when changes are detected. It works together with the codegened
+ * and automatically update the UI when changes are detected. It works together with the codegen
  * model classes, the controls, and the Form class to draw when needed.
  *
- * It relies on the presence of a SQL database table in the system. Define the following
+ * This relies on the existence of an SQL database table on the system. Define the following
  * in your Watcher subclass file to tell it which tables to use:
- *        static::$intDbIndex - The database index to look for the table
- *        static::$strTableName - The name of the table.
+ * static::$intDbIndex - the database index to look up the table
+ * static::$strTableName - the name of the table.
  *
  * To create the database, use the following SQL:
- * CREATE TABLE IF NOT EXISTS qc_watchers (
- * table_key varchar(200) NOT NULL,
+ * CREATE TABLE IF NOT EXISTS qc_watchers (* table_key varchar(200) NOT NULL,
  * ts varchar(40) NOT NULL,
  * PRIMARY KEY (table_key)
  * );
  *
  *
  * @package QCubed\Watcher
- * @was QWatcherDB
  */
 
 abstract class Database extends WatcherBase
 {
     /*** The following two variables must be initialized by a subclass **/
-    /** @var  integer The database index to use */
-    protected static $intDbIndex;
+    /** @var  integer The database indexes to use */
+    protected static int $intDbIndex;
     /** 
      * @var  string
      * The table name which will keep info about changed tables. It must have the following columns:
      * 1. table_key: varchar(largest key size)
      * 2. time: varchar(30)     */
-    protected static $strTableName;
+    protected static string $strTableName;
 
     /**
      * @var string[] Caches results of database lookups. Will not be saved with the formstate.
      */
-    private static $strKeyCaches = null;
+    private static ?array $strKeyCaches = null;
 
     /**
      * Override
      */
-    public function makeCurrent()
+    public function makeCurrent(): void
     {
-        $objDatabase = \QCubed\Database\Service::getDatabase(static::$intDbIndex);
+        $objDatabase = Service::getDatabase(static::$intDbIndex);
         $strIn = implode(',', $objDatabase->escapeValues(array_keys($this->strWatchedKeys)));
         $strSQL = sprintf("SELECT * FROM %s WHERE %s in (%s)",
             $objDatabase->escapeIdentifier(static::$strTableName),
@@ -75,8 +77,9 @@ abstract class Database extends WatcherBase
      * read.
      *
      * @return bool
+     * @throws Caller
      */
-    public function isCurrent()
+    public function isCurrent(): bool
     {
         // check cache
         $ret = true;
@@ -92,10 +95,10 @@ abstract class Database extends WatcherBase
         }
         if ($ret) {
             return true;
-        } // cache had everything we were looking for
+        } // the cache had everything we were looking for
 
-        // cache did not have what we were looking for, so check database
-        $objDatabase = \QCubed\Database\Service::getDatabase(static::$intDbIndex);
+        // cache did not have what we were looking for, so check databases
+        $objDatabase = Service::getDatabase(static::$intDbIndex);
         $strIn = implode(',', $objDatabase->escapeValues(array_keys($this->strWatchedKeys)));
         $strSQL = sprintf("SELECT * FROM %s WHERE %s in (%s)",
             $objDatabase->escapeIdentifier(static::$strTableName),
@@ -119,11 +122,12 @@ abstract class Database extends WatcherBase
      *
      * @param string $strDbName
      * @param string $strTableName
+     * @throws MysqliException
      */
-    static public function markTableModified($strDbName, $strTableName)
+    static public function markTableModified(string $strDbName, string $strTableName): void
     {
         $key = static::getKey($strDbName, $strTableName);
-        $objDatabase = \QCubed\Database\Service::getDatabase(static::$intDbIndex);
+        $objDatabase = Service::getDatabase(static::$intDbIndex);
         $time = microtime();
 
         $objDatabase->insertOrUpdate(static::$strTableName,

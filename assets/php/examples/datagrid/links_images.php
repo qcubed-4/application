@@ -3,6 +3,8 @@ use QCubed\Action\ActionParams;
 use QCubed\Action\Ajax;
 use QCubed\Control\Image;
 use QCubed\Event\Click;
+use QCubed\Exception\Caller;
+use QCubed\Exception\InvalidCast;
 use QCubed\Project\Application;
 use QCubed\Project\Control\Button;
 use QCubed\Project\Control\FormBase;
@@ -14,9 +16,13 @@ class ExampleForm extends FormBase
 {
 
     // Declare the DataGrid
-    protected $dtgPersons;
+    protected Table $dtgPersons;
 
-    protected function formCreate()
+    /**
+     * @throws InvalidCast
+     * @throws Caller
+     */
+    protected function formCreate(): void
     {
         // Define the DataGrid
         $this->dtgPersons = new Table($this);
@@ -30,12 +36,15 @@ class ExampleForm extends FormBase
         $this->dtgPersons->setDataBinder('dtgPersons_Bind');
     }
 
-    public function renderFullName(Person $objPerson)
+    public function renderFullName(Person $objPerson): string
     {
         return "<em>" . $objPerson->FirstName . "</em> " . $objPerson->LastName;
     }
 
-    public function renderImage(Person $objPerson)
+    /**
+     * @throws Caller
+     */
+    public function renderImage(Person $objPerson): string
     {
         $intPersonId = $objPerson->Id;
         $objControlId = "personImage" . $intPersonId;
@@ -58,7 +67,10 @@ class ExampleForm extends FormBase
         return $objControl->render(false);
     }
 
-    public function renderButton(Person $objPerson)
+    /**
+     * @throws Caller
+     */
+    public function renderButton(Person $objPerson): string
     {
         $objControlId = "editButton" . $objPerson->Id;
 
@@ -75,7 +87,7 @@ class ExampleForm extends FormBase
         return $objControl->render(false);
     }
 
-    public function renderButton_Click(ActionParams $params)
+    public function renderButton_Click(ActionParams $params): void
     {
         $intPersonId = intval($params->ActionParameter);
 
@@ -85,9 +97,12 @@ class ExampleForm extends FormBase
         // \QCubed\Project\Application::redirect("person_edit.php?intPersonId=" . $intPersonId);
     }
 
-    protected function dtgPersons_Bind()
+    /**
+     * @throws Caller
+     */
+    protected function dtgPersons_Bind(): void
     {
-        // We load the data source, and set it to the datagrid's DataSource parameter
+        // We load the data source and set it to the datagrid's DataSource parameter
         $this->dtgPersons->DataSource = Person::loadAll();
     }
 }

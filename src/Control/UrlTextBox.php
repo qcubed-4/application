@@ -9,9 +9,11 @@
 
 namespace QCubed\Control;
 
-require_once(dirname(dirname(__DIR__)) . '/i18n/i18n-lib.inc.php');
-use QCubed\Application\t;
+require_once(dirname(__DIR__, 2) . '/i18n/i18n-lib.inc.php');
 
+//use QCubed\Application\t;
+
+use QCubed\Exception\Caller;
 use QCubed\Project\Control\TextBox;
 
 /**
@@ -23,21 +25,43 @@ use QCubed\Project\Control\TextBox;
  */
 class UrlTextBox extends TextBox
 {
-    /** @var int */
-    protected $intSanitizeFilter = FILTER_SANITIZE_URL;
-    /** @var int */
-    protected $intValidateFilter = FILTER_VALIDATE_URL;
+    /** @var int|null */
+    protected ?int $intSanitizeFilter = FILTER_SANITIZE_URL;
+    /** @var int|null */
+    protected ?int $intValidateFilter = FILTER_VALIDATE_URL;
 
     /**
      * Constructor
      *
      * @param ControlBase|FormBase $objParentObject
      * @param null|string $strControlId
+     * @throws Caller
      */
-    public function __construct($objParentObject, $strControlId = null)
+    public function __construct(ControlBase|FormBase $objParentObject, ?string $strControlId = null)
     {
         parent::__construct($objParentObject, $strControlId);
-        $this->strLabelForInvalid = t('Invalid Web Address');
         $this->strTextMode = self::URL;
+    }
+
+    public function validate(): bool
+    {
+        $blnValid = parent::validate();
+
+        if ($this->intValidateFilter && $this->strText !== '') {
+            $validateOptions = $this->mixValidateFilterOptions ?? 0;
+
+            if (!filter_var($this->strText, FILTER_VALIDATE_URL)) {
+                $this->ValidationError = t('The URL is not in the correct format!');
+                $blnValid = false;
+            } else {
+                $host = parse_url($this->strText, PHP_URL_HOST);
+                if (!$host || !(checkdnsrr($host, 'A') || checkdnsrr($host, 'AAAA'))) {
+                    $this->ValidationError = t('Domain does not exist!');
+                    $blnValid = false;
+                }
+            }
+        }
+
+        return $blnValid;
     }
 }

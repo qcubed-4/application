@@ -9,8 +9,9 @@
 
 namespace QCubed\Control;
 
-require_once(dirname(dirname(__DIR__)) . '/i18n/i18n-lib.inc.php');
-use QCubed\Application\t;
+require_once(dirname(__DIR__, 2) . '/i18n/i18n-lib.inc.php');
+
+//use QCubed\Application\t;
 
 use QCubed\Exception\Caller;
 use QCubed\Exception\InvalidCast;
@@ -31,34 +32,35 @@ use QCubed as Q;
  * @property string $LabelForRequired
  * @property string $LabelForRequiredUnnamed
  * @property string $SelectionMode SELECTION_MODE_* const specifies if this is a "Single" or "Multiple" select control.
- * @was QListBoxBase
+ *
  * @package QCubed\Control
  */
 abstract class ListBoxBase extends ListControl
 {
     /** Can select only one item. */
-    const SELECTION_MODE_SINGLE = 'Single';
+    public const SELECTION_MODE_SINGLE = 'Single';
     /** Can select more than one */
-    const SELECTION_MODE_MULTIPLE = 'Multiple';
-    /** Selection mode not specified */
-    const SELECTION_MODE_NONE = 'None';
+    public const SELECTION_MODE_MULTIPLE = 'Multiple';
+    /** Selection mode isn't specified */
+    public const SELECTION_MODE_NONE = 'None';
 
-///////////////////////////
+    ///////////////////////////
     // Private Member Variables
     ///////////////////////////
 
     // APPEARANCE
     /** @var string Error to be shown if the box is empty, has a name and is marked as required */
-    protected $strLabelForRequired;
+    protected string $strLabelForRequired;
     /** @var string Error to be shown If the box is empty, doesn't have a name and is marked as required */
-    protected $strLabelForRequiredUnnamed;
+    protected string $strLabelForRequiredUnnamed;
 
     /**
      * ListBoxBase constructor.
      * @param ControlBase|FormBase $objParentObject
      * @param string|null $strControlId
+     * @throws Caller
      */
-    public function __construct($objParentObject, $strControlId = null)
+    public function __construct(FormBase|ControlBase $objParentObject, ?string $strControlId = null)
     {
         parent::__construct($objParentObject, $strControlId);
 
@@ -70,7 +72,7 @@ abstract class ListBoxBase extends ListControl
     /**
      * Parses the data received back from the client/browser
      */
-    public function parsePostData()
+    public function parsePostData(): void
     {
         if (array_key_exists($this->strControlId, $_POST)) {
             if (is_array($_POST[$this->strControlId])) {
@@ -83,7 +85,7 @@ abstract class ListBoxBase extends ListControl
                 $this->setSelectedItemsById(array($_POST[$this->strControlId]), false);
             }
         } else {
-            // Multiselect forms with nothing passed via $_POST means that everything was DE selected
+            // Multiselect forms with nothing passed via $_POST mean that everything was DE selected
             if ($this->SelectionMode == self::SELECTION_MODE_MULTIPLE) {
                 $this->unselectAllItems(false);
             }
@@ -96,7 +98,7 @@ abstract class ListBoxBase extends ListControl
      * @param ListItem $objItem
      * @return string resulting HTML
      */
-    protected function getItemHtml(ListItem $objItem)
+    protected function getItemHtml(ListItem $objItem): string
     {
         // The Default Item Style
         if ($this->objItemStyle) {
@@ -112,10 +114,6 @@ abstract class ListBoxBase extends ListControl
 
         $objStyler->setHtmlAttribute('value', ($objItem->Empty) ? '' : $objItem->Id);
 
-        if ($objItem->Mark) {
-            $objStyler->setHtmlAttribute('class', $objItem->Mark);
-        }
-
         if ($objItem->Selected) {
             $objStyler->setHtmlAttribute('selected', 'selected');
         }
@@ -124,17 +122,16 @@ abstract class ListBoxBase extends ListControl
             $objStyler->setHtmlAttribute('disabled', 'disabled');
         }
 
-        $strHtml = Html::renderTag('option', $objStyler->renderHtmlAttributes(),
+        return Html::renderTag('option', $objStyler->renderHtmlAttributes(),
                 QString::htmlEntities($objItem->Name), false, true) . _nl();
-
-        return $strHtml;
     }
 
     /**
-     * Returns the html for the entire control.
+     * Returns the HTML for the entire control.
      * @return string
+     * @throws Caller
      */
-    protected function getControlHtml()
+    protected function getControlHtml(): string
     {
         // If no selection is specified, we select the first item, because once we draw this, that is what the browser
         // will consider selected on the screen.
@@ -162,10 +159,16 @@ abstract class ListBoxBase extends ListControl
     }
 
     /**
-     * Return the inner html for the select box.
-     * @return string
+     * Renders the inner HTML of the list box, including options and option groups if applicable.
+     *
+     * This method organizes items into groups if they have a defined group label and generates
+     * the appropriate HTML structure. Items without a group are rendered directly as individual options,
+     * while grouped items are wrapped within optgroup tags.
+     *
+     * @return string The rendered HTML content for the list box.
+     * @throws Caller
      */
-    protected function renderInnerHtml()
+    protected function renderInnerHtml(): string
     {
         $strHtml = '';
         $intItemCount = $this->getItemCount();
@@ -175,7 +178,13 @@ abstract class ListBoxBase extends ListControl
         $groups = array();
 
         for ($intIndex = 0; $intIndex < $intItemCount; $intIndex++) {
-            $objItem = $this->getItem($intIndex);
+            try {
+                /** @var ListItem $objItem */
+                $objItem = $this->getItem($intIndex);
+            } catch (Q\Exception\IndexOutOfRange|InvalidCast $e) {
+                // If an error occurs, continue with the next index
+                continue;
+            }
             // Figure Out Groups (if applicable)
             if ($strGroup = $objItem->ItemGroup) {
                 $groups[$strGroup][] = $objItem;
@@ -194,21 +203,20 @@ abstract class ListBoxBase extends ListControl
                 foreach ($items as $objItem) {
                     $strGroupHtml .= $this->getItemHtml($objItem);
                 }
-                $strHtml .= Html::renderTag('optgroup', ['label' => QString::htmlEntities($strGroup)],
-                    $strGroupHtml);
+                $strHtml .= Html::renderTag('optgroup', ['label' => QString::htmlEntities($strGroup)], $strGroupHtml);
             }
         }
         return $strHtml;
     }
 
-    // For multiple-select based listboxes, you must define the way a "Reset" button should look
-    abstract protected function getResetButtonHtml();
+    // For multiple-select-based lightboxes, you must define the way a "Reset" button should look
+    abstract protected function getResetButtonHtml(): string;
 
     /**
      * Determines whether the supplied input data is valid or not.
      * @return bool
      */
-    public function validate()
+    public function validate(): bool
     {
         if ($this->blnRequired) {
             if ($this->SelectedIndex == -1) {
@@ -220,7 +228,7 @@ abstract class ListBoxBase extends ListControl
                 return false;
             }
 
-            if (($this->SelectedIndex == 0) && (strlen($this->SelectedValue) == 0)) {
+            if ($this->SelectedIndex == 0 && $this->SelectedValue == null) {
                 if ($this->strName) {
                     $this->ValidationError = sprintf($this->strLabelForRequired, $this->strName);
                 } else {
@@ -234,28 +242,29 @@ abstract class ListBoxBase extends ListControl
     }
 
     /**
-     * Override of superclass that will update the selection using javascript so that the whole control does
+     * Override of superclass that will update the selection using JavaScript so that the whole control does
      * not need to be redrawn.
      */
-    protected function refreshSelection()
+    protected function refreshSelection(): void
     {
         $items = $this->SelectedItems;
         $values = [];
         foreach ($items as $objItem) {
             $values[] = $objItem->Id;
         }
+
         Application::executeControlCommand($this->ControlId, 'val', $values);
     }
 
     /**
-     * Restore the  state of the control. This override makes sure the item exists before putting it. Otherwise,
+     * Restore the state of the control. This override makes sure the item exists before putting it. Otherwise,
      * if the item did not exist, the default selection would be removed and nothing would be selected.
      * @param mixed $state
      */
-    public function putState($state)
+    public function putState(mixed $state): void
     {
         if (!empty($state['SelectedValues'])) {
-            // assume only one selection in list
+            // assume only one selection in a list
             $strValue = reset($state['SelectedValues']);
             if ($this->findItemByValue($strValue)) {
                 $this->SelectedValues = [$strValue];
@@ -267,14 +276,15 @@ abstract class ListBoxBase extends ListControl
     /////////////////////////
     // Public Properties: GET
     /////////////////////////
+
     /**
-     * PHP magic function
-     * @param string $strName
+     * Magic method to retrieve property values.
      *
-     * @return mixed
-     * @throws Caller
+     * @param string $strName The name of the property to retrieve.
+     * @return mixed Returns the value of the requested property.
+     * @throws Caller If the property does not exist.
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             // APPEARANCE
@@ -302,15 +312,18 @@ abstract class ListBoxBase extends ListControl
     /////////////////////////
     // Public Properties: SET
     /////////////////////////
+
     /**
-     * PHP magic method
-     * @param string $strName
-     * @param string $mixValue
+     * Magic method to set the value of a property.
+     * Allows dynamic assignment of properties and handles typecasting or validation for certain attributes.
      *
+     * @param string $strName The name of the property to set.
+     * @param mixed $mixValue The value to assign to the property.
      * @return void
-     * @throws Caller|InvalidCast
+     * @throws Caller Thrown when attempting to set an undefined property.
+     * @throws InvalidCast Thrown when the value cannot be cast to the required type.
      */
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             // APPEARANCE
@@ -365,11 +378,12 @@ abstract class ListBoxBase extends ListControl
     }
 
     /**
-     * Returns an description of the options available to modify by the designer for the code generator.
+     * Returns a description of the options available to modify by the designer for the code generator.
      *
      * @return Q\ModelConnector\Param[]
+     * @throws Caller
      */
-    public static function getModelConnectorParams()
+    public static function getModelConnectorParams(): array
     {
         return array_merge(parent::getModelConnectorParams(), array(
             new Q\ModelConnector\Param(get_called_class(), 'Rows', 'Height of field for multirow field',
@@ -385,11 +399,12 @@ abstract class ListBoxBase extends ListControl
     }
 
     /**
-     * Returns the generator corresponding to this control.
+     * Creates and returns an instance of the ListBox code generator.
      *
-     * @return Q\Codegen\Generator\GeneratorBase
+     * @return Q\Codegen\Generator\ListBox An instance of the ListBox code generator.
      */
-    public static function getCodeGenerator() {
-        return new Q\Codegen\Generator\ListBox();
+    public static function getCodeGenerator(): Q\Codegen\Generator\ListBox
+    {
+        return new Q\Codegen\Generator\ListBox(__CLASS__);
     }
 }

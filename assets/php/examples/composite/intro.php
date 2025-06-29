@@ -1,5 +1,10 @@
 <?php
+
+use QCubed\Action\Server;
+use QCubed\Control\Label;
+use QCubed\Event\Click;
 use QCubed\Project\Control\FormBase;
+use QCubed\Project\Jqui\Button;
 
 require_once('../qcubed.inc.php');
 require('SampleComposite.php');
@@ -8,22 +13,23 @@ require('SampleComposite.php');
 class ExamplesForm extends FormBase {
 
 	// Local declarations of our Qcontrols
-	protected $lblMessage;
-	protected $btnButton;
+	protected Label $lblMessage;
+	protected Button $btnButton;
 	// Lets declare our Custom Composite Controls
-	protected $objCounter1;
-	protected $objCounter2;
-	protected $objCounter3;
+	protected SampleComposite $objCounter1;
+	protected SampleComposite $objCounter2;
+	protected SampleComposite $objCounter3;
 
 	// Initialize our Controls during the Form Creation process
-	protected function formCreate() {
+	protected function formCreate(): void
+    {
 		// Define the Label
-		$this->lblMessage = new \QCubed\Control\Label($this);
+		$this->lblMessage = new Label($this);
 		$this->lblMessage->Text = '';
 		$this->lblMessage->HtmlEntities = false;
 
 		// Define the Button
-		$this->btnButton = new \QCubed\Project\Jqui\Button($this);
+		$this->btnButton = new Button($this);
 		$this->btnButton->Text = 'Add the Values';
 
 		// Define our Custom Composite Controls
@@ -45,11 +51,12 @@ class ExamplesForm extends FormBase {
 
 		// Add a Click event handler to the main "Add the Values" button
 		// And, just for variety, lets keep it as a server action
-		$this->btnButton->AddAction(new \QCubed\Event\Click(), new \QCubed\Action\Server('btnButton_Click'));
+		$this->btnButton->AddAction(new Click(), new Server('btnButton_Click'));
 	}
 
 	// The "btnButton_Click" Event handler
-	protected function btnButton_Click($strFormId, $strControlId, $strParameter) {
+	protected function btnButton_Click(string $strFormId, string $strControlId, string $strParameter): void
+    {
 		$intTotal = $this->objCounter1->Value + $this->objCounter2->Value + $this->objCounter3->Value;
 
 		$this->lblMessage->Text = '<strong>The Total</strong>: ' . $intTotal;
@@ -59,4 +66,3 @@ class ExamplesForm extends FormBase {
 // Run the Form we have defined
 // The \QCubed\Project\Control\FormBase engine will look to intro.tpl.php to use as its HTML template include file
 ExamplesForm::Run('ExamplesForm');
-?>

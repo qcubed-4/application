@@ -8,14 +8,15 @@
 
 namespace QCubed\Control;
 
-use QCubed\Exception\Caller;
 use QCubed as Q;
+use QCubed\Exception\Caller;
 use QCubed\Exception\InvalidCast;
 use QCubed\Project\Application;
 use QCubed\Table\ColumnBase;
 use QCubed\Table\DataColumn;
 use QCubed\Table\DataGridCheckboxColumn;
 use QCubed\Type;
+use Throwable;
 
 
 if (!defined('QCUBED_FONT_AWESOME_CSS')) {
@@ -23,52 +24,79 @@ if (!defined('QCUBED_FONT_AWESOME_CSS')) {
 }
 
 /**
- * Class DataGridBase
+ * A base class for creating data grids within the QCubed framework.
  *
- * This class is designed primarily to work alongside the code generator, but it can be independent as well. It creates
- * an html table that displays data from the database. The data can possibly be sorted by clicking on the header cell
- * of the sort column.
+ * This class is designed to handle common functionality for data grids, such as sorting, pagination,
+ * column tracking, and checkbox interactions. It acts as the foundation for building customizable
+ * and interactive data grids that operate seamlessly within the framework.
  *
- * This grid also has close ties to the QDataGrid_CheckboxColumn to easily enable the addition of a column or columns
- * of checkboxes.
+ * Features include:
+ * - Sorting columns in ascending or descending order.
+ * - Integrating paginator within the grid.
+ * - Managing and tracking column states and interactions, including checkbox selections.
+ * - Providing hooks for customization, like overriding header rows or adding actions.
  *
- * This class is NOT intended to support column filters, but a subclass could be created that could do so. Just don't
- * do that here.
+ * This class extends the functionality of TableBase, inheriting its table structure and capabilities
+ * while adding data-grid-specific behavior.
  *
- * @property-read  QQClause $OrderByClause The sorting clause based on the selected headers.
- * @property  string $SortColumnId The id of the currently sorted column. Does not change if columns are re-ordered.
+ * @property  string $SortColumnId The Id of the currently sorted column. Does not change if columns are re-ordered.
  * @property  int $SortColumnIndex The index of the currently sorted column.
  * @property  int $SortDirection SortAscending or SortDescending.
  * @property  array $SortInfo An array containing the sort data, so you can save and restore it later if needed.
- * @was QDataGridBase
- * @package QCubed\Control
+ * @method getColumnById(string $strId)
  */
 class DataGridBase extends TableBase
 {
-    /** Numbers than can be used to multiply against the results of comparison functions to reverse the order. */
-    const SORT_ASCENDING = 1;
-    const SORT_DESCENDING = -1;
+    /** Numbers that can be used to multiply against the results of comparison functions to reverse the order. */
+    public const SORT_ASCENDING = 1;
+    public const SORT_DESCENDING = -1;
 
-    /** @var int Couter to generate column ids for columns that do not have them. */
-    protected $intLastColumnId = 0;
+    /** @var int Cuter to generate column Ids for columns that do not have them. */
+    protected int $intLastColumnId = 0;
 
-    /** @var  string Keeps track of current sort column. We do it by id so that the table can add/hide/show or rearrange columns and maintain the sort column. */
-    protected $strSortColumnId;
+    /** @var  string Keeps track of the current sort column. We do it by Id so that the table can add/hide/show or rearrange columns and maintain the sort column. */
+    protected string $strSortColumnId = '';
 
     /** @var int The direction of the currently sorted column. */
-    protected $intSortDirection = self::SORT_ASCENDING;
+    protected int $intSortDirection = self::SORT_ASCENDING;
 
     /** @var string Default class */
-    protected $strCssClass = 'datagrid';
-
+    protected string $strCssClass = 'datagrid';
+    /**
+     * @var array|bool|int|mixed|string
+     */
+    protected mixed $SortColumnId;
 
     /**
-     * DataGridBase constructor.
-     * @param ControlBase|FormBase $objParentObject
-     * @param null|string $strControlId
-     * @throws Caller
+     * Retrieves the last column ID as an integer.
+     * @return int Returns the last column ID.
      */
-    public function __construct($objParentObject, $strControlId = null)
+    public function getIntLastColumnId(): int
+    {
+        return $this->intLastColumnId;
+    }
+
+    /**
+     * Sets the value of the last column ID.
+     *
+     * @param int $intLastColumnId The ID of the last column to be set.
+     * @return void
+     */
+    public function setIntLastColumnId(int $intLastColumnId): void
+    {
+        $this->intLastColumnId = $intLastColumnId;
+    }
+
+    /**
+     * Constructor for initializing the object with a parent object and an optional control ID.
+     * It loads necessary CSS files, initializes actions, and handles exceptions during construction.
+     *
+     * @param FormBase|ControlBase $objParentObject The parent object to which the control belongs.
+     * @param string|null $strControlId An optional ID for the control. If not provided, a default ID will be generated.
+     * @return void
+     * @throws Caller If there is an issue during the construction process.
+     */
+    public function __construct(FormBase|ControlBase $objParentObject, ?string $strControlId = null)
     {
         try {
             parent::__construct($objParentObject, $strControlId);
@@ -80,23 +108,28 @@ class DataGridBase extends TableBase
             $objExc->incrementOffset();
             throw $objExc;
         }
+
+        print $this->strSortColumnId;
     }
 
     /**
-     * An override to add the paginator to the caption area.
-     * @return string
+     * Renders and returns the caption content.
+     *
+     * @return string The result of the caption rendering process.
+     * @throws Caller
      */
-    protected function renderCaption()
+    protected function renderCaption(): string
     {
         return $this->renderPaginator();
     }
 
     /**
-     * Renders the given paginator in a span in the caption. If a caption already exists, it will add the caption.
-     * @return string
+     * Renders and returns the paginator content within a caption element.
+     *
+     * @return string The resulting HTML of the paginator rendering process or an empty string if the paginator is not set.
      * @throws Caller
      */
-    protected function renderPaginator()
+    protected function renderPaginator(): string
     {
         $objPaginator = $this->objPaginator;
         if (!$objPaginator) {
@@ -109,49 +142,57 @@ class DataGridBase extends TableBase
             $strHtml = '<span>' . Q\QString::htmlEntities($this->strCaption) . '</span>' . $strHtml;
         }
 
-        $strHtml = Q\Html::renderTag('caption', null, $strHtml);
-
-        return $strHtml;
+        return Q\Html::renderTag('caption', null, $strHtml);
     }
 
     /**
-     * Adds the actions for the table. Override to add additional actions. If you are detecting clicks
-     * that need to cancel the default action, put those in front of this function.
-     */
-    public function addActions()
-    {
-        $this->addAction(new Q\Event\CheckboxColumnClick(), new Q\Action\AjaxControl($this, 'CheckClick'));
-        $this->addAction(new Q\Event\CheckboxColumnClick(),
-            new Q\Action\StopPropagation()); // prevent check click from bubbling as a row click.
-
-        $this->addAction(new Q\Event\DataGridSort(), new Q\Action\AjaxControl($this, 'SortClick'));
-        $this->addAction(new Q\Event\DataGridSort(), new Q\Action\StopPropagation());   // in case datagrid is nested
-    }
-
-    /**
-     * An override to create an id for every column, since the id is what we use to track sorting.
+     * Registers actions for handling checkbox column clicks and data grid sorting events.
      *
-     * @param int $intColumnIndex
-     * @param ColumnBase $objColumn
+     * The method adds specific event-action pairs to the component to
+     * handle checkbox clicks and sorting interactions. It also
+     * prevents event propagation where necessary.
+     *
+     * @return void
+     * @throws Caller
+     */
+    public function addActions(): void
+    {
+        $this->addAction(new Q\Event\CheckboxColumnClick(), new Q\Action\AjaxControl($this, 'checkClick'));
+        $this->addAction(new Q\Event\CheckboxColumnClick(),
+            new Q\Action\StopPropagation()); // prevent check click from bubbling as a row clicks.
+
+        $this->addAction(new Q\Event\DataGridSort(), new Q\Action\AjaxControl($this, 'sortClick'));
+        $this->addAction(new Q\Event\DataGridSort(), new Q\Action\StopPropagation());
+    }
+
+    /**
+     * Adds a column at the specified index, assigning an ID to the column if none exists.
+     *
+     * @param int $intColumnIndex The index at which the column will be added.
+     * @param ColumnBase $objColumn The column objects to be added.
+     * @return void
+     * @throws Caller
      * @throws InvalidCast
      */
-    public function addColumnAt($intColumnIndex, ColumnBase $objColumn)
+    public function addColumnAt(int $intColumnIndex, ColumnBase $objColumn): void
     {
         parent::addColumnAt($intColumnIndex, $objColumn);
-        // Make sure the column has an Id, since we use that to track sorting.
         if (!$objColumn->Id) {
             $objColumn->Id = $this->ControlId . '_col_' . $this->intLastColumnId++;
         }
     }
 
     /**
-     * Transfers clicks to any checkbox columns.
+     * Handles a click event for a specific column in the data grid.
      *
-     * @param $strFormId
-     * @param $strControlId
-     * @param $strParameter
+     * @param string $strFormId The ID of the form where the event originated.
+     * @param string $strControlId The ID of the control where the event occurred.
+     * @param mixed $strParameter Parameters associated with the click event, including column data.
+     * @return void
+     * @throws Caller
+     * @throws InvalidCast
      */
-    protected function checkClick($strFormId, $strControlId, $strParameter)
+    protected function checkClick(string $strFormId, string $strControlId, mixed $strParameter): void
     {
         $intColumnIndex = $strParameter['col'];
         $objColumn = $this->getColumn($intColumnIndex, true);
@@ -162,12 +203,12 @@ class DataGridBase extends TableBase
     }
 
     /**
-     * Clears all checkboxes in checkbox columns. If you have multiple checkbox columns, you can specify which column
-     * to clear. Otherwise, it will clear all of them.
+     * Clears the checked items for the specified column or all checkbox columns if no ID is provided.
      *
-     * @param string|null $strColId
+     * @param string|null $strColId The ID of the checkbox column to clear. If null, all checkbox columns will be cleared.
+     * @return void
      */
-    public function clearCheckedItems($strColId = null)
+    public function clearCheckedItems(?string $strColId = null): void
     {
         foreach ($this->objColumnArray as $objColumn) {
             if ($objColumn instanceof DataGridCheckboxColumn) {
@@ -179,14 +220,14 @@ class DataGridBase extends TableBase
     }
 
     /**
-     * Returns the checked item ids if the data grid has a QDataGrid_CheckboxColumn column. If there is more than
-     * one column, you can specify which column to want to query. If no id is specified, it
-     * will return the ids from the first column found. If no column was found, then null is returned.
+     * Retrieves the IDs of the checked items for a specified checkbox column, or all checked item IDs
+     * if no specific column ID is provided.
      *
-     * @param mixed $strColId
-     * @return array|null
+     * @param string|null $strColId The optional ID of the checkbox column to retrieve checked item IDs from.
+     *                              If null, it attempts to retrieve checked item IDs from any checkbox column.
+     * @return array|null The array of checked item IDs if found; otherwise, null if the column is not found.
      */
-    public function getCheckedItemIds($strColId = null)
+    public function getCheckedItemIds(?string $strColId = null): ?array
     {
         foreach ($this->objColumnArray as $objColumn) {
             if ($objColumn instanceof DataGridCheckboxColumn) {
@@ -201,13 +242,17 @@ class DataGridBase extends TableBase
     }
 
     /**
-     * Processes clicks on a sortable column head.
+     * Handles the click event for sorting a column in a grid or table. This method determines the column to sort by
+     * based on the provided parameter, updates the sort direction, and resets pagination if applicable.
      *
-     * @param string $strFormId
-     * @param string $strControlId
-     * @param mixed $mixParameter
+     * @param string $strFormId The ID of the form in which the control triggering the event is located.
+     * @param string $strControlId The ID of the control that triggered the event.
+     * @param mixed $mixParameter The parameter indicating the column to sort by, typically its index.
+     * @return void
+     * @throws Caller
+     * @throws InvalidCast
      */
-    protected function sortClick($strFormId, $strControlId, $mixParameter)
+    protected function sortClick(string $strFormId, string $strControlId, mixed $mixParameter): void
     {
         $intColumnIndex = Type::cast($mixParameter, Type::INTEGER);
         $objColumn = $this->getColumn($intColumnIndex, true);
@@ -221,10 +266,6 @@ class DataGridBase extends TableBase
 
         $strId = $objColumn->Id;
 
-        if (!$objColumn) {
-            return;
-        }
-
         // Reset pagination (if applicable)
         if ($this->objPaginator) {
             $this->PageNumber = 1;
@@ -236,11 +277,11 @@ class DataGridBase extends TableBase
 
             // Are we currently sorting by this column?
             if ($this->strSortColumnId === $strId) {
-                // Yes we are currently sorting by this column
+                // Yes, we are currently sorting by this column.
 
                 // In Reverse?
                 if ($this->intSortDirection == self::SORT_DESCENDING) {
-                    // Yep -- unreverse the sort
+                    // Yep -- reverse the sort
                     $this->intSortDirection = self::SORT_ASCENDING;
                 } else {
                     // Nope -- can we reverse?
@@ -254,18 +295,18 @@ class DataGridBase extends TableBase
                 $this->intSortDirection = self::SORT_ASCENDING;
             }
         } else {
-            // It isn't -- clear all sort properties
+            // It isn't -- clear all-sort properties
             $this->intSortDirection = self::SORT_ASCENDING;
             $this->strSortColumnId = null;
         }
     }
 
     /**
-     * Override to return the header row to indicate when a column is sortable.
+     * Generates and returns the HTML for the table header rows.
      *
-     * @return string
+     * @return string The rendered HTML string for the header rows.
      */
-    protected function getHeaderRowHtml()
+    protected function getHeaderRowHtml(): string
     {
         $strToReturn = '';
         for ($i = 0; $i < $this->intHeaderRowCount; $i++) {
@@ -297,12 +338,12 @@ class DataGridBase extends TableBase
     }
 
     /**
-     * Override to return sortable column info.
+     * Generates and returns the content for a header cell in a data column.
      *
-     * @param DataColumn $objColumn
-     * @return string
+     * @param DataColumn $objColumn The data column object containing the configuration and values for the header cell.
+     * @return string The rendered content of the header cell, including any applicable sorting indicators or spans for positioning.
      */
-    protected function getHeaderCellContent(DataColumn $objColumn)
+    protected function getHeaderCellContent(DataColumn $objColumn): string
     {
         $blnSortable = false;
         $strCellValue = $objColumn->fetchHeaderCellValue();
@@ -311,7 +352,7 @@ class DataGridBase extends TableBase
         }
         $strCellValue = Q\Html::renderTag('span', null, $strCellValue);    // wrap in a span for positioning
 
-        if ($this->strSortColumnId === $objColumn->Id) {
+        if ($this->strSortColumnId == $objColumn->Id) {
             if ($this->intSortDirection == self::SORT_ASCENDING) {
                 $strCellValue = $strCellValue . ' ' . Q\Html::renderTag('i', ['class' => 'fa fa-sort-desc fa-lg']);
             } else {
@@ -327,33 +368,37 @@ class DataGridBase extends TableBase
         }
 
         if ($blnSortable) {
-            // Wrap header cell in an html5 block-link to help with assistive technologies.
+            //Wrap the header cell in an HTML5 block link to help with assistive technologies.
             $strCellValue = Q\Html::renderTag('div', null, $strCellValue);
             $strCellValue = Q\Html::renderTag('a', ['href' => 'javascript:;'],
-                $strCellValue); // action will be handled by qcubed.js click handler in qcubed.datagrid2()
+                $strCellValue); // this action will be handled by qcubed.js click handler in qcubed.datagrid2()
         }
 
         return $strCellValue;
     }
 
     /**
-     * Override to enable the datagrid2 javascript.
+     * Creates and initializes the jQuery widget for the control.
+     *
+     * @return void
      */
-    protected function makeJqWidget()
+    protected function makeJqWidget(): void
     {
         parent::makeJqWidget();
         Application::executeJsFunction('qcubed.datagrid2', $this->ControlId);
     }
 
-
     /**
-     * Returns the current state of the control to be able to restore it later.
-     * @return mixed
+     * Retrieves and returns the current state of the object, including
+     * sorting and pagination data, if applicable.
+     *
+     * @return array|null An associative array containing the state data,
+     *               including sort column ID, sort direction, and page number.
      */
-    public function getState()
+    public function getState(): ?array
     {
         $state = array();
-        if ($this->strSortColumnId !== null) {
+        if ($this->strSortColumnId) {
             $state["c"] = $this->strSortColumnId;
             $state["d"] = $this->intSortDirection;
         }
@@ -364,10 +409,17 @@ class DataGridBase extends TableBase
     }
 
     /**
-     * Restore the state of the control.
-     * @param mixed $state Previously saved state as returned by GetState above.
+     * Updates the state of the object using the provided state array.
+     *
+     * @param mixed $state An associative array containing state information.
+     *                     Valid keys:
+     *                     - 'c': The column key to set as the sorting column.
+     *                     - 'd': The sorting direction, either ascending or descending.
+     *                     - 'p': The page number to set if a paginator is available.
+     *
+     * @return void
      */
-    public function putState($state)
+    public function putState(mixed $state): void
     {
         // use the name as the column key because columns might be added or removed for some reason
         if (isset($state["c"])) {
@@ -376,7 +428,7 @@ class DataGridBase extends TableBase
         if (isset($state["d"])) {
             $this->intSortDirection = $state["d"];
             if ($this->intSortDirection != self::SORT_DESCENDING) {
-                $this->intSortDirection = self::SORT_ASCENDING;    // make sure its only one of two values
+                $this->intSortDirection = self::SORT_ASCENDING;    // make sure it's only one of two values
             }
         }
         if (isset($state["p"]) &&
@@ -387,12 +439,11 @@ class DataGridBase extends TableBase
     }
 
     /**
-     * Returns the index of the currently sorted column.
-     * Returns false if nothing selected.
+     * Retrieves the index of the column currently set for sorting.
      *
-     * @return bool|int
+     * @return int|false The index of the sort column if found, or false if no match is found.
      */
-    public function getSortColumnIndex()
+    public function getSortColumnIndex(): false|int
     {
         if ($this->objColumnArray && ($count = count($this->objColumnArray))) {
             for ($i = 0; $i < $count; $i++) {
@@ -405,19 +456,16 @@ class DataGridBase extends TableBase
     }
 
     /**
-     * Return information on sorting the data. For SQL databases, this would be a QQClause. But since this just
-     * gets the clause from the currently active column, it could be anything.
+     * Retrieves the order by information based on the current sort column and sort direction.
      *
-     * This clause should not affect counting or limiting.
-     *
-     * @return mixed
+     * @return mixed The order by clause if available; otherwise, null.
      */
-    public function getOrderByInfo()
+    public function getOrderByInfo(): mixed
     {
-        if ($this->strSortColumnId !== null) {
+        if ($this->strSortColumnId) {
             $objColumn = $this->getColumnById($this->strSortColumnId);
             assert($objColumn instanceof DataColumn);
-            if ($objColumn && $objColumn->OrderByClause) {
+            if ($objColumn->OrderByClause) {
                 if ($this->intSortDirection == self::SORT_ASCENDING) {
                     return $objColumn->OrderByClause;
                 } else {
@@ -436,11 +484,14 @@ class DataGridBase extends TableBase
     }
 
     /**
-     * @param string $strName
-     * @return bool|int|Keeps|mixed|null
-     * @throws Caller
+     * Magic method to retrieve the value of a property dynamically.
+     * Handles specific property names and provides custom behavior for each.
+     *
+     * @param string $strName The name of the property to retrieve.
+     * @return mixed The value of the requested property or the parent::__get result.
+     * @throws Caller If the property does not exist or cannot be retrieved.
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             // MISC
@@ -470,12 +521,12 @@ class DataGridBase extends TableBase
 
     /**
      * @param string $strName
-     * @param string $mixValue
-     * @throws Caller
-     * @throws InvalidCast
+     * @param mixed $mixValue
      * @return void
+     * @throws Caller
+     * @throws Throwable Exception
      */
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             case "SortColumnId":
@@ -514,7 +565,7 @@ class DataGridBase extends TableBase
                 try {
                     $this->intSortDirection = Type::cast($mixValue, Type::INTEGER);
                     if ($this->intSortDirection != self::SORT_DESCENDING) {
-                        $this->intSortDirection = self::SORT_ASCENDING;    // make sure its only one of two values
+                        $this->intSortDirection = self::SORT_ASCENDING;    // make sure it's only one of two values
                     }
                     break;
                 } catch (InvalidCast $objExc) {
@@ -522,11 +573,14 @@ class DataGridBase extends TableBase
                     throw $objExc;
                 }
 
-            case "SortInfo":    // restore the SortInfo obtained from the getter
+            case "SortInfo":    // Restore the SortInfo obtained from the getter
                 try {
-                    if (isset($mixValue['id']) && isset($mixValue['dir'])) {
+                    if (is_array($mixValue) && isset($mixValue['id']) && isset($mixValue['dir'])) {
                         $this->intSortDirection = Type::cast($mixValue['dir'], Type::INTEGER);
                         $this->strSortColumnId = Type::cast($mixValue['id'], Type::STRING);
+                    } else {
+                        // We add logic here to handle invalid format or default values
+                        throw new Caller("Invalid mixValue format: an expected array with 'id' and 'dir'.");
                     }
                     break;
                 } catch (InvalidCast $objExc) {

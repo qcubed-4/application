@@ -23,50 +23,48 @@ use QCubed\Js;
  * @property-read mixed $CausesValidationOverride An override for CausesValidation property (if supplied)
  * @property-read string $JsReturnParam            The parameter to be returned
  *                                                 (overrides the Control's ActionParameter)
- * @was QServerAction
  * @package QCubed\Action
  */
 class Server extends ActionBase
 {
-    /** @var string Name of the method in the form to be called */
-    protected $strMethodName;
+    /** @var string|null Name of the method in the form to be called */
+    protected ?string $strMethodName = null;
     /**
-     * @var mixed A constant from QCausesValidation enumeration class
+     * @var mixed A constant from the CausesValidation enumeration class
      *            It is set in the constructor via the corresponding argument
      */
-    protected $mixCausesValidationOverride;
+    protected mixed $mixCausesValidationOverride;
     /** @var string An override for the Control's ActionParameter */
-    protected $strJsReturnParam;
+    protected string $strJsReturnParam;
 
     /**
      * Server constructor.
      *
-     *
-     * @param string|callable $strMethodName The method name which is to be assigned as the event handler
+     * @param string|null $strMethodName The method name which is to be assigned as the event handler
      *                                             (for the event being created). If blank, the whole page will just refresh.
-     * @param string $mixCausesValidationOverride A constant from CausesValidation
+     * @param string|null $mixCausesValidationOverride A constant from CausesValidation
      *                                             (or $this or an array of QControls)
      * @param string $strJsReturnParam The parameter to be returned when this event occurs
      * @throws Caller
      */
     public function __construct(
-        $strMethodName = null,
-        $mixCausesValidationOverride = null,
-        $strJsReturnParam = ''
+        mixed $strMethodName = null,
+        mixed $mixCausesValidationOverride = null,
+        string $strJsReturnParam = ""
     ) {
         global $_FORM;
         if (is_string($strMethodName)) {
             if (!method_exists($_FORM, $strMethodName)) {
-                throw new Caller("If method name is a string, the method must belong to the form.");
+                throw new Caller("If the method name is a string, the method must belong to the form.");
             }
         }
         elseif (is_array($strMethodName) && is_callable($strMethodName)) {
-            // Assume first item is a control or form
+            // Assume the first item is a control or form
             if ($strMethodName[0] instanceof ControlBase) {
                 $strMethodName = $strMethodName[0]->ControlId . ':' . $strMethodName[1];
             }
             elseif (!method_exists($_FORM, $strMethodName[1])) {
-                throw new Caller("If method name is a string, the method must belong to a form.");
+                throw new Caller("If a method name is a string, the method must belong to a form.");
             }
             else {
                 $strMethodName = $strMethodName[1];
@@ -89,7 +87,7 @@ class Server extends ActionBase
      * @return mixed|null|string
      * @throws Caller
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             case 'MethodName':
@@ -115,7 +113,7 @@ class Server extends ActionBase
      *
      * @return string The action parameter
      */
-    protected function getActionParameter($objControl)
+    protected function getActionParameter(ControlBase $objControl): string
     {
         if ($objActionParameter = $this->strJsReturnParam) {
             return $objActionParameter;
@@ -144,7 +142,7 @@ class Server extends ActionBase
      *
      * @return string
      */
-    public function renderScript(ControlBase $objControl)
+    public function renderScript(ControlBase $objControl): string
     {
         return sprintf("qc.pB('%s', '%s', '%s', %s);",
             $objControl->Form->FormId, $objControl->ControlId, addslashes(get_class($this->objEvent)),

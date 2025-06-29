@@ -19,13 +19,13 @@ use QCubed as Q;
 /**
  * Class ListControl
  *
- * Abstract object which is extended by anything which involves lists of selectable items.
+ * Abstract object which is extended by anything that involves lists of selectable items.
  * This object is the foundation for the ListBox, CheckBoxList, RadioButtonList
  * and TreeNav. Subclasses can be used as objects to specify one-to-many and many-to-many relationships.
  *
  * @property-read integer $ItemCount      the current count of ListItems in the control.
- * @property integer $SelectedIndex  is the index number of the control that is selected. "-1" means that nothing is selected. If multiple items are selected, it will return the lowest index number of all ListItems that are currently selected. Set functionality: selects that specific ListItem and will unselect all other currently selected ListItems.
- * @property-read array $SelectedIndexes  An array if index numbers corresponding to the selectiong in a multi-select situation.
+ * @property integer $SelectedIndex  is the index number of the control that is selected. "-1" means that nothing is selected. If multiple items are selected, it will return the lowest index number of all ListItems that are currently selected. Set functionality: select that specific ListItem and will unselect all other currently selected ListItems.
+ * @property-read array $SelectedIndexes  An array if index numbers corresponding to the selecting in a multi-select situation.
  * @property string $SelectedName   simply returns ListControl::SelectedItem->Name, or null if nothing is selected.
  * @property-read ListItem $SelectedItem   (readonly!) returns the ListItem object, itself, that is selected (or the ListItem with the lowest index number of a ListItems that are currently selected if multiple items are selected). It will return null if nothing is selected.
  * @property-read array $SelectedItems  returns an array of selected ListItems (if any).
@@ -35,49 +35,65 @@ use QCubed as Q;
  * @property string $ItemStyle     {@link ListItemStyle}
  * @see     ListItemStyle
  * @package Controls
- * @was QListControl
  * @package QCubed\Control
  */
 abstract class ListControl extends Q\Project\Control\ControlBase
 {
     use ListItemManagerTrait;
 
-    const REPEAT_HORIZONTAL = 'Horizontal';
-    const REPEAT_VERTICAL = 'Vertical';
+    public const REPEAT_HORIZONTAL = 'Horizontal';
+    public const REPEAT_VERTICAL = 'Vertical';
 
 
 /** @var null|ListItemStyle The common style for all elements in the list */
-    protected $objItemStyle = null;
+    protected ?ListItemStyle $objItemStyle = null;
 
     //////////
     // Methods
     //////////
 
     /**
-     * Add an item to the list.
+     * Adds a new item to the list. The item can be specified as a `ListItem` instance
+     * or created dynamically from the provided parameters.
      *
-     * @param ListItem|string $mixListItemOrName A full ListItem, in which case everything else is ignored, or the name of an item
-     * @param null|string $strValue The value of the item
-     * @param null|bool $blnSelected Is the item selected?
-     * @param null|string $strItemGroup The name of the item group, if items should be grouped
-     * @param null|array|string $mixOverrideParameters
+     * @param ListItem|string $mixListItemOrName The ListItem instance to add, or the name of the new item.
+     * @param string|null $strValue Optional. The value associated with the item. Used only if creating a new ListItem.
+     * @param bool|null $blnSelected Optional. Indicates whether the item should be marked as selected. Used only if creating a new ListItem.
+     * @param bool|null $blnDisabled Optional. Indicates whether the item should be marked as disabled. Used only if creating a new ListItem.
+     * @param string|null $strItemGroup Optional. The group name the item belongs to. Used only if creating a new ListItem.
+     * @param string|null $mixOverrideParameters Optional. Additional override parameters for item creation. Used only if creating a new ListItem.
+     *
+     * @return void
+     * @throws Caller
      */
     public function addItem(
-        $mixListItemOrName,
-        $strValue = null,
-        $blnSelected = null,
-        //$blnDisabled = null,
-        $strItemGroup = null,
-        $mixOverrideParameters = null
-    ) {
-        if (gettype($mixListItemOrName) == Type::OBJECT) {
-            $objListItem = Type::cast($mixListItemOrName, '\\QCubed\\Control\\ListItem');
+        ListItem|string $mixListItemOrName,
+        ?string         $strValue = null,
+        ?bool           $blnSelected = null,
+        ?bool           $blnDisabled = null,
+        ?string         $strItemGroup = null,
+        ?string         $mixOverrideParameters = null
+    ): void
+    {
+        if ($mixListItemOrName instanceof ListItem) {
+            $objListItem = $mixListItemOrName;
         } elseif ($mixOverrideParameters) {
-            // The OverrideParameters can only be included if they are not null, because OverrideAttributes in \QCubed\Base can't accept a NULL Value
-            $objListItem = new ListItem($mixListItemOrName, $strValue, $blnSelected, $strItemGroup,
-                $mixOverrideParameters);
+            $objListItem = new ListItem(
+                $mixListItemOrName,
+                $strValue,
+                $blnSelected,
+                $blnDisabled,
+                $strItemGroup,
+                $mixOverrideParameters
+            );
         } else {
-            $objListItem = new ListItem($mixListItemOrName, $strValue, $blnSelected, $strItemGroup);
+            $objListItem = new ListItem(
+                $mixListItemOrName,
+                $strValue,
+                $blnSelected,
+                $blnDisabled,
+                $strItemGroup
+            );
         }
 
         $this->addListItem($objListItem);
@@ -85,21 +101,23 @@ abstract class ListControl extends Q\Project\Control\ControlBase
 
     /**
      * Adds an array of items, or an array of key=>value pairs. Convenient for adding a list from a type table.
-     * When passing key=>val pairs, mixSelectedValues can be an array, or just a single value to compare against to indicate what is selected.
+     * When passing key=>val pairs, mixSelectedValues can be an array or just a single value to compare against to indicate what is selected.
      *
-     * @param array $mixItemArray Array of QListItems or key=>val pairs.
-     * @param mixed $mixSelectedValues Array of selected values, or value of one selection
-     * @param string $strItemGroup allows you to apply grouping (<optgroup> tag)
-     * @param string $mixOverrideParameters OverrideParameters for ListItemStyle
+     * @param array $mixItemArray Array of ListItems or key=>val pairs.
+     * @param mixed|null $mixSelectedValues Array of selected values, or value of one selection
+     * @param string|null $strItemGroup allows you to apply grouping (<optgroup> tag)
+     * @param string|null $mixOverrideParameters OverrideParameters for ListItemStyle
      *
      * @throws InvalidCast
+     * @throws Caller
      */
     public function addItems(
-        array $mixItemArray,
-        $mixSelectedValues = null,
-        $strItemGroup = null,
-        $mixOverrideParameters = null
-    ) {
+        array  $mixItemArray,
+        mixed  $mixSelectedValues = null,
+        ?string $strItemGroup = null,
+        ?string $mixOverrideParameters = null
+    ): void
+    {
         try {
             $mixItemArray = Type::cast($mixItemArray, Type::ARRAY_TYPE);
         } catch (InvalidCast $objExc) {
@@ -117,16 +135,16 @@ abstract class ListControl extends Q\Project\Control\ControlBase
                 $blnSelected = ($val === $mixSelectedValues);    // differentiate between null and 0 values
             }
             $this->addItem($item, $val, $blnSelected, $strItemGroup, $mixOverrideParameters);
-        };
+        }
         $this->reindex();
         $this->markAsModified();
     }
 
     /**
-     * Return the id. Used by QListItemManager trait.
-     * @return string
+     * Return the ID. Used by ListItemManager trait.
+     * @return string|null
      */
-    public function getId()
+    public function getId(): ?string
     {
         return $this->strControlId;
     }
@@ -134,34 +152,47 @@ abstract class ListControl extends Q\Project\Control\ControlBase
     /**
      * Recursively unselects all the items and subitems in the list.
      *
-     * @param bool $blnRefresh True if we need to reflect the change in the html page. False if we are recording
+     * @param bool $blnRefresh True if we need to reflect the change in the HTML page. False if we are recording
      *   what the user has already done.
+     * @throws IndexOutOfRange
+     * @throws InvalidCast|Caller
      */
-    public function unselectAllItems($blnRefresh = true)
+    public function unselectAllItems(bool $blnRefresh = true): void
     {
         $intCount = $this->getItemCount();
         for ($intIndex = 0; $intIndex < $intCount; $intIndex++) {
             $objItem = $this->getItem($intIndex);
-            $objItem->Selected = false;
+            if ($objItem instanceof ListItem) {
+                $objItem->Selected = false;
+            }
         }
         if ($blnRefresh && $this->blnOnPage) {
             $this->refreshSelection();
         }
     }
 
-
     /**
-     * Selects the given items by Id, and unselects items that are not in the list.
-     * @param string[] $strIdArray
-     * @param bool $blnRefresh
+     * Set selected items by their IDs.
+     *
+     * This method marks items as selected based on the given array of IDs. If
+     * the optional refresh parameter is true, the selection will be refreshed
+     * based on the current state.
+     *
+     * @param string[] $strIdArray Array of item IDs to mark as selected.
+     * @param bool $blnRefresh Optional. Whether to refresh the selection after setting the items. Default is true.
+     * @return void
+     * @throws IndexOutOfRange
+     * @throws InvalidCast|Caller
      */
-    public function setSelectedItemsById(array $strIdArray, $blnRefresh = true)
+    public function setSelectedItemsById(array $strIdArray, bool $blnRefresh = true): void
     {
         $intCount = $this->getItemCount();
         for ($intIndex = 0; $intIndex < $intCount; $intIndex++) {
             $objItem = $this->getItem($intIndex);
             $strId = $objItem->getId();
-            $objItem->Selected = in_array($strId, $strIdArray);
+            if ($objItem instanceof ListItem) {
+                $objItem->Selected = in_array($strId, $strIdArray);
+            }
         }
         if ($blnRefresh && $this->blnOnPage) {
             $this->refreshSelection();
@@ -169,16 +200,20 @@ abstract class ListControl extends Q\Project\Control\ControlBase
     }
 
     /**
-     * Set the selected item by index. This can only set top level items. Lower level items are untouched.
+     * Set the selected item by an index. This can only set top-level items. Lower level items are untouched.
      * @param integer[] $intIndexArray
      * @param bool $blnRefresh
+     * @throws IndexOutOfRange
+     * @throws InvalidCast|Caller
      */
-    public function setSelectedItemsByIndex(array $intIndexArray, $blnRefresh = true)
+    public function setSelectedItemsByIndex(array $intIndexArray, bool $blnRefresh = true): void
     {
         $intCount = $this->getItemCount();
         for ($intIndex = 0; $intIndex < $intCount; $intIndex++) {
             $objItem = $this->getItem($intIndex);
-            $objItem->Selected = in_array($intIndex, $intIndexArray);
+            if ($objItem instanceof ListItem) {
+                $objItem->Selected = in_array($intIndex, $intIndexArray);
+            }
         }
         if ($blnRefresh && $this->blnOnPage) {
             $this->refreshSelection();
@@ -191,8 +226,10 @@ abstract class ListControl extends Q\Project\Control\ControlBase
      *
      * @param array $mixValueArray
      * @param bool $blnRefresh
+     * @throws IndexOutOfRange
+     * @throws InvalidCast|Caller
      */
-    public function setSelectedItemsByValue(array $mixValueArray, $blnRefresh = true)
+    public function setSelectedItemsByValue(array $mixValueArray, bool $blnRefresh = true): void
     {
         $intCount = $this->getItemCount();
 
@@ -213,7 +250,9 @@ abstract class ListControl extends Q\Project\Control\ControlBase
                     $blnSelected = true;
                 }
             }
-            $objItem->Selected = $blnSelected;
+            if ($objItem instanceof ListItem) {
+                $objItem->Selected = $blnSelected;
+            }
         }
         if ($blnRefresh && $this->blnOnPage) {
             $this->refreshSelection();
@@ -224,45 +263,50 @@ abstract class ListControl extends Q\Project\Control\ControlBase
      * Set the selected items by name.
      * @param string[] $strNameArray
      * @param bool $blnRefresh
+     * @throws IndexOutOfRange
+     * @throws InvalidCast|Caller
      */
-    public function setSelectedItemsByName(array $strNameArray, $blnRefresh = true)
+    public function setSelectedItemsByName(array $strNameArray, bool $blnRefresh = true): void
     {
         $intCount = $this->getItemCount();
         for ($intIndex = 0; $intIndex < $intCount; $intIndex++) {
             $objItem = $this->getItem($intIndex);
             $strName = $objItem->Name;
+            if ($objItem instanceof ListItem) {
             $objItem->Selected = in_array($strName, $strNameArray);
+            }
         }
         if ($blnRefresh && $this->blnOnPage) {
             $this->refreshSelection();
         }
     }
 
-
     /**
      * This method is called when a selection is changed. It should execute the code to refresh the selected state
      * of the items in the control.
      *
      * The default just redraws the control. Redrawing a large list control can take a lot of time, so subclasses should
-     * implement a way of just setting the selection through javasacript.
+     * implement a way of just setting the selection through JavaScript.
      */
-    protected function refreshSelection()
+    protected function refreshSelection(): void
     {
         $this->markAsModified();
     }
 
     /**
-     * Return the first item selected.
+     * Retrieves the first selected item from the list of items, if any.
+     * Iterates through the items and returns the first item marked as selected.
      *
-     * @return null|ListItem
-     * @throws InvalidCast
+     * @return ListItem|null Returns the first selected ListItem if found, or null if no selected item exists.
+     * @throws IndexOutOfRange
+     * @throws InvalidCast|Caller
      */
-    public function getFirstSelectedItem()
+    public function getFirstSelectedItem(): ?ListItem
     {
         $intCount = $this->getItemCount();
         for ($intIndex = 0; $intIndex < $intCount; $intIndex++) {
             $objItem = $this->getItem($intIndex);
-            if ($objItem->Selected) {
+            if ($objItem instanceof ListItem && $objItem->Selected) {
                 return $objItem;
             }
         }
@@ -270,17 +314,18 @@ abstract class ListControl extends Q\Project\Control\ControlBase
     }
 
     /**
-     * Return all the selected items.
+     * Retrieve all selected items.
      *
-     * @return ListItem[]
+     * @return ListItem[] An array containing all selected ListItem objects.
+     * @throws InvalidCast|IndexOutOfRange|Caller
      */
-    public function getSelectedItems()
+    public function getSelectedItems(): array
     {
         $aResult = array();
         $intCount = $this->getItemCount();
         for ($intIndex = 0; $intIndex < $intCount; $intIndex++) {
             $objItem = $this->getItem($intIndex);
-            if ($objItem->Selected) {
+            if ($objItem instanceof ListItem && $objItem->Selected) {
                 $aResult[] = $objItem;
             }
         }
@@ -290,16 +335,18 @@ abstract class ListControl extends Q\Project\Control\ControlBase
     /**
      * Returns the current state of the control to be able to restore it later.
      */
-    public function getState()
+    public function getState(): array
     {
         return array('SelectedValues' => $this->SelectedValues);
     }
 
     /**
-     * Restore the  state of the control.
-     * @param array $state
+     * Assigns the given state to the current object, updating properties if applicable.
+     *
+     * @param mixed $state The state data to be applied, which may include 'SelectedValues'.
+     * @return void
      */
-    public function putState($state)
+    public function putState(mixed $state): void
     {
         if (!empty($state['SelectedValues'])) {
             $this->SelectedValues = $state['SelectedValues'];
@@ -310,13 +357,25 @@ abstract class ListControl extends Q\Project\Control\ControlBase
     // Public Properties: GET
     /////////////////////////
     /**
-     * PHP __get magic method implementation
-     * @param string $strName Property Name
+     * Magic method to get the property value based on the property name.
      *
-     * @return mixed
-     * @throws Exception|Caller
+     * @param string $strName The property name to retrieve.
+     * @return mixed The value of the requested property. The return type varies depending on the property:
+     *               - ItemCount: int
+     *               - SelectedIndex: int
+     *               - SelectedIndexes: array
+     *               - SelectedName: null|string
+     *               - SelectedValue: mixed
+     *               - Value: mixed
+     *               - SelectedItem: mixed
+     *               - SelectedItems: array
+     *               - SelectedNames: array
+     *               - SelectedValues: array
+     *               - ItemStyle: mixed
+     *               - default: mixed (result of parent::__get or exception)
+     * @throws Caller Thrown if the property is not found or an error occurs in parent::__get.
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             case "ItemCount":
@@ -324,7 +383,8 @@ abstract class ListControl extends Q\Project\Control\ControlBase
 
             case "SelectedIndex":
                 for ($intIndex = 0; $intIndex < $this->getItemCount(); $intIndex++) {
-                    if ($this->getItem($intIndex)->Selected) {
+                    $objItem = $this->getItem($intIndex);
+                    if ($objItem instanceof ListItem && $objItem->Selected) {
                         return $intIndex;
                     }
                 }
@@ -333,13 +393,14 @@ abstract class ListControl extends Q\Project\Control\ControlBase
             case "SelectedIndexes":
                 $indexes = [];
                 for ($intIndex = 0; $intIndex < $this->getItemCount(); $intIndex++) {
-                    if ($this->getItem($intIndex)->Selected) {
+                    $objItem = $this->getItem($intIndex);
+                    if ($objItem instanceof ListItem && $objItem->Selected) {
                         $indexes[] = $intIndex;
                     }
                 }
                 return $indexes;
 
-            case "SelectedName": // assumes first selected item is the selection
+            case "SelectedName": // assumes the first selected item is the selection
                 if ($objItem = $this->getFirstSelectedItem()) {
                     return $objItem->Name;
                 }
@@ -395,15 +456,16 @@ abstract class ListControl extends Q\Project\Control\ControlBase
     // Public Properties: SET
     /////////////////////////
     /**
-     * PHP __set magic method implementation
+     * Magic method to set a property value dynamically.
      *
-     * @param string $strName Property Name
-     * @param string $mixValue Propety Value
-     *
+     * @param string $strName The name of the property to set.
+     * @param mixed $mixValue The value to set the property to.
      * @return void
-     * @throws IndexOutOfRange|\Exception|Caller|InvalidCast
+     * @throws InvalidCast If the value cannot be cast to the required type.
+     * @throws IndexOutOfRange If the selected index is out of the valid range.
+     * @throws Caller If the parent class cannot handle the property.
      */
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             case "SelectedIndex":
@@ -472,7 +534,6 @@ abstract class ListControl extends Q\Project\Control\ControlBase
                     $objExc->incrementOffset();
                     throw $objExc;
                 }
-                break;
         }
     }
 
@@ -480,8 +541,9 @@ abstract class ListControl extends Q\Project\Control\ControlBase
      * Returns a description of the options available to modify by the designer for the code generator.
      *
      * @return QModelConnectorParam[]
+     * @throws Caller
      */
-    public static function getModelConnectorParams()
+    public static function getModelConnectorParams(): array
     {
         return array_merge(parent::getModelConnectorParams(), array(
             new QModelConnectorParam(QModelConnectorParam::GENERAL_CATEGORY, 'NoAutoLoad',

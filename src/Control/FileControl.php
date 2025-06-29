@@ -9,8 +9,7 @@
 
 namespace QCubed\Control;
 
-require_once(dirname(dirname(__DIR__)) . '/i18n/i18n-lib.inc.php');
-use QCubed\Application\t;
+require_once(dirname(__DIR__, 2) . '/i18n/i18n-lib.inc.php');
 
 use QCubed\Exception\Caller;
 use QCubed\Type;
@@ -23,9 +22,9 @@ use QCubed as Q;
  *
  * @package Controls
  *
- * @property-read string $FileName is the name of the file that the user uploads
- * @property-read string $Type is the MIME type of the file
- * @property-read integer $Size is the size in bytes of the file
+ * @property-read string $FileName is the name of the file that the user uploads?
+ * @property-read string $Type is the MIME type of the file?
+ * @property-read integer $Size is the size in bytes of the file?
  * @property-read string $File is the temporary full file path on the server where the file physically resides
  * @was QFileControl
  * @package QCubed\Control
@@ -37,18 +36,18 @@ class FileControl extends Q\Project\Control\ControlBase
     ///////////////////////////
 
     // MISC
-    protected $strFileName = null;
-    protected $strType = null;
-    protected $intSize = null;
-    protected $strFile = null;
+    protected ?string $strFileName = null;
+    protected ?string $strType = null;
+    protected ?int $intSize = null;
+    protected ?string $strFile = null;
 
     // SETTINGS
-    protected $strFormAttributes = array('enctype' => 'multipart/form-data');
+    protected array $strFormAttributes = array('enctype' => 'multipart/form-data');
 
     //////////
     // Methods
     //////////
-    public function parsePostData()
+    public function parsePostData(): void
     {
         // Check to see if this Control's Value was passed in via the POST data
         if ((array_key_exists($this->strControlId, $_FILES)) && ($_FILES[$this->strControlId]['tmp_name'])) {
@@ -58,18 +57,14 @@ class FileControl extends Q\Project\Control\ControlBase
             $this->intSize = Type::cast($_FILES[$this->strControlId]['size'], Type::INTEGER);
             $this->strFile = $_FILES[$this->strControlId]['tmp_name'];
         }
-
-        print $this->strFileName;
-        print '<br>';
-        print $this->strFile;
     }
 
     /**
-     * Returns the HTML of the control which can be sent to user's browser
+     * Returns the HTML of the control which can be sent to the user's browser
      *
      * @return string HTML of the control
      */
-    protected function getControlHtml()
+    protected function getControlHtml(): string
     {
         // Reset Internal Values
         $this->strFileName = null;
@@ -82,13 +77,11 @@ class FileControl extends Q\Project\Control\ControlBase
             $strStyle = sprintf('style="%s"', $strStyle);
         }
 
-        $strToReturn = sprintf('<input type="file" name="%s" id="%s" %s%s />',
+        return sprintf('<input type="file" name="%s" id="%s" %s%s />',
             $this->strControlId,
             $this->strControlId,
             $this->renderHtmlAttributes(),
             $strStyle);
-
-        return $strToReturn;
     }
 
     /**
@@ -96,13 +89,13 @@ class FileControl extends Q\Project\Control\ControlBase
      *
      * @return bool
      */
-    public function validate()
+    public function validate(): bool
     {
         if ($this->blnRequired) {
-            if (strlen($this->strFileName) > 0) {
+            if ($this->strFileName) {
                 return true;
             } else {
-                $this->ValidationError = t($this->strName) . ' ' . t('is required');
+                $this->ValidationError = t('File selection is required');
                 return false;
             }
         } else {
@@ -120,7 +113,7 @@ class FileControl extends Q\Project\Control\ControlBase
      * @return mixed
      * @throws Caller
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             // MISC

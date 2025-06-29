@@ -6,12 +6,12 @@ require_once('../qcubed.inc.php'); ?>
 <div id="instructions">
 	<h1>Virtual Attributes and Custom SQL</h1>
 
-	<p> When generating custom SQL, if you prefix any additional or non-table bound columns with a double-underscore ("__"), the
+	<p> When generating custom SQL, if you prefix any additional or non-table-bound columns with a double-underscore ("__"), the
 	generated object will read in the column as a virtual attribute.  You can then use the generated
 	<strong>getVirtualAttribute()</strong> method to retrieve the value of this data.</p>
 
 	<p>In our example here, we create a custom SQL query which uses SQL's <strong>COUNT</strong> function and
-	subselects to calculate the number of team member for each project.</p>
+	subselects to calculate the number of team members for each project.</p>
 
 	<p>By utilizing <strong>Virtual Attributes</strong>, complex queries with calculated values,
 	subselects, etc. can be retrieved in a single database query, and all the values can be

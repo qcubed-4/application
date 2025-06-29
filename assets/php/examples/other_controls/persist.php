@@ -11,18 +11,18 @@ require_once('../qcubed.inc.php');
 class PersistentExampleForm extends FormBase
 {
     // We will persist this control in the $_SESSION
-    protected $ddnProjectPicker1;
-    protected $ddnProjectPicker2;
-    protected $fld1;
-    protected $fld2;
+    protected ProjectPickerListBox $ddnProjectPicker1;
+    protected ProjectPickerListBox $ddnProjectPicker2;
+    protected TextBox $fld1;
+    protected TextBox $fld2;
 
-    protected $btnReload;
+    protected Button $btnReload;
 
-    protected function formCreate()
+    protected function formCreate(): void
     {
 
-        $this->ddnProjectPicker1 = new ProjectPickerListBox ($this);
-        $this->ddnProjectPicker2 = new ProjectPickerListBox ($this);
+        $this->ddnProjectPicker1 = new ProjectPickerListBox($this);
+        $this->ddnProjectPicker2 = new ProjectPickerListBox($this);
         $this->ddnProjectPicker2->SaveState = true;
 
         $this->fld1 = new TextBox($this);
@@ -37,7 +37,7 @@ class PersistentExampleForm extends FormBase
         $this->btnReload->onClick(new Ajax('btnReload_Click'));
     }
 
-    protected function btnReload_Click()
+    protected function btnReload_Click(): void
     {
         Application::redirect('persist.php');
     }
@@ -50,7 +50,7 @@ class PersistentExampleForm extends FormBase
 class ProjectPickerListBox extends ListBox
 {
     /**
-     * This constructor will only be executed once - afterwards,
+     * This constructor will only be executed once - afterward,
      * the state of the control will be stored into the $_SESSION
      * and, on future loads, populated from the session state.
      */

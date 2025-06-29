@@ -13,7 +13,6 @@ namespace QCubed\Event;
 /**
  * Class DoubleClick
  *
- * @was QDoubleClickEvent
  * @package QCubed\Event
  */
 class DoubleClick extends EventBase

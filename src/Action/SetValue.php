@@ -14,26 +14,32 @@ use QCubed\Control\ControlBase;
 /**
  * Class SetValue
  *
- * Sets the javascript value of a control in the form. The value has to be known ahead of time. Useful for
+ * Sets the JavaScript value of a control in the form. The value has to be known ahead of time. Useful for
  * automatically clearing a text field when it receives focus, for example.
  *
- * @was QSetValueAction
  * @package QCubed\Action
  */
 class SetValue extends ActionBase {
-    protected $strControlId = null;
-    protected $strValue = "";
+    protected ?string $strControlId = null;
+    protected mixed $strValue = "";
 
-    public function __construct($objControl, $strValue = "") {
+    /**
+     * Constructor method to initialize the object with control properties.
+     *
+     * @param ControlBase $objControl The control object containing necessary properties.
+     * @param string|null $strValue Optional value to set for the object, default is an empty string.
+     */
+    public function __construct(ControlBase $objControl, mixed $strValue = "") {
         $this->strControlId = $objControl->ControlId;
         $this->strValue = $strValue;
     }
 
     /**
      * @param ControlBase $objControl
-     * @return mixed|string
+     * @return string
      */
-    public function renderScript(ControlBase $objControl) {
+    public function renderScript(ControlBase $objControl): string
+    {
         return sprintf("jQuery('#%s').val('%s');", $this->strControlId, $this->strValue);
     }
 }

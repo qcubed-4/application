@@ -1,5 +1,5 @@
 <?php require('../includes/header.inc.php'); ?>
-<?php $this->RenderBegin(); ?>
+<?php $this->renderBegin(); ?>
 
 <div id="instructions">
 	<h1>The FileControl Control</h1>
@@ -22,21 +22,21 @@
     you understand the risks and how to mitigate them. PHP will take care of uploading the file itself to a temporary
     directory, and you can find out where the file is with the <strong>->File</strong> attribute of the <strong>FileControl</strong>.
     After that, it is up to you to check the file to make sure it is the type of file you expect, and then either move the file
-    out of the temporary directory, or process it how you would like. You could put the file into a  BLOB in your database, move
+    out of the temporary directory or process it how you would like. You could put the file into a BLOB in your database, move
     it to another directory, upload it to a cloud service, or whatever. Just be sure that you take precautions to prevent a
     malicious attack unexpectedly coming from a file upload. </p>
 
-    <p>This particular example is a simple example of handling upload of a single jpeg file, but is not complete. It does not
-    handle multiple files selected, nor does it provide enough checks to ensure that the file uploaded is actually a jpeg file,
+    <p>This particular example is a simple example of handling upload of a single JPEG file, but is not complete. It does not
+    handle multiple files selected, nor does it provide enough checks to ensure that the file uploaded is actually a JPEG file,
     but it should get you started.</p>
 
 </div>
 
 <div id="demoZone">
-	<p><?php $this->flcImage->RenderWithError(); ?></p>
-    <p><?php $this->lblImage->Render(); ?></p>
-	<p><?php $this->btnUpload->Render(); ?></p>
+	<p><?php $this->flcImage->renderWithError(); ?></p>
+    <p><?php $this->lblImage->render(); ?></p>
+	<p><?php $this->btnUpload->render(); ?></p>
 </div>
 
-<?php $this->RenderEnd(); ?>
+<?php $this->renderEnd(); ?>
 <?php require('../includes/footer.inc.php'); ?>

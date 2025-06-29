@@ -1,4 +1,7 @@
 <?php
+
+use QCubed\Exception\Caller;
+use QCubed\Exception\InvalidCast;
 use QCubed\Project\Control\FormBase;
 use QCubed\Project\Control\Table;
 use QCubed\Table\CallableColumn;
@@ -6,9 +9,15 @@ use QCubed\Table\IndexedColumn;
 
 require_once('../qcubed.inc.php');
 
+/**
+ * Class ComplexColumn
+ *
+ * Extends the IndexedColumn class to provide additional functionality for rendering
+ * and managing header cells in a table.
+ */
 class ComplexColumn extends IndexedColumn
 {
-    public function renderHeaderCell()
+    public function renderHeaderCell(): ?string
     {
         if ($this->objParentTable->CurrentHeaderRowIndex == 0 &&
             $this->Index > 1
@@ -19,7 +28,7 @@ class ComplexColumn extends IndexedColumn
         }
     }
 
-    public function fetchHeaderCellValue()
+    public function fetchHeaderCellValue(): string
     {
         if ($this->objParentTable->CurrentHeaderRowIndex == 0 &&
             $this->Index == 1
@@ -30,11 +39,11 @@ class ComplexColumn extends IndexedColumn
     }
 
 
-    public function getHeaderCellParams()
+    public function getHeaderCellParams(): array
     {
         $a = parent::getHeaderCellParams();
         if ($this->Index == 0) {
-            //make background white
+            //mMake background white
             $a['style'] = 'background-color: white';
         }
         if ($this->ParentTable->CurrentHeaderRowIndex == 0) {
@@ -49,17 +58,20 @@ class ComplexColumn extends IndexedColumn
 
 class ExampleForm extends FormBase
 {
+    /** @var Table */
+    protected Table $tblPersons;
 
     /** @var Table */
-    protected $tblPersons;
+    protected Table $tblReport;
 
     /** @var Table */
-    protected $tblReport;
+    protected Table $tblComplex;
 
-    /** @var Table */
-    protected $tblComplex;
-
-    protected function formCreate()
+    /**
+     * @throws InvalidCast
+     * @throws Caller
+     */
+    protected function formCreate(): void
     {
         // Define the DataGrid
         $this->tblPersons = new Table($this);
@@ -69,7 +81,7 @@ class ExampleForm extends FormBase
         $this->tblPersons->HeaderRowCssClass = 'header_row';
 
         // Define Columns
-        // This demonstrates how to first create a column, and then add it to the table
+        // This demonstrates how to first create a column and then add it to the table
         $objColumn = new CallableColumn('Full Name', [$this, 'getFullName']);
         $this->tblPersons->addColumn($objColumn);
 
@@ -122,24 +134,27 @@ class ExampleForm extends FormBase
         $this->tblComplex->setDataBinder('tblComplex_Bind');
     }
 
-    protected function tblPersons_Bind()
+    /**
+     * @throws Caller
+     */
+    protected function tblPersons_Bind(): void
     {
-        // We load the data source, and set it to the datagrid's DataSource parameter
+        // We load the data source and set it to the datagrid's DataSource parameter
         $this->tblPersons->DataSource = Person::loadAll();
     }
 
-    public function getFullName($item)
+    public function getFullName($item): string
     {
         return 'Full Name is "' . $item->FirstName . ' ' . $item->LastName . '"';
     }
 
-    protected function tblReport_Bind()
+    protected function tblReport_Bind(): void
     {
         // build the entire datasource as an array of arrays.
-        $csv = '1997,Ford,E350,"ac, abs, moon",3000.00
+        $csv = '1997,Ford, E350,"ac, abs, moon",3000.00
 1999,Chevy,"Venture ""Extended Edition""","",4900.00
 1999,Chevy,"Venture ""Extended Edition, Very Large""","",5000.00
-1996,Jeep,Grand Cherokee,"MUST SELL!';
+1996,Jeep, Grand Cherokee, "MUST SELL!';
         $data = str_getcsv($csv, "\n", '"', "\\");
         foreach ($data as &$row) {
             $row = str_getcsv($row, ",", '"', "\\");
@@ -148,7 +163,7 @@ class ExampleForm extends FormBase
         $this->tblReport->DataSource = $data;
     }
 
-    protected function tblComplex_Bind()
+    protected function tblComplex_Bind(): void
     {
         $a[] = array('Name' => 'Income', 1 => 1000, 2 => 2000, 3 => 1500);
         $a[] = array('Name' => 'Expense', 1 => 500, 2 => 700, 3 => 2100);

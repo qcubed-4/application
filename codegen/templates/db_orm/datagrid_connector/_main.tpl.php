@@ -1,6 +1,6 @@
 <?php
 
-/** @var QSqlTable $objTable */
+/** @var SqlTable $objTable */
 /** @var QDatabaseCodeGen $objCodeGen */
 global $_TEMPLATE_SETTINGS;
 
@@ -31,16 +31,14 @@ $_TEMPLATE_SETTINGS = array(
  * a collection of <?= $objTable->ClassName ?> objects.
  *
  * To take advantage of some (or all) of these control objects, you
- * must create an instance of this object in a QForm or QPanel.
+ * must create an instance of this object in a QForm or Panel.
  *
- * Any and all changes to this file will be overwritten with any subsequent re-
- * code generation.
+ * Any and all changes to this file will be overwritten with any subsequent re-code generation.
  *
 <?= $listCodegenerator->dataListConnectorComments($objCodeGen, $objTable); ?>
  *
  */
-class <?= $objTable->ClassName ?>ListGen extends <?= $strClassName ?>
-
+class <?= $objTable->ClassName ?>ListGen extends DataGrid
 {
 <?= $listCodegenerator->dataListConnector($objCodeGen, $objTable); ?>
 }

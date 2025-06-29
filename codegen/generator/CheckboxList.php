@@ -13,16 +13,21 @@ use QCubed\Codegen\ColumnInterface;
 use QCubed\Codegen\DatabaseCodeGen;
 use QCubed\Codegen\ManyToManyReference;
 use QCubed\Codegen\SqlTable;
+use QCubed\Codegen\SqlColumn;
+use QCubed\Exception\Caller;
+use QCubed\Exception\InvalidCast;
 
 /**
  * Class CheckboxList
  *
  * @package QCubed\Codegen\Generator
- * @was QCheckBoxBaseList_CodeGenerator
  */
 class CheckboxList extends ListControl
 {
-    public function __construct($strControlClassName = 'QCubed\\Control\\CheckboxList')
+    protected string $strControlClassName;
+    protected SqlColumn $objColumn;
+
+    public function __construct(string $strControlClassName = 'QCubed\\Control\\CheckboxList')
     {
         parent::__construct($strControlClassName);
     }
@@ -36,11 +41,12 @@ class CheckboxList extends ListControl
      * @return string
      */
     public function connectorCreateOptions(
-        DatabaseCodeGen $objCodeGen,
-        SqlTable $objTable,
-        $objColumn,
-        $strControlVarName
-    ) {
+        DatabaseCodeGen  $objCodeGen,
+        SqlTable         $objTable,
+        ?ColumnInterface $objColumn,
+        string $strControlVarName
+    ): string
+    {
         $strRet = parent::connectorCreateOptions($objCodeGen, $objTable, $objColumn, $strControlVarName);
 
         if (!$objColumn instanceof ManyToManyReference) {
@@ -55,24 +61,25 @@ class CheckboxList extends ListControl
      * @param SqlTable $objTable
      * @param ColumnInterface $objColumn
      * @return string
+     * @throws Caller
+     * @throws InvalidCast
      */
-    public function connectorUpdate(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn)
+    public function connectorUpdate(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn): string
     {
         $strObjectName = $objCodeGen->modelVariableName($objTable->Name);
         $strPropName = $objColumn->ObjectDescription;
         $strPropNames = $objColumn->ObjectDescriptionPlural;
         $strControlVarName = $objCodeGen->modelConnectorVariableName($objColumn);
 
-        $strRet = <<<TMPL
-		protected function {$strControlVarName}_Update() {
-			if (\$this->{$strControlVarName}) {
-				\$this->{$strObjectName}->unassociateAll{$strPropNames}();
-				\$this->{$strObjectName}->associate{$strPropName}(\$this->{$strControlVarName}->SelectedValues);
-			}
-		}
+        return <<<TMPL
+        protected function {$strControlVarName}_Update() {
+            if (\$this->{$strControlVarName}) {
+                \$this->{$strObjectName}->unassociateAll{$strPropNames}();
+                \$this->{$strObjectName}->associate{$strPropName}(\$this->{$strControlVarName}->SelectedValues);
+            }
+        }
 
 
 TMPL;
-        return $strRet;
     }
 }

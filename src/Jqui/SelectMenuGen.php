@@ -11,7 +11,7 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
 /**
  * Class SelectMenuGen
  *
- * This is the SelectMenuGen class which is automatically generated
+ * This is the SelectMenuGen class that is automatically generated
  * by scraping the JQuery UI documentation website. As such, it includes all the options
  * as listed by the JQuery UI website, which may or may not be appropriate for QCubed. See
  * the SelectMenuBase class for any glue code to make this class more
@@ -27,10 +27,10 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
  * menu is appended to the body.
  *
  * @property mixed $Classes
- * Specify additional classes to add to the widgets elements. Any of
- * classes specified in the Theming section can be used as keys to
+ * Specify additional classes to add to the widget elements. Any of
+ * the classes specified in the Theming section can be used as keys to
  * override their value. To learn more about this option, check out the
- * learn article about the classes option.
+ * learned article about the classes option.
 
  *
  * @property boolean $Disabled
@@ -55,33 +55,32 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
  * will be set for the width, allowing the width to be set in a
  * stylesheet.
  *
- * @was QSelectMenuGen
-
  */
 
 class SelectMenuGen extends QCubed\Project\Control\ListBox
 {
-    protected $strJavaScripts = QCUBED_JQUI_JS;
-    protected $strStyleSheets = QCUBED_JQUI_CSS;
+    protected string $strJavaScripts = QCUBED_JQUI_JS;
+    protected string $strStyleSheets = QCUBED_JQUI_CSS;
     /** @var mixed */
-    protected $mixAppendTo = null;
+    protected mixed $mixAppendTo = null;
     /** @var mixed */
-    protected $mixClasses = null;
+    protected mixed $mixClasses = null;
     /** @var boolean */
-    protected $blnDisabled = null;
+    protected ?bool $blnDisabled = null;
     /** @var mixed */
-    protected $mixIcons = null;
+    protected mixed $mixIcons = null;
     /** @var mixed */
-    protected $mixPosition = null;
+    protected mixed $mixPosition = null;
     /** @var mixed */
-    protected $mixWidth = null;
+    protected mixed $mixWidth = null;
 
     /**
      * Builds the option array to be sent to the widget constructor.
      *
      * @return array key=>value array of options
      */
-    protected function makeJqOptions() {
+    protected function makeJqOptions(): array
+    {
         $jqOptions = parent::MakeJqOptions();
         if (!is_null($val = $this->AppendTo)) {$jqOptions['appendTo'] = $val;}
         if (!is_null($val = $this->Classes)) {$jqOptions['classes'] = $val;}
@@ -97,20 +96,19 @@ class SelectMenuGen extends QCubed\Project\Control\ListBox
      *
      * @return string
      */
-    public function getJqSetupFunction()
+    public function getJqSetupFunction(): string
     {
         return 'selectmenu';
     }
-
 
     /**
      * Closes the menu.
      * 
      * 	* This method does not accept any arguments.
      */
-    public function close()
+    public function close(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "close", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "close", QCubed\ApplicationBase::PRIORITY_LOW);
     }
     /**
      * Removes the selectmenu functionality completely. This will return the
@@ -118,27 +116,27 @@ class SelectMenuGen extends QCubed\Project\Control\ListBox
      * 
      * 	* This method does not accept any arguments.
      */
-    public function destroy()
+    public function destroy(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "destroy", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "destroy", QCubed\ApplicationBase::PRIORITY_LOW);
     }
     /**
      * Disables the selectmenu.
      * 
      * 	* This method does not accept any arguments.
      */
-    public function disable()
+    public function disable(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "disable", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "disable", QCubed\ApplicationBase::PRIORITY_LOW);
     }
     /**
      * Enables the selectmenu.
      * 
      * 	* This method does not accept any arguments.
      */
-    public function enable()
+    public function enable(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "enable", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "enable", QCubed\ApplicationBase::PRIORITY_LOW);
     }
     /**
      * Retrieves the selectmenus instance object. If the element does not
@@ -149,41 +147,42 @@ class SelectMenuGen extends QCubed\Project\Control\ListBox
      * 
      * 	* This method does not accept any arguments.
      */
-    public function instance()
+    public function instance(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "instance", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "instance", QCubed\ApplicationBase::PRIORITY_LOW);
     }
     /**
      * Returns a jQuery object containing the menu element.
      * 
      * 	* This method does not accept any arguments.
      */
-    public function menuWidget()
+    public function menuWidget(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "menuWidget", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "menuWidget", QCubed\ApplicationBase::PRIORITY_LOW);
     }
     /**
      * Opens the menu.
      * 
      * 	* This method does not accept any arguments.
      */
-    public function open()
+    public function open(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "open", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "open", QCubed\ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Gets the value currently associated with the specified optionName.
-     * 
+     *
      * Note: For options that have objects as their value, you can get the
      * value of a specific key by using dot notation. For example, "foo.bar"
      * would get the value of the bar property on the foo option.
-     * 
-     * 	* optionName Type: String The name of the option to get.
-     * @param $optionName
+     *
+     *    * optionName Type: String The name of the option to get.
+     * @param string $optionName
      */
-    public function option($optionName)
+    public function option(string $optionName): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $optionName, Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $optionName, QCubed\ApplicationBase::PRIORITY_LOW);
     }
     /**
      * Gets an object containing key/value pairs representing the current
@@ -191,37 +190,39 @@ class SelectMenuGen extends QCubed\Project\Control\ListBox
      * 
      * 	* This signature does not accept any arguments.
      */
-    public function option1()
+    public function option1(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", QCubed\ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Sets the value of the selectmenu option associated with the specified
      * optionName.
-     * 
+     *
      * Note: For options that have objects as their value, you can set the
      * value of just one property by using dot notation for optionName. For
      * example, "foo.bar" would update only the bar property of the foo
      * option.
-     * 
-     * 	* optionName Type: String The name of the option to set.
-     * 	* value Type: Object A value to set for the option.
-     * @param $optionName
-     * @param $value
+     *
+     *    * optionName Type: String The name of the option to set.
+     *    * value Type: Object A value to set for the option.
+     * @param string $optionName
+     * @param string $value
      */
-    public function option2($optionName, $value)
+    public function option2(string $optionName, string $value): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $optionName, $value, Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $optionName, $value, QCubed\ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Sets one or more options for the selectmenu.
-     * 
-     * 	* options Type: Object A map of option-value pairs to set.
-     * @param $options
+     *
+     *    * options Type: Object A map of option-value pairs to set.
+     * @param array $options
      */
-    public function option3($options)
+    public function option3(array $options): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $options, Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $options, QCubed\ApplicationBase::PRIORITY_LOW);
     }
     /**
      * Parses the original element and re-renders the menu. Processes any
@@ -229,13 +230,13 @@ class SelectMenuGen extends QCubed\Project\Control\ListBox
      * 
      * 	* This method does not accept any arguments.
      */
-    public function refresh()
+    public function refresh(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "refresh", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "refresh", QCubed\ApplicationBase::PRIORITY_LOW);
     }
 
 
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             case 'AppendTo': return $this->mixAppendTo;
@@ -254,7 +255,7 @@ class SelectMenuGen extends QCubed\Project\Control\ListBox
         }
     }
 
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             case 'AppendTo':
@@ -310,11 +311,13 @@ class SelectMenuGen extends QCubed\Project\Control\ListBox
     }
 
     /**
-    * If this control is attachable to a codegenerated control in a ModelConnector, this function will be
-    * used by the ModelConnector designer dialog to display a list of options for the control.
-    * @return QModelConnectorParam[]
-    **/
-    public static function getModelConnectorParams()
+     * If this control is attachable to a codegenerated control in a ModelConnector, this function will be
+     * used by the ModelConnector designer dialog to display a list of options for the control.
+     * @return QModelConnectorParam[]
+     *
+     * @throws Caller
+     */
+    public static function getModelConnectorParams(): array
     {
         return array_merge(parent::GetModelConnectorParams(), array(
             new QModelConnectorParam (get_called_class(), 'Disabled', 'Disables the selectmenu if set to true.', Type::BOOLEAN),

@@ -14,9 +14,9 @@ use QCubed\QString;
 ?>
 <?php print("<?php\n"); ?>
 use QCubed as Q;
+use QCubed\Project\Control\FormBase;
 use QCubed\Project\Application;
 use QCubed\Project\Control\Dialog;
-use QCubed\Project\Control\FormBase;
 use QCubed\Project\Control\ControlBase;
 
 // Load the QCubed Development Framework
@@ -26,25 +26,27 @@ require(QCUBED_PROJECT_PANEL_DIR . '/<?= $objTable->ClassName ?>ListPanel.php');
 
 /**
  * This is a draft FormBase object to do the List All functionality
- * of the <?= $objTable->ClassName ?> class, and is a starting point for the form object.
+ * of the <?= $objTable->ClassName ?> class and is a starting point for the form object.
  *
  * Any display customizations and presentation-tier logic can be implemented
  * here by overriding existing or implementing new methods, properties and variables.
  */
 class <?= $objTable->ClassName ?>ListForm extends FormBase
 {
-    protected $pnlNav;
-    protected $pnl<?= $objTable->ClassName ?>List;
+    protected NavPanel $pnlNav;
+    protected <?= $objTable->ClassName ?>ListPanel $pnl<?= $objTable->ClassName ?>List;
 
     // Override Form Event Handlers as Needed
-    protected function formRun() {
+    protected function formRun(): void
+    {
         parent::formRun();
 
-        // If your app requires a login, or some other kind of authroization step, this is the place to do that
+        // If your app requires a login, or some other kind of authorization  step, this is the place to do that
         Application::checkAuthorized();
     }
 
-    protected function formCreate() {
+    protected function formCreate(): void
+    {
         $this->pnlNav = new NavPanel($this);
         $this->pnl<?= $objTable->ClassName ?>List = new <?= $objTable->ClassName ?>ListPanel($this);
     }

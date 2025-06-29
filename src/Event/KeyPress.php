@@ -14,7 +14,6 @@ namespace QCubed\Event;
  *
  * When a keyboard key has been pressed (key went down, and went up)
  *
- * @was QKeyPressEvent
  * @package QCubed\Event
  */
 class KeyPress extends EventBase

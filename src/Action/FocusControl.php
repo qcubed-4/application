@@ -9,7 +9,6 @@
 
 namespace QCubed\Action;
 
-use QCubed\Exception\Caller;
 use QCubed\Control\ControlBase;
 
 /**
@@ -17,26 +16,21 @@ use QCubed\Control\ControlBase;
  *
  * Puts focus on a Control (on the client side/browser)
  *
- * @was QFocusControlAction
  * @package QCubed\Action
  */
 class FocusControl extends ActionBase
 {
     /** @var null|string Control ID of the control on which focus is to be put */
-    protected $strControlId = null;
+    protected ?string $strControlId = null;
 
     /**
      * Constructor
      *
      * @param ControlBase $objControl
      *
-     * @throws Caller
      */
-    public function __construct($objControl)
+    public function __construct(ControlBase $objControl)
     {
-        if (!($objControl instanceof ControlBase)) {
-            throw new Caller('First parameter of constructor is expecting an object of type QControl');
-        }
 
         $this->strControlId = $objControl->ControlId;
     }
@@ -48,7 +42,7 @@ class FocusControl extends ActionBase
      *
      * @return string JavaScript to be executed on the client side
      */
-    public function renderScript(ControlBase $objControl)
+    public function renderScript(ControlBase $objControl): string
     {
         // for firefox focus is special when in a blur or in a focusout event
         // http://stackoverflow.com/questions/7046798/jquery-focus-fails-on-firefox/7046837#7046837

@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection ALL */
+
 /**
  *
  * Part of the QCubed PHP framework.
@@ -9,29 +10,36 @@
 
 namespace QCubed\Control;
 
+use Exception;
 use QCubed as Q;
 use QCubed\Context;
 use QCubed\Exception\Caller;
 use QCubed\Exception\DataBind;
+use QCubed\Exception\InvalidCast;
 use QCubed\Html;
 use QCubed\ObjectBase;
 use QCubed\Project\Control\FormBase as QForm;
+//use QCubed\Project\Control\ControlBase;
 use QCubed\Project\Watcher\Watcher;
 use QCubed\Type;
 use QCubed\Project\Application;
 use QCubed\Action\ActionBase as QAction;
+use Random\RandomException;
+use ReflectionClass;
+use ReflectionException;
+use Throwable;
 
 
 /**
  * Class FormBase
  *
- * The FormBase is central to the application framework. You can think of it as the control the prints and manages
- * the html FORM tag on the page. Sine all other controls are contained by the form, the form is responsible for saving
+ * The FormBase is central to the application framework. You can think of it as the control the prints and manage
+ * the HTML FORM tag on the page. Since all other controls are contained by the form, the form is responsible for saving
  * and restoring its own state and the state of all the controls on the page. This is what allows QCubed to present all the
- * controls on the clients webpage as if they were PHP objects in your application, so that you don't have to worry about
- * JavaScript state, or HTML Gets and Puts.
+ * controls on the client's webpage as if they were PHP objects in your application, so that you don't have to worry about
+ * JavaScript state or HTML Gets and Puts.
  *
- * Doing all of this is fairly complex, and involves the use of JavaScript in the qcubed.js page, and in various control plugins.
+ * Doing all of this is fairly complex and involves the use of JavaScript in the qcubed.js page, and in various control plugins.
  * It must also detect whether data is submitted via HTML Submit actions or Ajax actions (JavaScript HttpRequest actions),
  * and act accordingly.
  *
@@ -47,7 +55,6 @@ use QCubed\Action\ActionBase as QAction;
  * @property string $HtmlIncludeFilePath (Alternate) path to the template file to be used
  * @property string $CssClass            Form CSS class.
  * @package QCubed\Control
- * @was QFormBase
  */
 abstract class FormBase extends ObjectBase
 {
@@ -55,94 +62,89 @@ abstract class FormBase extends ObjectBase
     // Form Status Constants
     ///////////////////////////
     /** Form has not started rendering */
-    const FORM_STATUS_UNRENDERED = 1;
+    public const FORM_STATUS_UNRENDERED = 1;
     /** Form has started rendering but has not finished */
-    const FORM_STATUS_RENDER_BEGUN = 2;
+    public const FORM_STATUS_RENDER_BEGUN = 2;
     /** Form rendering has already been started and finished */
-    const FORM_STATUS_RENDER_ENDED = 3;
+    public const FORM_STATUS_RENDER_ENDED = 3;
 
     // Keys for hidden fields that we use to communicate with qcubed.js
-    const POST_CALL_TYPE = 'Qform__FormCallType';   // Do not use this to detect ajax. Use Application::isAjax() instead
-    const POST_FORM_STATE = 'Qform__FormState';
+    public const POST_CALL_TYPE = 'Qform__FormCallType';   // Do not use this to detect ajax. Use Application::isAjax() instead
+    public const POST_FORM_STATE = 'Qform__FormState';
 
     ///////////////////////////
     // Static Members
     ///////////////////////////
-    /** @var bool True when css scripts get rendered on page. Lets user call RenderStyles in header. */
-    protected static $blnStylesRendered = false;
+    /** @var bool True when CSS scripts get rendered on a page. Lets user call RenderStyles in a header. */
+    protected static bool $blnStylesRendered = false;
 
     ///////////////////////////
     // Protected Member Variables
     ///////////////////////////
     /** @var string Form ID (usually passed as the first argument to the 'Run' method call) */
-    protected $strFormId;
+    protected string $strFormId;
     /** @var integer representational integer value of what state the form currently is in */
-    protected $intFormStatus;
+    protected int $intFormStatus;
     /** @var ControlBase[] Array of Controls with this form as the parent */
-    protected $objControlArray;
-    /**
-     * @var QControlGrouping List of Groupings in the form (for old drag and drop)
-     * Use of this is deprecated in favor of jQueryUI drag and drop, but code remains in case we need it again
-     * since we might pull out JQueryUi, in which case we might implement HTML5 drag and drop.
-     * @deprecated
-     */
-    protected $objGroupingArray;
+    protected ?array $objControlArray = null;
     /** @var bool Has the body tag already been rendered? */
-    protected $blnRenderedBodyTag = false;
-    protected $checkableControlValues = array();
-    /** @var string The type of call made to the QForm (Ajax, Server or Fresh GET request) */
-    //protected $strCallType;   Use Application::isAjax() or Application::instance->context->requestMode() instead
+    protected ?bool $blnRenderedBodyTag = false;
+    protected array $checkableControlValues = array();
+    // /** @var string The type of call made to the QForm (Ajax, Server or Fresh GET request) */
+    //protected $strCallType; Use Application::isAjax() or Application::instance->context->requestMode() instead
     /** @var null|WaitIcon Default wait icon for the page/QForm */
-    protected $objDefaultWaitIcon = null;
+    protected null|WaitIcon $objDefaultWaitIcon = null;
 
     /** @var array List of included JavaScript files for this QForm */
-    protected $strIncludedJavaScriptFileArray = array();
+    protected array $strIncludedJavaScriptFileArray = array();
     /** @var array List of ignored JavaScript files for this QForm */
-    protected $strIgnoreJavaScriptFileArray = array();
+    protected array $strIgnoreJavaScriptFileArray = array();
 
     /** @var array List of included CSS files for this QForm */
-    protected $strIncludedStyleSheetFileArray = array();
+    protected array $strIncludedStyleSheetFileArray = array();
     /** @var array List of ignored CSS files for this QForm */
-    protected $strIgnoreStyleSheetFileArray = array();
+    protected array $strIgnoreStyleSheetFileArray = array();
 
-    protected $strPreviousRequestMode = false;
+    protected ?bool $strPreviousRequestMode = false;
     /**
      * @var string The QForm's template file path.
      * When this value is not supplied, the 'Run' function will try to find and use the
-     * .tpl.php file with the same filename as the QForm in the same same directory as the QForm file.
+     * .tpl.php file with the same filename as the QForm in the same directory as the QForm file.
      */
-    protected $strHtmlIncludeFilePath;
+    protected string $strHtmlIncludeFilePath;
     /** @var string CSS class to be set for the 'form' tag when QCubed Renders the QForm */
-    protected $strCssClass;
+    protected string $strCssClass = '';
 
-    protected $strCustomAttributeArray = null;
-
+    /**
+     * @var array|null An optional array of custom attributes.
+     *                 This can be used to define additional attributes for customization purposes.
+     *                 If not set, the default value is null.
+     */
+    protected ?array $strCustomAttributeArray = null;
 
     /**
      * @var null|string The key to encrypt the formstate
-     *              when saving and retrieving from the chosen FormState handler
+     * When saving and retrieving from the chosen FormState handler
      */
-    public static $EncryptionKey = null;
+    public static ?string $EncryptionKey = null;
     /**
-     * @var string Chosen FormStateHandler
-     *              default is QFormStateHandler as shown here,
-     *              however it is read from the configuration.inc.php (in the QForm class)
-     *              In case something goes wrong with QForm, the default FormStateHandler here will
+     * @var string Chosen DefaultHandler
+     *              Default is DefaultHandler as shown here,
+     *              however, it is read from the configuration.inc.php (in the QForm class)
+     *              In case something goes wrong with QForm; the default DefaultHandler here will
      *              try to take care of the situation.
      */
-    public static $FormStateHandler = 'QFormStateHandler';
-
+    public static string $FormStateHandler = 'DefaultHandler';
 
     /**
      * Generates Control ID used to keep track of those Controls whose ID was not explicitly set.
-     * It uses the counter variable to maintain uniqueness for Control IDs during the life of the page
-     * Life of the page is untill the time when the formstate expired and is removed by the
+     * It uses the counter-variable to maintain uniqueness for Control IDs during the life of the page
+     * Life of the page is until the time when the formstate expired and is removed by the
      * garbage collection of the formstate handler
      * @return string the Ajax Action ID
      */
-    public function generateControlId()
+    public function generateControlId(): string
     {
-//			$strToReturn = sprintf('control%s', $this->intNextControlId);
         $strToReturn = sprintf('c%s', $this->intNextControlId);
         $this->intNextControlId++;
         return $strToReturn;
@@ -150,21 +152,21 @@ abstract class FormBase extends ObjectBase
 
     /**
      * @var int Counter variable to contain the numerical part of the Control ID value.
-     *      it is automatically incremented everytime the GenerateControlId() runs
+     *      It is automatically incremented everytime the GenerateControlId() runs
      */
-    protected $intNextControlId = 1;
+    protected int $intNextControlId = 1;
 
     /////////////////////////
     // Helpers for AjaxActionId Generation
     /////////////////////////
     /**
      * Generates Ajax Action ID used to keep track of Ajax Actions
-     * It uses the counter variable to maintain uniqueness for Ajax Action IDs during the life of the page
-     * Life of the page is untill the time when the formstate expired and is removed by the
+     * It uses the counter-variable to maintain uniqueness for Ajax Action IDs during the life of the page
+     * Life of the page is until the time when the formstate expired and is removed by the
      * garbage collection of the formstate handler
      * @return string the Ajax Action ID
      */
-    public function generateAjaxActionId()
+    public function generateAjaxActionId(): string
     {
         $strToReturn = sprintf('a%s', $this->intNextAjaxActionId);
         $this->intNextAjaxActionId++;
@@ -173,20 +175,20 @@ abstract class FormBase extends ObjectBase
 
     /**
      * @var int Counter variable to contain the numerical part of the AJAX ID value.
-     *      it is automatically incremented everytime the GenerateAjaxActionId() runs
+     *          It is automatically incremented everytime the GenerateAjaxActionId() runs
      */
-    protected $intNextAjaxActionId = 1;
+    protected int $intNextAjaxActionId = 1;
 
     /////////////////////////
     // Event Handlers
     /////////////////////////
     /**
      * Custom Form Run code.
-     * To contain code which should be run 'AFTER' QCubed's QForm run has been completed
+     * To contain code which should be run, 'AFTER' QCubed's QForm run has been completed
      * but 'BEFORE' the custom event handlers are called
-     * (In case it is to be used, it should be overriden by a child class)
+     * (In case it is to be used, it should be overridden by a child class)
      */
-    protected function formRun()
+    protected function formRun(): void
     {
     }
 
@@ -196,27 +198,27 @@ abstract class FormBase extends ObjectBase
      * In this situation, we are about to process an event, or the user has reloaded the page. Do whatever you
      * need to do before any event processing.
      */
-    protected function formLoad()
+    protected function formLoad(): void
     {
     }
 
     /**
      * To contain the code to initialize the QForm on the first call.
      * Once the QForm is created, the state is saved and is reused by the Run method.
-     * In short - this function will run only once (the first time the QForm is to be created)
-     * (In case it is to be used, it should be overriden by a child class)
+     * In short, this function will run only once (the first time the QForm is to be created)
+     * (In case it is to be used, it should be overridden by a child class)
      */
-    protected function formCreate()
+    protected function formCreate(): void
     {
     }
 
     /**
-     * To contain the code to be executed after formRun, formCreate, formLoad has been called
-     * and the custom defined event handlers have been executed but actual rendering process has not begun.
+     * To contain the code to be executed after formRun, formCreate, formLoad has been called,
+     * and the custom-defined event handlers have been executed, but an actual rendering process has not begun.
      * This is a good place to put data into a session variable that you need to send to
      * other forms.
      */
-    protected function formPreRender()
+    protected function formPreRender(): void
     {
     }
 
@@ -226,10 +228,10 @@ abstract class FormBase extends ObjectBase
      * - Load data into the control from the database
      * - Initialize controls whose data depends on the state or data in other controls.
      *
-     * When this is called, the controls will have been created by formCreate, and will have already read their saved state.
+     * When this is called, the controls will have been created by formCreate and will have already read their saved state.
      *
      */
-    protected function formInitialize()
+    protected function formInitialize(): void
     {
     }
 
@@ -240,7 +242,7 @@ abstract class FormBase extends ObjectBase
      * additional form level validation, and any form level actions needed as part of the validation process,
      * like displaying an error message.
      *
-     * This is the last thing called in the validation process, and will always be called if
+     * This is the last thing called in the validation process and will always be called if
      * validation is requested, even if prior controls caused a validation error. Return false to prevent
      * validation and cancel the current action.
      *
@@ -249,7 +251,7 @@ abstract class FormBase extends ObjectBase
      *
      * @return bool    Return false to prevent validation.
      */
-    protected function formValidate()
+    protected function formValidate(): bool
     {
         return true;
     }
@@ -259,44 +261,42 @@ abstract class FormBase extends ObjectBase
      * override this function. For example, you could display a message that an error occurred with some of the
      * controls.
      */
-    protected function formInvalid()
+    protected function formInvalid(): void
     {
     }
 
     /**
-     * This function is meant to be overriden by child class and is called when the Form exits
-     * (After the form render is complete and just before the Run function completes execution)
+     * This function is intended to be overridden by a subclass and is called when the form exits.
+     * (After the form render is complete, and just before the Run function completes execution)
      */
-    protected function formExit()
+    protected function formExit(): void
     {
     }
 
-
     /**
-     * VarExport the Controls or var_export the current QForm
-     * (well, be ready for huge amount of text)
-     * @param bool $blnReturn
+     * Exports the object in a parsable string representation
+     * @param bool $blnReturn Whether to return the exported string or output it directly
      *
-     * @return mixed
+     * @return array|string|null The exported string if $blnReturn is true, otherwise null
      */
-    public function varExport($blnReturn = true)
+    public function varExport(bool $blnReturn = true): array|string|null
     {
         if ($this->objControlArray) {
             foreach ($this->objControlArray as $objControl) {
-                $objControl->varExport(true);  // force the controls to be prepared to serialize
+                $objControl->varExport();  // force the controls to be prepared to serialize
             }
         }
          return var_export($this, $blnReturn);
     }
 
     /**
-     * Returns the value of a checkable control. Checkable controls are special, in that the browser only tells us
-     * when a control is checked, not when it is unchecked. So, unless we keep track of them specially, we will
-     * not know if they are unchecked, or just not there.
-     * @param $strControlId
-     * @return mixed|null
+     * Retrieves the value of a specified checkable control by its identifier. If the control ID exists
+     * in the internal checkable control values, the corresponding value is returned. Otherwise, null is returned.
+     *
+     * @param string $strControlId The identifier of the checkable control.
+     * @return mixed The value of the checkable control if it exists, or null if not.
      */
-    public function checkableControlValue($strControlId)
+    public function checkableControlValue(string $strControlId): mixed
     {
         if (array_key_exists($strControlId, $this->checkableControlValues)) {
             return $this->checkableControlValues[$strControlId];
@@ -304,13 +304,12 @@ abstract class FormBase extends ObjectBase
         return null;
     }
 
-
     /**
      * Helper function for below GetModifiedControls
      * @param ControlBase $objControl
      * @return boolean
      */
-    protected static function isControlModified(ControlBase $objControl)
+    protected static function isControlModified(ControlBase $objControl): bool
     {
         return $objControl->isModified();
     }
@@ -318,43 +317,43 @@ abstract class FormBase extends ObjectBase
     /**
      * Return only the controls that have been modified
      */
-    public function getModifiedControls()
+    public function getModifiedControls(): array
     {
-        $ret = array_filter($this->objControlArray, 'QForm::IsControlModified');
-        return $ret;
+        return array_filter($this->objControlArray, 'QForm::IsControlModified');
     }
 
     /**
      * This method initializes the actual layout of the form
-     * It runs in all cases including initial form (the time when formCreate is run) as well as on
-     * trigger actions (QServerAction, QAjaxAction, QServerControlAction and QAjaxControlAction)
+     * It runs in all cases including the initial form (the time when formCreate is run) as well as on
+     * trigger actions (ServerAction, AjaxAction, ServerControlAction and AjaxControlAction)
      *
-     * It is responsible for implementing the logic and sequence in which page wide checks are done
+     * It is responsible for implementing the logic and sequence in which page wide checks are done,
      * such as running formValidate and Control validations for every control of the page and their
-     * child controls. Checking for an existing FormState and loading them before trigerring any action
+     * child controls. Checking for an existing FormState and loading them before triggering any action
      * is also a responsibility of this method.
      * @param string $strFormClass The class of the form to create when creating a new form.
      * @param string|null $strAlternateHtmlFile location of the alternate HTML template file.
-     * @param string|null $strFormId The html id to use for the form. If null, $strFormClass will be used.
+     * @param string|null $strFormId The HTML id to use for the form. If null, $strFormClass will be used.
      *
      * @throws Caller
-     * @throws \Exception
+     * @throws Throwable Exception
      */
-    public static function run($strFormClass, $strAlternateHtmlFile = null, $strFormId = null)
+    public static function run(string $strFormClass, ?string $strAlternateHtmlFile = null, ?string $strFormId = null): void
     {
         // See if we can get a Form Class out of PostData
 
-        /** @var \QCubed\Project\Control\FormBase $objClass */
+        /** @var QForm $objClass */
         $objClass = null;
         if ($strFormId === null) {
             $strFormId = $strFormClass;
         }
+
         if (array_key_exists('Qform__FormId',
                 $_POST) && ($_POST['Qform__FormId'] == $strFormId) && array_key_exists('Qform__FormState', $_POST)
         ) {
             $strPostDataState = $_POST['Qform__FormState'];
 
-            if ($strPostDataState) // We might have a valid form state -- let's see by unserializing this object
+            if ($strPostDataState) // We might have a valid form state -- let's see by un serializing this object
             {
                 $objClass = QForm::unserialize($strPostDataState);
             }
@@ -372,10 +371,10 @@ abstract class FormBase extends ObjectBase
 
             $objClass->intFormStatus = self::FORM_STATUS_UNRENDERED;
 
-            // Cleanup ajax post data if the encoding does not match, since ajax data is always utf-8
+            // Clean up ajax post-data if the encoding does not match, since ajax data is always utf-8
             if (Application::isAjax() && Application::encodingType() != 'UTF-8') {
                 foreach ($_POST as $key => $val) {
-                    if (substr($key, 0, 6) != 'Qform_') {
+                    if (!str_starts_with($key, 'Qform_')) {
                         $_POST[$key] = iconv('UTF-8', Application::encodingType(), $val);
                     }
                 }
@@ -421,13 +420,11 @@ abstract class FormBase extends ObjectBase
                                         $objClass->objControlArray[$strControlId]->__set($strProperty, $strValue);
                                     }
                                     break;
-
                             }
                         }
                     }
                 }
             }
-
 
             // Set the RenderedCheckableControlArray
             if (!empty($_POST['Qform__FormCheckableControls'])) {
@@ -440,12 +437,12 @@ abstract class FormBase extends ObjectBase
                 $objClass->checkableControlValues = [];
             }
 
-            // This is original code. In an effort to minimize changes,
+            // This is the original code. In an effort to minimize changes,
             // we aren't going to touch the server calls for now
             if (!Application::isAjax()) {
                 foreach ($objClass->objControlArray as $objControl) {
                     // If they were rendered last time and are visible
-                    // (and if ServerAction, enabled), then Parse its post data
+                    // (And if ServerAction, enabled), then Parse its post-data
                     if (($objControl->Visible) &&
                         ($objControl->Enabled) &&
                         ($objControl->RenderMethod)
@@ -467,7 +464,7 @@ abstract class FormBase extends ObjectBase
                 foreach ($controls as $key => $val) {
                     if ($key == 'Qform__FormControl') {
                         $strControlId = $val;
-                    } elseif (substr($key, 0, 6) == 'Qform_') {
+                    } elseif (str_starts_with($key, 'Qform_')) {
                         continue;    // ignore this form data
                     } else {
                         $strControlId = $key;
@@ -475,6 +472,7 @@ abstract class FormBase extends ObjectBase
                     if (($intOffset = strpos($strControlId, '_')) !== false) {    // the first break is the control id
                         $strControlId = substr($strControlId, 0, $intOffset);
                     }
+
                     if (($objControl = $objClass->getControl($strControlId)) &&
                         !isset($previouslyFoundArray[$strControlId])
                     ) {
@@ -504,7 +502,7 @@ abstract class FormBase extends ObjectBase
             // Trigger Load Event (if applicable)
             $objClass->formLoad();
 
-            // Trigger a triggered control's Server- or Ajax- action (e.g. PHP method) here (if applicable)
+            // Trigger a triggered control's Server- or Ajax-action (e.g., PHP method) here (if applicable)
             $objClass->triggerActions();
 
         } else {
@@ -526,7 +524,6 @@ abstract class FormBase extends ObjectBase
             $objClass->strFormId = $strFormId;
             $objClass->intFormStatus = self::FORM_STATUS_UNRENDERED;
             $objClass->objControlArray = array();
-            $objClass->objGroupingArray = array();
 
             // Trigger Run Event (if applicable)
             $objClass->formRun();
@@ -537,7 +534,7 @@ abstract class FormBase extends ObjectBase
             $objClass->formInitialize();
 
             if (defined('QCUBED_DESIGN_MODE') && QCUBED_DESIGN_MODE == 1) {
-                // Attach custom event to dialog to handle right click menu items sent by form
+                // Attach a custom event to dialog to handle right click menu items sent by form
 
                 $dlg = new Q\ModelConnector\EditDlg ($objClass, 'qconnectoreditdlg');
 
@@ -559,6 +556,7 @@ abstract class FormBase extends ObjectBase
         } elseif ($requestMode == Context::REQUEST_MODE_QCUBED_SERVER || $requestMode == Context::REQUEST_MODE_HTTP) {
             // Server/Postback or New Page
             // Make sure all controls are marked as not being on the page yet
+
             foreach ($objClass->objControlArray as $objControl) {
                 $objControl->resetOnPageStatus();
             }
@@ -569,19 +567,19 @@ abstract class FormBase extends ObjectBase
             // Ensure that RenderEnd() was called during the Render process
             switch ($objClass->intFormStatus) {
                 case self::FORM_STATUS_UNRENDERED:
-                    throw new Caller('$this->renderBegin() is never called in the HTML Include file');
+                    throw new Caller('$this->renderBegin() is never called in the HTML Include a file');
                 case self::FORM_STATUS_RENDER_BEGUN:
-                    throw new Caller('$this->renderEnd() is never called in the HTML Include file');
+                    throw new Caller('$this->renderEnd() is never called in the HTML Include a file');
                 case self::FORM_STATUS_RENDER_ENDED:
                     break;
                 default:
                     throw new Caller('FormStatus is in an unknown status');
             }
         } else {
-            throw new \Exception('Cannot process request mode: ' . $requestMode);
+            throw new Exception('Cannot process request mode: ' . $requestMode);
         }
 
-        // Once all the controls have been set up, and initialized, remember them.
+        // Once all the controls have been set up and initialized, remember them.
         $objClass->saveControlState();
 
         // Trigger Exit Event (if applicable)
@@ -589,12 +587,14 @@ abstract class FormBase extends ObjectBase
     }
 
     /**
-     * Unpacks a post variable that has been encoded with JSON.stringify.
+     * Decodes a JSON-encoded POST variable, handling the application's encoding type.
+     * This function ensures proper encoding conversion for non-UTF-8 data and decodes the input accordingly.
      *
-     * @param $val
-     * @return mixed|string
+     * @param string $val The JSON-encoded POST variable to be unpacked.
+     * @return mixed The decoded value, which could be a string, array, or other data type, depending on the input.
+     * @throws Throwable Exception If the data type cannot be handled or converted properly.
      */
-    protected static function unpackPostVar($val)
+    protected static function unpackPostVar(string $val): mixed
     {
         $encoding = Application::encodingType();
         if ($encoding != 'UTF-8' && Application::instance()->context()->requestMode() != Context::REQUEST_MODE_AJAX) {
@@ -613,7 +613,7 @@ abstract class FormBase extends ObjectBase
                     }
                 });
             } else {
-                throw new \Exception ('Unknown Post Var Type');
+                throw new Exception ('Unknown Post-Var Type');
             }
         }
         return $val;
@@ -622,7 +622,7 @@ abstract class FormBase extends ObjectBase
     /**
      * Reset all validation states.
      */
-    public function resetValidationStates()
+    public function resetValidationStates(): void
     {
         foreach ($this->objControlArray as $objControl) {
             $objControl->validationReset();
@@ -630,13 +630,15 @@ abstract class FormBase extends ObjectBase
     }
 
     /**
-     * Private function to respond to a designer click.
+     * Handles the click event for the designer control. This method determines the relevant control
+     * based on input parameters, retrieves the control, and invokes the edit dialog for further interaction.
      *
-     * @param $strFormId
-     * @param $strControlId
-     * @param $mixParam
+     * @param string $strFormId The form ID associated with the event.
+     * @param string $strControlId The control ID associated with the event.
+     * @param mixed $mixParam An array or object containing additional parameters such as the control ID or associated target.
+     * @return void
      */
-    private function ctlDesigner_Click($strFormId, $strControlId, $mixParam)
+    private function ctlDesigner_Click(string $strFormId, string $strControlId, mixed $mixParam): void
     {
         if (isset($mixParam['id'])) {
             $controlId = $mixParam['id'];
@@ -659,14 +661,15 @@ abstract class FormBase extends ObjectBase
     /**
      * An invalid form state was found.
      * We were handed a formstate, but the formstate could not be interpreted. This could be for
-     * a variety of reasons, and is dependent on the formstate handler. Most likely, the user hit
+     * a variety of reasons and is dependent on the formstate handler. Most likely, the user hit
      * the back button past the back button limit of what we remember, or the user lost the session.
      * Or, you simply have not set up the form state handler correctly.
-     * In the past, we threw an exception, but that was not a very user friendly response.
+     * In the past, we threw an exception, but that was not a very user-friendly response.
      * The response below resubmits the url without a formstate so that a new one will be created.
      * Override if you want a different response.
+     * @throws Throwable
      */
-    public static function invalidFormState()
+    public static function invalidFormState(): void
     {
         //ob_clean();
         if (Application::isAjax()) {
@@ -682,12 +685,16 @@ abstract class FormBase extends ObjectBase
     }
 
     /**
-     * Calls a data binder associated with the form. Does this so data binder can be protected. Mostly for legacy code.
-     * @param callable $callable
-     * @param  ControlBase $objPaginatedControl
+     * Binds a data source to a paginated control by invoking the provided callable.
+     * If an exception occurs during the binding process, it rethrows the exception
+     * wrapped in a DataBind exception.
+     *
+     * @param callable $callable A callable function or method that performs the data binding.
+     * @param mixed $objPaginatedControl The paginated control to which the data will be bound.
+     * @return void
      * @throws DataBind
      */
-    public function callDataBinder($callable, $objPaginatedControl)
+    public function callDataBinder(callable $callable, mixed $objPaginatedControl): void
     {
         try {
             call_user_func($callable, $objPaginatedControl);
@@ -700,9 +707,9 @@ abstract class FormBase extends ObjectBase
      * Renders the AjaxHelper for the QForm
      * @param ControlBase|null $objControl
      *
-     * @return string The Ajax helper string (should be JS commands)
+     * @return string|array The Ajax helper string (should be JS commands)
      */
-    protected function renderAjaxHelper($objControl)
+    protected function renderAjaxHelper(?ControlBase $objControl): string|array
     {
         $controls = [];
 
@@ -713,23 +720,23 @@ abstract class FormBase extends ObjectBase
                 $controls = array_merge($controls, $this->renderAjaxHelper($objChildControl));
             }
         }
-
         return $controls;
     }
 
     /**
-     * Renders the actual ajax return value as a json object. Since json must be UTF-8 encoded, will convert to
-     * UTF-8 if needed. Response is parsed in the "success" function in qcubed.js, and handled there.
+     * Renders the actual ajax return value as a JSON object. Since JSON must be UTF-8 encoded, it will convert to
+     * UTF-8 if needed. Response is parsed in the "success" function in qcubed.js and handled there.
+     * @throws Throwable Exception
      */
-    protected function renderAjax()
+    protected function renderAjax(): void
     {
         $aResponse = array();
 
         if (Application::instance()->jsResponse()->hasExclusiveCommand()) {
             /**
-             * Processing of the actions has resulted in a very high priority exclusive response. This would typically
-             * happen when a javascript widget is requesting data from us. We want to respond as quickly as possible,
-             * and also prevent possibly redrawing the widget while its already in the middle of its own drawing.
+             * Processing of the actions has resulted in a very high-priority exclusive response. This would typically
+             * happen when a JavaScript widget is requesting data from us. We want to respond as quickly as possible
+             * and also prevent possibly redrawing the widget while it is already in the middle of its own drawing.
              * We short-circuit the drawing process here.
              */
 
@@ -763,8 +770,8 @@ abstract class FormBase extends ObjectBase
 
         // Go through all controls and gather up any JS or CSS to run or Form Attributes to modify
         foreach ($this->getAllControls() as $objControl) {
-            // Include any javascript files that were added by the control
-            // Note: current implementation does not handle removal of javascript files
+            // Include any JavaScript files that were added by the control
+            // Note: current implementation does not handle removal of JavaScript files
             if ($strScriptArray = $this->processJavaScriptList($objControl->JavaScripts)) {
                 Application::addJavaScriptFiles($strScriptArray);
             }
@@ -778,8 +785,7 @@ abstract class FormBase extends ObjectBase
             $attributes = $objControl->_GetFormAttributes();
             if ($attributes) {
                 // Make sure the form has attributes that the control requires.
-                // Note that current implementation does not handle removing attributes that are no longer needed
-                // if such a control gets removed from a form during an ajax call, but that is a very unlikely scenario.
+                // If such a control gets removed from a form during an ajax call, but that is a very unlikely scenario.
                 Application::executeControlCommand($this->strFormId, 'attr', $attributes);
             }
         }
@@ -795,7 +801,7 @@ abstract class FormBase extends ObjectBase
             }
             if ($strScript) {
                 Application::executeJavaScript($strScript,
-                    Application::PRIORITY_HIGH);    // put these last in the high priority queue, just before getting the commands below
+                    Q\ApplicationBase::PRIORITY_HIGH);    // put these lasts in the high-priority queue, just before getting the commands below
             }
             $objControl->resetFlags();
         }
@@ -804,17 +810,7 @@ abstract class FormBase extends ObjectBase
             $aResponse[Q\JsResponse::REG_C] = $strControlIdToRegister;
         }
 
-
-        foreach ($this->objGroupingArray as $objGrouping) {
-            $strRender = $objGrouping->render();
-            if (trim($strRender) ?? '') {
-                Application::executeJavaScript($strRender, Application::PRIORITY_HIGH);
-            }
-        }
-
-
         $aResponse = array_merge($aResponse, Application::getJavascriptCommandArray());
-
         // Add in the form state
         $strFormState = QForm::serialize($this);
         $aResponse[Q\JsResponse::CONTROLS][] = [
@@ -837,12 +833,13 @@ abstract class FormBase extends ObjectBase
     }
 
     /**
-     * Saves the formstate using the 'Save' method of FormStateHandler set in configuration.inc.php
-     * @param FormBase $objForm
+     * Serializes a given FormBase object and saves its state using the defined form state handler.
      *
-     * @return string the Serialized QForm
+     * @param FormBase $objForm The form object to be serialized.
+     *
+     * @return string Serialized form state saved by the form state handler.
      */
-    public static function serialize(FormBase $objForm)
+    public static function serialize(FormBase $objForm): string
     {
         // Get and then Update PreviousRequestMode
         $strPreviousRequestMode = $objForm->strPreviousRequestMode;
@@ -869,20 +866,21 @@ abstract class FormBase extends ObjectBase
 
         // Setup and Call the FormStateHandler to retrieve the PostDataState to return
         $strFormStateHandler = QForm::$FormStateHandler;
-        $strPostDataState = $strFormStateHandler::save($strSerializedForm, $blnBackButtonFlag);
 
         // Return the PostDataState
-        return $strPostDataState;
+        return $strFormStateHandler::save($strSerializedForm, $blnBackButtonFlag);
     }
 
     /**
-     * Unserializes (extracts) the FormState using the 'Load' method of FormStateHandler set in configuration.inc.php
-     * @param string $strPostDataState The string identifying the FormState to the loaded for Unserialization
+     * Un serializes (extracts) the FormState using the 'Load' method of FormStateHandler set in configuration.inc.php
+     * @param string $strPostDataState The string identifying the FormState to the loaded for Serialization
      *
+     * @return QForm|null the Form object
+     * @throws Caller
+     * @throws InvalidCast
      * @internal param string $strSerializedForm
-     * @return QForm the Form object
      */
-    public static function unserialize($strPostDataState)
+    public static function unserialize(string $strPostDataState): ?QForm
     {
         // Setup and Call the FormStateHandler to retrieve the Serialized Form
         $strFormStateHandler = QForm::$FormStateHandler;
@@ -890,9 +888,9 @@ abstract class FormBase extends ObjectBase
 
         if ($strSerializedForm) {
             // Unserialize and Cast the Form
-            // For the QSessionFormStateHandler the __PHP_Incomplete_Class occurs sometimes
+            // For the QSessionFormStateHandler the __PHP_Incomplete_Class sometimes occurs
             // for the result of the unserialize call.
-            /** @var \QCubed\Project\Control\FormBase $objForm */
+            /** @var QForm $objForm */
             $objForm = unserialize($strSerializedForm);
             $objForm = Type::cast($objForm, '\QCubed\Project\Control\FormBase');
 
@@ -904,7 +902,6 @@ abstract class FormBase extends ObjectBase
                     $objControl->wakeup($objForm);
                 }
             }
-
             // Return the Form
             return $objForm;
         } else {
@@ -918,16 +915,14 @@ abstract class FormBase extends ObjectBase
      *
      * @throws Caller
      */
-    public function addControl(ControlBase $objControl)
+    public function addControl(ControlBase $objControl): void
     {
         $strControlId = $objControl->ControlId;
         $objControl->markAsModified(); // make sure new controls get drawn
         if (array_key_exists($strControlId, $this->objControlArray)) {
             throw new Caller(sprintf('A control already exists in the form with the ID: %s', $strControlId));
         }
-        if (array_key_exists($strControlId, $this->objGroupingArray)) {
-            throw new Caller(sprintf('A Grouping already exists in the form with the ID: %s', $strControlId));
-        }
+
         $this->objControlArray[$strControlId] = $objControl;
     }
 
@@ -938,20 +933,17 @@ abstract class FormBase extends ObjectBase
      *
      * @return null|ControlBase
      */
-    public function getControl($strControlId)
+    public function getControl(string $strControlId): ?ControlBase
     {
-        if (isset($this->objControlArray[$strControlId])) {
-            return $this->objControlArray[$strControlId];
-        } else {
-            return null;
-        }
+        return $this->objControlArray[$strControlId] ?? null;
     }
 
     /**
      * Removes a Control (and its children) from the current QForm
      * @param string $strControlId
+     * @throws Caller
      */
-    public function removeControl($strControlId)
+    public function removeControl(string $strControlId): void
     {
         if (isset($this->objControlArray[$strControlId])) {
             // Get the Control in Question
@@ -965,25 +957,22 @@ abstract class FormBase extends ObjectBase
                 $objControl->ParentControl->removeChildControl($strControlId,
                     false);    // will redraw the ParentControl
             } else {
-                // if the parent is the form, then remove it from the dom through javascript, since the form won't be redrawn
+                // if the parent is the form, then remove it from the dom through JavaScript, since the form won't be redrawn
                 Application::executeSelectorFunction('#' . $objControl->getWrapperId(), 'remove');
             }
 
             // Remove this control
             unset($this->objControlArray[$strControlId]);
 
-            // Remove this control from any groups
-            foreach ($this->objGroupingArray as $strKey => $objGrouping) {
-                $this->objGroupingArray[$strKey]->removeControl($strControlId);
-            }
         }
     }
 
     /**
-     * Returns all controls belonging to the Form as an array.
-     * @return mixed|ControlBase[]
+     * Retrieves all controls in the current control array.
+     *
+     * @return array The array of all controls.
      */
-    public function getAllControls()
+    public function getAllControls(): array
     {
         return $this->objControlArray;
     }
@@ -991,9 +980,9 @@ abstract class FormBase extends ObjectBase
     /**
      * Tell all the controls to save their state.
      */
-    public function saveControlState()
+    public function saveControlState(): void
     {
-        // tell the controls to save their state
+        // Tell the controls to save their state
         $a = $this->getAllControls();
         foreach ($a as $control) {
             $control->_WriteState();
@@ -1003,32 +992,31 @@ abstract class FormBase extends ObjectBase
     /**
      * Tell all the controls to read their state.
      */
-    protected function restoreControlState()
+    protected function restoreControlState(): void
     {
-        // tell the controls to restore their state
+        // Tell the controls to restore their state
         $a = $this->getAllControls();
         foreach ($a as $control) {
             $control->_ReadState();
         }
     }
 
-
     /**
-     * Custom Attributes are other html name-value pairs that can be rendered within the form using this method.
+     * Custom Attributes are other HTML name-value pairs that can be rendered within the form using this method.
      * For example, you can now render the autocomplete tag on the QForm
-     * additional javascript actions, etc.
+     * additional JavaScript actions, etc.
      *        $this->setCustomAttribute("autocomplete", "off");
      * Will render:
-     *        [form ...... autocomplete="off"] (replace sqare brackets with angle brackets)
+     *        [form … autocomplete="off"] (replace square brackets with angle brackets)
      * @param string $strName Name of the attribute
      * @param string $strValue Value of the attribute
      *
      * @throws Caller
      */
-    public function setCustomAttribute($strName, $strValue)
+    public function setCustomAttribute(string $strName, string $strValue): void
     {
         if ($strName == "method" || $strName == "action") {
-            throw new Caller(sprintf("Custom Attribute not supported through SetCustomAttribute(): %s",
+            throw new Caller(sprintf("Custom Attribute is not supported through SetCustomAttribute(): %s",
                 $strName));
         }
 
@@ -1048,7 +1036,7 @@ abstract class FormBase extends ObjectBase
      * @return mixed
      * @throws Caller
      */
-    public function getCustomAttribute($strName)
+    public function getCustomAttribute(string $strName): mixed
     {
         if ((is_array($this->strCustomAttributeArray)) && (array_key_exists($strName,
                 $this->strCustomAttributeArray))
@@ -1059,7 +1047,17 @@ abstract class FormBase extends ObjectBase
         }
     }
 
-    public function removeCustomAttribute($strName)
+    /**
+     * Removes a custom attribute from the custom attribute array.
+     *
+     * If the specified attribute exists in the custom attribute array, it will be removed.
+     * Throw an exception if the attribute does not exist.
+     *
+     * @param string $strName The name of the custom attribute to remove.
+     * @return void
+     * @throws Caller If the specified custom attribute does not exist.
+     */
+    public function removeCustomAttribute(string $strName): void
     {
         if ((is_array($this->strCustomAttributeArray)) && (array_key_exists($strName,
                 $this->strCustomAttributeArray))
@@ -1071,64 +1069,24 @@ abstract class FormBase extends ObjectBase
         }
     }
 
-    /*
-        public function addGrouping(ControlGrouping $objGrouping)
-        {
-            $strGroupingId = $objGrouping->GroupingId;
-            if (array_key_exists($strGroupingId, $this->objGroupingArray)) {
-                throw new Caller(sprintf('A Grouping already exists in the form with the ID: %s',
-                    $strGroupingId));
-            }
-            if (array_key_exists($strGroupingId, $this->objControlArray)) {
-                throw new Caller(sprintf('A Control already exists in the form with the ID: %s', $strGroupingId));
-            }
-            $this->objGroupingArray[$strGroupingId] = $objGrouping;
-        }
-    
-        public function getGrouping($strGroupingId)
-        {
-            if (array_key_exists($strGroupingId, $this->objGroupingArray)) {
-                return $this->objGroupingArray[$strGroupingId];
-            } else {
-                return null;
-            }
-        }
-    
-        public function removeGrouping($strGroupingId)
-        {
-            if (array_key_exists($strGroupingId, $this->objGroupingArray)) {
-                // Remove this Grouping
-                unset($this->objGroupingArray[$strGroupingId]);
-            }
-        }
-    */
-    /**
-     * Retruns the Groupings
-     * @return mixed
-     */
-    public function getAllGroupings()
-    {
-        return $this->objGroupingArray;
-    }
-
     /**
      * Returns the child controls of the current Form or a Control object
      *
-     * @param FormBase|ControlBase $objParentObject The object whose child controls are to be searched for
+     * @param ControlBase|FormBase $objParentObject The object whose child controls are to be searched for
      *
-     * @throws Caller
      * @return ControlBase[]
+     *@throws Caller
      */
-    public function getChildControls($objParentObject)
+    public function getChildControls(FormBase|ControlBase $objParentObject): array
     {
         $objControlArrayToReturn = array();
 
         if ($objParentObject instanceof QForm) {
             // They want all the ChildControls for this Form
-            // Basically, return all objControlArray Controls where the Qcontrol's parent is NULL
+            // Basically, return all objControlArray Controls where the Control's parent is NULL
             foreach ($this->objControlArray as $objChildControl) {
                 if (!($objChildControl->ParentControl)) {
-                    array_push($objControlArrayToReturn, $objChildControl);
+                    $objControlArrayToReturn[] = $objChildControl;
                 }
             }
             return $objControlArrayToReturn;
@@ -1136,16 +1094,6 @@ abstract class FormBase extends ObjectBase
         } else {
             if ($objParentObject instanceof ControlBase) {
                 return $objParentObject->getChildControls();
-                // THey want all the ChildControls for a specific Control
-                // Basically, return all objControlArray Controls where the Qcontrol's parent is the passed in parentobject
-                /*				$strControlId = $objParentObject->ControlId;
-                                foreach ($this->objControlArray as $objChildControl) {
-                                    $objParentControl = $objChildControl->ParentControl;
-                                    if (($objParentControl) && ($objParentControl->ControlId == $strControlId)) {
-                                        array_push($objControlArrayToReturn, $objChildControl);
-                                    }
-                                }*/
-
             } else {
                 throw new Caller('ParentObject must be either a Form or Control object');
             }
@@ -1158,9 +1106,9 @@ abstract class FormBase extends ObjectBase
      * and then execute it.
      * @param string $strTemplate Path to the HTML template file
      *
-     * @return string The evaluated HTML string
+     * @return string|null The evaluated HTML string
      */
-    public function evaluateTemplate($strTemplate)
+    public function evaluateTemplate(string $strTemplate): ?string
     {
         global $_ITEM;
         global $_CONTROL;
@@ -1180,7 +1128,7 @@ abstract class FormBase extends ObjectBase
             $strTemplateEvaluated = ob_get_contents();
             ob_end_clean();
 
-            // Restore the output buffer and return evaluated template
+            // Restore the output buffer and return the evaluated template
             if ($strAlreadyRendered) {
                 print($strAlreadyRendered);
             }
@@ -1199,23 +1147,20 @@ abstract class FormBase extends ObjectBase
      * @param string $strControlId Control ID triggering the method
      * @param string $strMethodName Method name which has to be fired. Includes a control id if a control action.
      * @param QAction $objAction The action object which caused the event
+     * @throws ReflectionException
      */
-    protected function triggerMethod($strControlId, $strMethodName, QAction $objAction)
+    protected function triggerMethod(string $strControlId, string $strMethodName, QAction $objAction): void
     {
         $mixParameter = $_POST['Qform__FormParameter'];
         $objMethodParam = new Q\Action\ActionParams($objAction, $this, $strControlId, $mixParameter);
-        Q\Project\Control\ControlBase::_processActionParams($objMethodParam);
+        ControlBase::_processActionParams($objMethodParam);
 
         if (strpos($strMethodName, '::')) {
-            // Calling a static method in a class
+            // Static method calling
             $f = explode('::', $strMethodName);
             if (is_callable($f)) {
-                /**
-                 * To transition to actions that just take a $params array and nothing else, we use reflection
-                 */
-                $ref = new \ReflectionClass($f[0]);
+                $ref = new ReflectionClass($f[0]);
                 $argCount = $ref->getMethod($f[1])->getNumberOfParameters();
-
                 if ($argCount > 1) {
                     $f($this->strFormId, $strControlId, $objMethodParam->Param);
                 } else {
@@ -1226,12 +1171,10 @@ abstract class FormBase extends ObjectBase
             $strDestControlId = substr($strMethodName, 0, $intPosition);
             $strMethodName = substr($strMethodName, $intPosition + 1);
             $objDestControl = $this->getControl($strDestControlId);
-            Q\Project\Control\ControlBase::_callActionMethod($objDestControl, $strMethodName, $objMethodParam);
+
+            ControlBase::_callActionMethod($objDestControl, $strMethodName, $objMethodParam);
         } else {
-            /**
-             * To transition to actions that just take a $params array and nothing else, we use reflection
-             */
-            $ref = new \ReflectionClass(get_class($this));
+            $ref = new ReflectionClass(get_class($this));
             $argCount = $ref->getMethod($strMethodName)->getNumberOfParameters();
 
             if ($argCount > 1) {
@@ -1243,17 +1186,26 @@ abstract class FormBase extends ObjectBase
     }
 
     /**
-     * Calles 'Validate' method on a Control recursively
+     * Calls 'Validate' method on a Control recursively
      * @param ControlBase $objControl
      *
      * @return bool
      */
-    protected function validateControlAndChildren(ControlBase $objControl)
+    protected function validateControlAndChildren(ControlBase $objControl): bool
     {
         return $objControl->validateControlAndChildren();
     }
 
-    protected function triggerActions($strControlIdOverride = null)
+    /**
+     * Handles the triggering of actions for a specific control based on posted data and request mode.
+     * The method determines the control and event causing the action, performs validation, and executes
+     * a corresponding server or AJAX action if conditions are met.
+     *
+     * @param string|null $strControlIdOverride Optional control ID to override the one provided in the posted data.
+     * @return void
+     * @throws Throwable Exception If the request mode is unknown or the control specified in the posted data does not exist.
+     */
+    protected function triggerActions(?string $strControlIdOverride = null): void
     {
         if (array_key_exists('Qform__FormControl', $_POST)) {
             if ($strControlIdOverride) {
@@ -1267,7 +1219,7 @@ abstract class FormBase extends ObjectBase
                 $strEvent = $_POST['Qform__FormEvent'];
                 $strAjaxActionId = null;
 
-                // Does this Control which performed the action exist?
+                // Does this Control, which performed the action, exist?
                 if (array_key_exists($strControlId, $this->objControlArray)) {
                     // Get the ActionControl as well as the Actions to Perform
                     $objActionControl = $this->objControlArray[$strControlId];
@@ -1286,7 +1238,7 @@ abstract class FormBase extends ObjectBase
                             $objActions = $objActionControl->getAllActions($strEvent, 'QCubed\\Action\\Server');
                             break;
                         default:
-                            throw new \Exception('Unknown request mode: ' . Application::instance()->context()->requestMode());
+                            throw new Exception('Unknown request mode: ' . Application::instance()->context()->requestMode());
                     }
 
                     // Validation Check
@@ -1294,10 +1246,10 @@ abstract class FormBase extends ObjectBase
                     $mixCausesValidation = null;
 
                     // Figure out what the CausesValidation directive is
-                    // Set $mixCausesValidation to the default one (e.g. the one defined on the control)
+                    // Set $mixCausesValidation to the default one (e.g., the one defined on the control)
                     $mixCausesValidation = $objActionControl->CausesValidation;
 
-                    // Next, go through the linked ajax/server actions to see if a causesvalidation override is set on any of them
+                    // Next, go through the linked ajax/server actions to see if a cause validation override is set on any of them
                     if ($objActions) {
                         foreach ($objActions as $objAction) {
                             if (($objAction instanceof Q\Action\Server || $objAction instanceof Q\Action\Ajax) &&
@@ -1310,16 +1262,16 @@ abstract class FormBase extends ObjectBase
 
                     // Now, Do Something with mixCauseValidation...
 
-                    // Starting Point is a Control
+                    // The Starting Point is Control
                     if ($mixCausesValidation instanceof ControlBase) {
                         if (!$this->validateControlAndChildren($mixCausesValidation)) {
                             $blnValid = false;
                         }
 
-                        // Starting Point is an Array of Controls
+                        // The Starting Point is an Array of Controls
                     } else {
                         if (is_array($mixCausesValidation)) {
-                            foreach (((array)$mixCausesValidation) as $objControlToValidate) {
+                            foreach (($mixCausesValidation) as $objControlToValidate) {
                                 if (!$this->validateControlAndChildren($objControlToValidate)) {
                                     $blnValid = false;
                                 }
@@ -1344,7 +1296,6 @@ abstract class FormBase extends ObjectBase
                                     if (!($objParentObject = $objActionControl->ParentControl)) {
                                         $objParentObject = $this;
                                     }
-
                                     // Get all the children of ParentObject
                                     foreach ($this->getChildControls($objParentObject) as $objControl) {
                                         // Only Enabled and Visible and Rendered controls that are children of ParentObject should be validated
@@ -1357,7 +1308,7 @@ abstract class FormBase extends ObjectBase
                                 } else {
                                     if ($mixCausesValidation == ControlBase::CAUSES_VALIDATION_SIBLINGS_ONLY) {
                                         // Get only the Siblings of the ActionControl's ParentControl
-                                        // If not ParentControl, tyhen the parent is the form itself
+                                        // If not ParentControl, then the parent is the form itself
                                         if (!($objParentObject = $objActionControl->ParentControl)) {
                                             $objParentObject = $this;
                                         }
@@ -1374,7 +1325,6 @@ abstract class FormBase extends ObjectBase
                                         }
 
                                         // No Validation Requested
-                                    } else {
                                     }
                                 }
                             }
@@ -1389,17 +1339,17 @@ abstract class FormBase extends ObjectBase
                         }
                     }
 
+                    // Go ahead and run the ServerActions or AjaxActions if Validation Passed, and if there are Server/Ajax-Actions defined
 
-                    // Go ahead and run the ServerActions or AjaxActions if Validation Passed and if there are Server/Ajax-Actions defined
                     if ($blnValid) {
                         if ($objActions) {
                             foreach ($objActions as $objAction) {
                                 if ($strMethodName = $objAction->MethodName) {
                                     if (($strAjaxActionId == null)            //if this call was not an ajax call
-                                        || ($objAction->Id == null)        // or the QAjaxAction derived action has no id set
+                                        || ($objAction->Id == null)        // or the AjaxAction derived action has no id set
                                         //(a possible way to add a callback that gets executed on every ajax call for this control)
                                         || ($strAjaxActionId == $objAction->Id)
-                                    ) //or the ajax action id passed from client side equals the id of the current ajax action
+                                    ) //or the ajax action id passed from the client side equals the id of the current ajax action
                                     {
                                         $this->triggerMethod($strControlId, $strMethodName, $objAction);
                                     }
@@ -1411,14 +1361,14 @@ abstract class FormBase extends ObjectBase
                     }
                 } else {
                     // Nope -- Throw an exception
-                    throw new \Exception(sprintf('Control passed by Qform__FormControl does not exist: %s',
+                    throw new Exception(sprintf('Control passed by Qform__FormControl does not exist: %s',
                         $strControlId));
                 }
             }
             /* else {
                 // TODO: Code to automatically execute any PrimaryButton's onclick action, if applicable
                 // Difficult b/c of all the QCubed hidden parameters that need to be set to get the action to work properly
-                // Javascript interaction of PrimaryButton works fine in Firefox... currently doens't work in IE 6.
+                // Javascript interaction of PrimaryButton works fine in Firefox... currently doesn't work in IE 6.
             }*/
         }
     }
@@ -1426,7 +1376,7 @@ abstract class FormBase extends ObjectBase
     /**
      * Begins rendering the page
      */
-    protected function render()
+    protected function render(): void
     {
         if (Watcher::watchersChanged()) {
             Application::executeJsFunction('qc.broadcastChange');
@@ -1440,8 +1390,9 @@ abstract class FormBase extends ObjectBase
      * @param bool $blnDisplayOutput
      *
      * @return null|string Null when blnDisplayOutput is true
+     * @throws Caller
      */
-    protected function renderChildren($blnDisplayOutput = true)
+    protected function renderChildren(bool $blnDisplayOutput = true): ?string
     {
         $strToReturn = "";
 
@@ -1460,7 +1411,7 @@ abstract class FormBase extends ObjectBase
     }
 
     /**
-     * This exists to prevent inadverant "New"
+     * This exists to prevent inadvertent "New"
      */
     protected function __construct()
     {
@@ -1478,10 +1429,11 @@ abstract class FormBase extends ObjectBase
      * @param bool $blnDisplayOutput Determines whether the generated styles should be directly outputted.
      *                               If true, styles are printed; otherwise, the method returns the
      *                               generated HTML string.
-     * @return string|null The generated HTML string containing the `<link>` tags for stylesheets if
+     * @return string|null The generated HTML string containing the `<link>` tags for stylesheets of
      *                     `$blnDisplayOutput` is false, or null if `$blnDisplayOutput` is true.
+     * @throws Caller
      */
-    public function renderStyles($blnDisplayOutput = true)
+    public function renderStyles(bool $blnDisplayOutput = true): ?string
     {
         $strToReturn = '';
         $this->strIncludedStyleSheetFileArray = array();
@@ -1531,7 +1483,7 @@ abstract class FormBase extends ObjectBase
                 $strToReturn .= '<link href="' . $this->getCssFileUri($strScript) . '" rel="stylesheet" />';
             }
 
-            // Add newline after each file, including the last one
+            // Add a newline after each file, including the last one
             $strToReturn .= "\n";
 
             // Add indentation only if it is NOT the last file
@@ -1564,7 +1516,7 @@ abstract class FormBase extends ObjectBase
      * @return null|string
      * @throws Caller
      */
-    public function renderBegin($blnDisplayOutput = true)
+    public function renderBegin(bool $blnDisplayOutput = true): ?string
     {
         // Ensure that RenderBegin() has not yet been called
         switch ($this->intFormStatus) {
@@ -1573,7 +1525,7 @@ abstract class FormBase extends ObjectBase
             case self::FORM_STATUS_RENDER_BEGUN:
             case self::FORM_STATUS_RENDER_ENDED:
                 throw new Caller('$this->renderBegin() has already been called');
-                break;
+                //break;
             default:
                 throw new Caller('FormStatus is in an unknown status');
         }
@@ -1585,7 +1537,7 @@ abstract class FormBase extends ObjectBase
 
         $blnProcessing = Application::setProcessOutput(false);
         $strOutputtedText = trim(ob_get_contents());
-        if (strpos(strtolower($strOutputtedText), '<body') === false) {
+        if (!str_contains(strtolower($strOutputtedText), '<body')) {
             $strToReturn = '<body>';
             $this->blnRenderedBodyTag = true;
         } else {
@@ -1599,7 +1551,7 @@ abstract class FormBase extends ObjectBase
         foreach ($this->getAllControls() as $objControl) {
             // Form Attributes?
             if ($attributes = $objControl->_GetFormAttributes()) {
-                $strFormAttributeArray = array_merge($strFormAttributeArray, $attributes);
+                $strFormAttributeArray = array_merge($strFormAttributeArray, (array)$attributes);
             }
         }
 
@@ -1639,17 +1591,16 @@ abstract class FormBase extends ObjectBase
 
     /**
      * Internal helper function used by RenderBegin and by RenderAjax
-     * Given a comma-delimited list of javascript files, this will return an array of files that NEED to still
+     * Given a comma-delimited list of JavaScript files, this will return an array of files that NEED to still
      * be included because (1) it hasn't yet been included and (2) it hasn't been specified to be "ignored".
      *
-     * This WILL update the internal $strIncludedJavaScriptFileArray array.
+     * This UPDATES the internal $strIncludedJavaScriptFileArray array.
      *
-     * @param string | array $strJavaScriptFileList
-     * @return string[] array of script files to include or NULL if none
+     * @param array|string|null $strJavaScriptFileList
+     * @return array|null array of script files to include or NULL if none
      */
-    protected function processJavaScriptList($strJavaScriptFileList)
+    protected function processJavaScriptList(array|string|null $strJavaScriptFileList): ?array
     {
-
         if (empty($strJavaScriptFileList)) {
             return null;
         }
@@ -1664,8 +1615,8 @@ abstract class FormBase extends ObjectBase
         foreach ($strJavaScriptFileList as $strScript) {
             if ($strScript = trim($strScript) ?? '') {
 
-                // Include it if we're NOT ignoring it and it has NOT already been included
-                if ((array_search($strScript, $this->strIgnoreJavaScriptFileArray) === false) &&
+                // Include it if we're NOT ignoring it and it has NOT yet been included
+                if ((!in_array($strScript, $this->strIgnoreJavaScriptFileArray)) &&
                     !array_key_exists($strScript, $this->strIncludedJavaScriptFileArray)
                 ) {
                     $strArrayToReturn[$strScript] = $strScript;
@@ -1683,15 +1634,15 @@ abstract class FormBase extends ObjectBase
 
     /**
      * Primarily used by RenderBegin and by RenderAjax
-     * Given a comma-delimited list of stylesheet files, this will return an array of file that NEED to still
+     * Given a comma-delimited list of stylesheet files, this will return an array of a file that NEED to still
      * be included because (1) it hasn't yet been included and (2) it hasn't been specified to be "ignored".
      *
-     * This WILL update the internal $strIncludedStyleSheetFileArray array.
+     * This UPDATES the internal $strIncludedStyleSheetFileArray array.
      *
-     * @param string $strStyleSheetFileList
-     * @return string[] array of stylesheet files to include or NULL if none
+     * @param array|string|null $strStyleSheetFileList
+     * @return array|null array of stylesheet files to include or NULL if none
      */
-    protected function processStyleSheetList($strStyleSheetFileList)
+    protected function processStyleSheetList(array|string|null $strStyleSheetFileList): ?array
     {
         $strArrayToReturn = array();
 
@@ -1701,9 +1652,9 @@ abstract class FormBase extends ObjectBase
 
             // Iterate through the list of StyleSheetFiles to Include...
             foreach ($strScriptArray as $strScript) {
-                if ($strScript = trim($strScript) ?? '') // Include it if we're NOT ignoring it and it has NOT already been included
+                if ($strScript = trim($strScript) ?? '') // Include it if we're NOT ignoring it and it has NOT yet been included
                 {
-                    if ((array_search($strScript, $this->strIgnoreStyleSheetFileArray) === false) &&
+                    if ((!in_array($strScript, $this->strIgnoreStyleSheetFileArray)) &&
                         !array_key_exists($strScript, $this->strIncludedStyleSheetFileArray)
                     ) {
                         $strArrayToReturn[$strScript] = $strScript;
@@ -1721,10 +1672,10 @@ abstract class FormBase extends ObjectBase
     }
 
     /**
-     * Returns whether or not this Form is being run due to a PostBack event (e.g. a ServerAction or AjaxAction)
+     * Returns whether or not this Form is being run due to a PostBack event (e.g., a ServerAction or AjaxAction)
      * @return bool
      */
-    public function isPostBack()
+    public function isPostBack(): bool
     {
         $requestMode = Application::instance()->context()->requestMode();
         return ($requestMode == Context::REQUEST_MODE_QCUBED_SERVER || $requestMode == Context::REQUEST_MODE_QCUBED_AJAX);
@@ -1737,16 +1688,16 @@ abstract class FormBase extends ObjectBase
      * @param bool $blnErrorsOnly Show only the errors (otherwise, show both warnings and errors)
      * @return string[] an array of strings representing the (multiple) errors and warnings
      */
-    public function getErrorMessages($blnErrorsOnly = false)
+    public function getErrorMessages(?bool $blnErrorsOnly = false): array
     {
         $strToReturn = array();
         foreach ($this->getAllControls() as $objControl) {
             if ($objControl->ValidationError) {
-                array_push($strToReturn, $objControl->ValidationError);
+                $strToReturn[] = $objControl->ValidationError;
             }
             if (!$blnErrorsOnly) {
                 if ($objControl->Warning) {
-                    array_push($strToReturn, $objControl->Warning);
+                    $strToReturn[] = $objControl->Warning;
                 }
             }
         }
@@ -1760,16 +1711,16 @@ abstract class FormBase extends ObjectBase
      * @param bool $blnErrorsOnly Return controls that have just errors (otherwise, show both warnings and errors)
      * @return ControlBase[] an array of controls representing the (multiple) errors and warnings
      */
-    public function getErrorControls($blnErrorsOnly = false)
+    public function getErrorControls(?bool $blnErrorsOnly = false): array
     {
         $objToReturn = array();
         foreach ($this->getAllControls() as $objControl) {
             if ($objControl->ValidationError) {
-                array_push($objToReturn, $objControl);
+                $objToReturn[] = $objControl;
             } else {
                 if (!$blnErrorsOnly) {
                     if ($objControl->Warning) {
-                        array_push($objToReturn, $objControl);
+                        $objToReturn[] = $objControl;
                     }
                 }
             }
@@ -1783,8 +1734,9 @@ abstract class FormBase extends ObjectBase
      * @param string $strFile File name to be tested
      *
      * @return string the final JS file URI
+     * @throws Caller
      */
-    public function getJsFileUri($strFile)
+    public function getJsFileUri(string $strFile): string
     {
         return Application::getJsFileUri($strFile);
     }
@@ -1794,25 +1746,26 @@ abstract class FormBase extends ObjectBase
      * @param string $strFile File name to be tested
      *
      * @return string the final CSS URI
+     * @throws Caller
      */
-    public function getCssFileUri($strFile)
+    public function getCssFileUri(string $strFile): string
     {
         return Application::getCssFileUri($strFile);
     }
 
     /**
-     * Get high level form javascript files to be included. Default here includes all
-     * javascripts needed to run qcubed.
+     * Get high-level form JavaScript files to be included. Default here includes all
+     * JavaScripts needed to run qcubed.
      * Override and add to this list and include
-     * javascript and jQuery files and libraries needed for your application.
-     * Javascript files included before QCUBED_JS can refer to jQuery as $.
+     * JavaScript and jQuery files and libraries needed for your application.
+     * JavaScript files included before QCUBED_JS can refer to jQuery as $.
      * After qcubed.js, $ becomes $j, so add other libraries that need
-     * $ in a different context after qcubed.js, and insert jQuery libraries and  plugins that
+     * $ in a different context after qcubed.js, and insert jQuery libraries and plugins that
      * refer to $ before qcubed.js file.
      *
      * @return array
      */
-    protected function getFormJavaScripts()
+    protected function getFormJavaScripts(): array
     {
         return array(
             QCUBED_JQUERY_JS,
@@ -1828,7 +1781,7 @@ abstract class FormBase extends ObjectBase
      *
      * @return array
      */
-    protected function getFormStyles()
+    protected function getFormStyles(): array
     {
         return array(
             QCUBED_CSS
@@ -1837,13 +1790,13 @@ abstract class FormBase extends ObjectBase
 
     /**
      * Renders the end of the form, including the closing form and body tags.
-     * Renders the html for hidden controls.
-     * @param bool $blnDisplayOutput should the output be returned or directly printed to screen.
+     * Renders the HTML for hidden controls.
+     * @param bool $blnDisplayOutput should the output be returned or directly printed to the screen?
      *
      * @return null|string
-     * @throws Caller
+     * @throws Caller|RandomException
      */
-    public function renderEnd($blnDisplayOutput = true)
+    public function renderEnd(bool $blnDisplayOutput = true): ?string
     {
         // Ensure that RenderEnd() has not yet been called
         switch ($this->intFormStatus) {
@@ -1853,7 +1806,7 @@ abstract class FormBase extends ObjectBase
                 break;
             case self::FORM_STATUS_RENDER_ENDED:
                 throw new Caller('$this->renderEnd() has already been called');
-                break;
+
             default:
                 throw new Caller('FormStatus is in an unknown status');
         }
@@ -1870,28 +1823,30 @@ abstract class FormBase extends ObjectBase
             }
         }
 
-        /**** Prepare Javascripts ****/
+        /**** Prepare JavaScripts ****/
 
-        // Clear included javascript array since we are completely redrawing the page
+        // Clearly included JavaScript array since we are completely redrawing the page
         $this->strIncludedJavaScriptFileArray = array();
         $strControlIdToRegister = array();
         $strEventScripts = '';
 
-        // Add form level javascripts and libraries
+        // Add form level JavaScripts and libraries
         $strJavaScriptArray = $this->processJavaScriptList($this->getFormJavaScripts());
         Application::addJavaScriptFiles($strJavaScriptArray);
-        $strFormJsFiles = Application::renderFiles();    // Render the form-level javascript files separately
+        $strFormJsFiles = Application::renderFiles();    // Render the form-level JavaScript files separately
 
         // Go through all controls and gather up any JS or CSS to run or Form Attributes to modify
         foreach ($this->getAllControls() as $objControl) {
             if ($objControl->Rendered || $objControl->ScriptsOnly) {
                 $strControlIdToRegister[] = $objControl->ControlId;
 
-                /* Note: GetEndScript may cause the control to register additional commands, or even add javascripts, so those should be handled after this. */
+                /* Note: GetEndScript may cause the control to register additional commands or even add JavaScripts, so those should be handled after this. */
                 if ($strControlScript = $objControl->getEndScript()) {
                     $strControlScript = Q\Js\Helper::terminateScript($strControlScript);
 
-                    // Add comments for developer version of output
+                    Application::executeJavaScript($strControlScript);;
+
+                    // Add comments for a developer version of output
                     if (!Application::instance()->minimize()) {
                         // Render a comment
                         $strControlScript = _nl() . _nl() .
@@ -1904,7 +1859,7 @@ abstract class FormBase extends ObjectBase
                 }
             }
 
-            // Include the javascripts specified by each control.
+            // Include the JavaScripts specified by each control.
             if ($strScriptArray = $this->processJavaScriptList($objControl->JavaScripts)) {
                 Application::addJavaScriptFiles($strScriptArray);
             }
@@ -1916,24 +1871,14 @@ abstract class FormBase extends ObjectBase
             }
         }
 
-        // Add grouping commands to events (Used for deprecated drag and drop, but not removed yet)
-        /*
-        foreach ($this->objGroupingArray as $objGrouping) {
-            $strGroupingScript = $objGrouping->render();
-            if (strlen($strGroupingScript) > 0) {
-                $strGroupingScript = \QCubed\Js\Helper::terminateScript($strGroupingScript);
-                $strEventScripts .= $strGroupingScript;
-            }
-        }*/
-
-        /*** Build the javascript block ****/
+        /*** Build the JavaScript block ****/
 
         // Start with variable settings and initForm
-        $strEndScript = sprintf('qc.initForm("%s"); ', $this->strFormId);
+        $strEndScript = sprintf('qc.initForm("%s"); ', $this->strFormId) . _nl();
 
         // Register controls
         if ($strControlIdToRegister) {
-            $strEndScript .= sprintf("qc.regCA(%s); \n", Q\Js\Helper::toJsObject($strControlIdToRegister));
+            $strEndScript .= sprintf("qc.regCA(%s); \n", Q\Js\Helper::toJsObject($strControlIdToRegister)) . _nl();
         }
 
         // Design mode event
@@ -1950,23 +1895,20 @@ abstract class FormBase extends ObjectBase
                 );', $this->FormId);
         }
 
-        // Add any application level js commands.
-        // This will include high and medimum level commands
+        // Add any application level JS commands.
+        // This will include high and critical level commands
         $strEndScript .= Application::renderJavascript(true);
 
-        // Add the javascript coming from controls and events just after the medium level commands
-        $strEndScript .= ';' . $strEventScripts;
+        // Add the JavaScript coming from controls and events just after the medium level commands
+        //$strEndScript .= ';' . $strEventScripts;
 
-        // Add low level commands and other things that need to execute at the end
-        $strEndScript .= ';' . Application::renderJavascript(false);
-
+        // Add low-level commands and other things that need to execute at the end
+        $strEndScript .= /*';' .*/ Application::renderJavascript(false);
 
         // Create Final EndScript Script
-        $strEndScript = sprintf('<script type="text/javascript">jQuery(document).ready(function($j) { %s; });</script>',
-            $strEndScript);
+        $strEndScript = sprintf('<script type="text/javascript">jQuery(document).ready(function($j) { %s; });</script>', $strEndScript);
 
-
-        /**** Render the HTML itself, appending the javascript we generated above ****/
+        /**** Render the HTML itself, appending the JavaScript we generated above ****/
 
         foreach ($this->getAllControls() as $objControl) {
             if ($objControl->Rendered) {
@@ -1975,9 +1917,9 @@ abstract class FormBase extends ObjectBase
             $objControl->resetFlags(); // Make sure controls are serialized in a reset state
         }
 
-        $strHtml .= $strFormJsFiles . _nl();    // Add form level javascript files
+        $strHtml .= $strFormJsFiles . _nl();    // Add form level JavaScript files
 
-        // put javascript environment defines up early for use by other js files.
+        // put JavaScript environment defines up early for use by other JS files.
         $strHtml .= '<script type="text/javascript">' .
             sprintf('qc.baseDir = "%s"; ', QCUBED_BASE_URL) .
             sprintf('qc.jsVendor = "%s"; ', QCUBED_VENDOR_URL) .
@@ -1988,19 +1930,19 @@ abstract class FormBase extends ObjectBase
             '</script>' .
             _nl();
 
-        $strHtml .= Application::renderFiles() . _nl();    // add plugin and control js files
+        $strHtml .= Application::renderFiles() . _nl();    // add a plugin and control JS files
 
         // Render hidden controls related to the form
         $strHtml .= sprintf('<input type="hidden" name="Qform__FormId" id="Qform__FormId" value="%s" />',
                 $this->strFormId) . _nl();
-        $strHtml .= sprintf('<input type="hidden" name="Qform__FormControl" id="Qform__FormControl" value="" />') . _nl();
-        $strHtml .= sprintf('<input type="hidden" name="Qform__FormEvent" id="Qform__FormEvent" value="" />') . _nl();
-        $strHtml .= sprintf('<input type="hidden" name="Qform__FormParameter" id="Qform__FormParameter" value="" />') . _nl();
+        $strHtml .= '<input type="hidden" name="Qform__FormControl" id="Qform__FormControl" value="" />' . _nl();
+        $strHtml .= '<input type="hidden" name="Qform__FormEvent" id="Qform__FormEvent" value="" />' . _nl();
+        $strHtml .= '<input type="hidden" name="Qform__FormParameter" id="Qform__FormParameter" value="" />' . _nl();
         $strHtml .= Html::renderTag('input',
             ['type' => 'hidden', 'name' => self::POST_CALL_TYPE, 'id' => self::POST_CALL_TYPE, 'value' => ''], null,
             true) . _nl();
-        $strHtml .= sprintf('<input type="hidden" name="Qform__FormUpdates" id="Qform__FormUpdates" value="" />') . _nl();
-        $strHtml .= sprintf('<input type="hidden" name="Qform__FormCheckableControls" id="Qform__FormCheckableControls" value="" />') . _nl();
+        $strHtml .= '<input type="hidden" name="Qform__FormUpdates" id="Qform__FormUpdates" value="" />' . _nl();
+        $strHtml .= '<input type="hidden" name="Qform__FormCheckableControls" id="Qform__FormCheckableControls" value="" />' . _nl();
 
         // Serialize and write out the formstate
         $strHtml .= sprintf('<input type="hidden" name="' . self::POST_FORM_STATE . '" id="Qform__FormState" value="%s" />',
@@ -2032,10 +1974,13 @@ abstract class FormBase extends ObjectBase
 
         // Display or Return
         if ($blnDisplayOutput) {
+
             if (Application::instance()->context()->requestMode() != Context::REQUEST_MODE_CLI) {
                 print($strHtml);
             }
+
             return null;
+
         } else {
             if (Application::instance()->context()->requestMode() != Context::REQUEST_MODE_CLI) {
                 return $strHtml;
@@ -2049,20 +1994,19 @@ abstract class FormBase extends ObjectBase
     // Public Properties: GET
     /////////////////////////
     /**
-     * PHP magic method for getting property values of object
+     * PHP magic method for getting property values of an object
      *
      * @param string $strName
      * @return mixed
      * @throws Caller
-     * @throws \Exception
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             case "FormId":
                 return $this->strFormId;
             case "CallType":
-                throw new \Exception ('CallType is deprecated. Use Applicaton::isAjax() or Application::instance()->context()->requestMode()');
+                throw new Caller('CallType is deprecated. Use Application::isAjax() or Application::instance()->context()->requestMode()');
             case "DefaultWaitIcon":
                 return $this->objDefaultWaitIcon;
             case "FormStatus":
@@ -2086,18 +2030,19 @@ abstract class FormBase extends ObjectBase
     // Public Properties: SET
     /////////////////////////
     /**
-     * PHP magic function to set the value of properties of class object
+     * PHP magic function to set the value of properties of a class object
      * @param string $strName Name of the property
-     * @param string $mixValue Value of the property
+     * @param mixed $mixValue Value of the property
      *
      * @return void
      * @throws Caller
+     * @throws Exception
      */
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             case "HtmlIncludeFilePath":
-                // Passed-in value is null -- use the "default" path name of file".tpl.php"
+                // Passed-in value is null -- use the "default" path name of a file".tpl.php"
                 if (!$mixValue) {
                     $strPath = realpath(substr(Application::instance()->context()->scriptFileName(), 0,
                             strrpos(Application::instance()->context()->scriptFileName(), '.php')) . '.tpl.php');
@@ -2143,7 +2088,7 @@ abstract class FormBase extends ObjectBase
      * @param string $strBuffer
      * @return string
      */
-    public static function EvaluateTemplate_ObHandler($strBuffer)
+    public static function EvaluateTemplate_ObHandler(string $strBuffer): string
     {
         return $strBuffer;
     }

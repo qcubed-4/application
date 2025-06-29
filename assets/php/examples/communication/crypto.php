@@ -1,31 +1,31 @@
 <?php
-use QCubed\Control\Label;
 use QCubed\Cryptography;
+use QCubed\Project\Control\FormBase;
 
 require_once('../qcubed.inc.php');
 
-// Define the \QCubed\Project\Control\FormBase with all our Qcontrols
-class ExamplesForm extends \QCubed\Project\Control\FormBase
+// Define the \QCubed\Project\Control\FormBase with all our Controls
+class ExamplesForm extends FormBase
 {
 
-    // Local declarations of our Qcontrols
-    protected $strOriginal;
+    // Local declarations of our Controls
+    protected string $strOriginal;
 
-    protected $objCrypto;
-    protected $strEncrypted;
-    protected $strDecrypted;
+    protected Cryptography $objCrypto;
+    protected string $strEncrypted;
+    protected string $strDecrypted;
 
-    protected $objCrypto1;
-    protected $strEncrypted1;
-    protected $strDecrypted1;
+    protected Cryptography $objCrypto1;
+    protected string $strEncrypted1;
+    protected string $strDecrypted1;
 
-    protected $objCrypto2;
-    protected $strEncrypted2;
-    protected $strDecrypted2;
+    protected Cryptography $objCrypto2;
+    protected string $strEncrypted2;
+    protected string $strDecrypted2;
 
 
     // Initialize our Controls during the Form Creation process
-    protected function formCreate()
+    protected function formCreate(): void
     {
         $this->strOriginal = 'The quick brown fox jumps over the lazy dog.';
 
@@ -36,7 +36,7 @@ class ExamplesForm extends \QCubed\Project\Control\FormBase
         $this->strEncrypted = $this->objCrypto->encrypt($this->strOriginal);
         $this->strDecrypted  = $this->objCrypto->decrypt($this->strEncrypted);
 
-        // Modify the base64 mode while making the specification on the constructor, itself
+        // Modify the base64 mode while making the specification on the constructor, itself,
         // By default, let's instantiate a \QCubed\Cryptography object with Base64 encoding enabled
         // Note: while the resulting encrypted data is safe for any text-based stream, including
         // use as GET/POST data, inside the URL, etc., the resulting encrypted data stream will
@@ -46,7 +46,7 @@ class ExamplesForm extends \QCubed\Project\Control\FormBase
         $this->strEncrypted1 = $this->objCrypto1->encrypt($this->strOriginal);
         $this->strDecrypted1 = $this->objCrypto1->decrypt($this->strEncrypted1);
 
-        // Modify the base64 mode while making the specification on the constructor, itself
+        // Modify the base64 mode while making the specification on the constructor, itself,
         // By default, let's instantiate a \QCubed\Cryptography object with Base64 encoding enabled
         // Note: while the resulting encrypted data is safe for any text-based stream, including
         // use as GET/POST data, inside the URL, etc., the resulting encrypted data stream will

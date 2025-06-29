@@ -5,17 +5,17 @@
 	<h1>Other Client-Side Action Types</h1>
 	
 	<p>Below is a sampling of just <em>some</em> of the other <strong>Action</strong> types that are available to you
-	as part of the core QCubed distribution.</p>
+	as part of the core QCubed-4 distribution.</p>
 	
 	<p>Notice that all of these <strong>Actions</strong> simply render out JavaScript to perform the action,
-	so the interaction the user experience is completely done on the client-side (e.g. no server/Ajax calls here).</p>
-	
-	<p>View the code for the details, and for more information or for a listing of <em>all</em> the <strong>Actions</strong> and <strong>Events</strong>, please
-	see the <strong>Documentation</strong> section of the QCubed website.</p>
+	so the interaction the user experiences is completely done on the client-side (e.g., no server/Ajax calls here).</p>
+
+    <p>For details and additional information, or to see a list of all <em>actions</em></strong> and <strong>events</strong>,
+            please a see the <strong>documentation</strong> section of the QCubed-4 website.</p>
 </div>
 
 <div id="demoZone">
-	<style type="text/css">
+	<style>
 		.panelHover { background-color: #eeeeff; border:1px solid #000078; width: 400px; padding: 10px;}
 		.panelHighlight { background-color: #ffeeee; border-color: #780000; cursor: pointer;}
 	</style>

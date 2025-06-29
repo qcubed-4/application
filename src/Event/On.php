@@ -21,23 +21,26 @@ use QCubed\Exception\Caller;
  *
  * @param string $strEventName the name of the event i.e.: "click"
  * @param string $strSelector i.e.: "#myselector" ==> results in: $('#myControl').on("myevent","#myselector",function()...
- * @was QOnEvent
+ *
  * @package QCubed\Event
  */
 class On extends EventBase
 {
     /** @var string Name of the event */
-    protected $strEventName;
+    protected string $strEventName;
 
     /**
-     * Constructor
-     * @param int $strEventName
-     * @param int $intDelay
-     * @param string $strCondition
-     * @param string $strSelector
-     * @throws Exception|Caller
+     * Constructs a new instance of the class.
+     *
+     * @param string $strEventName The name of the event.
+     * @param int $intDelay Optional delay before the event is triggered. Defaults to 0.
+     * @param string|null $strCondition Optional condition for the event. Defaults to null.
+     * @param string|null $strSelector Optional selector associated with the event. Defaults to null.
+     *
+     * @return void
+     * @throws Caller
      */
-    public function __construct($strEventName, $intDelay = 0, $strCondition = null, $strSelector = null)
+    public function __construct(string $strEventName, int $intDelay = 0, ?string $strCondition = null, ?string $strSelector = null)
     {
         $this->strEventName = $strEventName;
         if ($strSelector) {
@@ -54,13 +57,14 @@ class On extends EventBase
     }
 
     /**
-     * PHP Magic function implementation
-     * @param string $strName
+     * Magic method to retrieve the value of a property.
      *
-     * @return int|mixed|null|string
-     * @throws Exception|Caller
+     * @param string $strName The name of the property to retrieve.
+     *
+     * @return mixed The value of the requested property.
+     * @throws Caller If the property does not exist or an error occurs during retrieval.
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             case 'EventName':

@@ -30,15 +30,20 @@ use QCubed\Type;
 class Image extends \QCubed\Project\Control\ControlBase
 {
     /** @var  string */
-    protected $strAlternateText;
+    protected string $strAlternateText = '';
     /** @var  string */
-    protected $strImageUrl;
+    protected string $strImageUrl = '';
     /** @var  integer */
-    protected $intHeight;
+    protected int $intHeight = 0;
     /** @var  integer */
-    protected $intWidth;
+    protected int $intWidth = 0;
 
-    protected function getControlHtml()
+    /**
+     * Generates the HTML representation of the control, including attributes and child controls if applicable.
+     *
+     * @return string The generated HTML for the control.
+     */
+    protected function getControlHtml(): string
     {
         $attributes = [];
         if ($this->strAlternateText) {
@@ -47,10 +52,10 @@ class Image extends \QCubed\Project\Control\ControlBase
         if ($this->strImageUrl) {
             $attributes['src'] = $this->strImageUrl;
         }
-        if ($this->intHeight !== null) {
+        if ($this->intHeight) {
             $attributes['height'] = (string)$this->intHeight;
         }
-        if ($this->intWidth !== null) {
+        if ($this->intWidth) {
             $attributes['width'] = (string)$this->intWidth;
         }
 
@@ -60,12 +65,18 @@ class Image extends \QCubed\Project\Control\ControlBase
             $strMap = Html::renderTag("map", ["name"=>$this->ControlId . "_map"], $this->renderChildren(false));
         }
 
-        $strToReturn = $this->renderTag('img', $attributes, null, null, true) . $strMap;
-
-        return $strToReturn;
+        return $this->renderTag('img', $attributes, null, null, true) . $strMap;
     }
 
-    public function addChildControl(ControlBase $objControl)
+    /**
+     * Adds a child control to the current control.
+     * Only instances of ImageArea are allowed as child controls for Image controls.
+     *
+     * @param ControlBase $objControl The control to be added as a child.
+     * @return void
+     * @throws Caller If the provided control is not an instance of ImageArea.
+     */
+    public function addChildControl(ControlBase $objControl): void
     {
         if (!$objControl instanceof ImageArea) {
             throw new Caller("Only ImageArea controls are allowed as children of Image controls");
@@ -73,12 +84,22 @@ class Image extends \QCubed\Project\Control\ControlBase
         parent::addChildControl($objControl);
     }
 
-    public function validate()
+    /**
+     * Validates the current state or data.
+     *
+     * @return bool Returns true if validation is successful.
+     */
+    public function validate(): bool
     {
         return true;
     }
 
-    public function parsePostData()
+    /**
+     * Parses the POST data and processes it accordingly.
+     *
+     * @return void
+     */
+    public function parsePostData(): void
     {
     }
 
@@ -87,7 +108,7 @@ class Image extends \QCubed\Project\Control\ControlBase
      * @return mixed|null
      * @throws Caller
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             // APPEARANCE
@@ -112,13 +133,13 @@ class Image extends \QCubed\Project\Control\ControlBase
     }
 
     /**
-     * @param $strName
-     * @param $mixValue
-     * @throws Caller
-     * @throws InvalidCast
+     * @param string $strName
+     * @param mixed $mixValue
      * @return void
+     *@throws InvalidCast
+     * @throws Caller
      */
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             // APPEARANCE

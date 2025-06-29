@@ -4,20 +4,21 @@ use QCubed\Control\Label;
 use QCubed\Control\WaitIcon;
 use QCubed\Event\Click;
 use QCubed\Project\Control\Button;
+use QCubed\Project\Control\FormBase;
 
 require_once('../qcubed.inc.php');
 
-// Define the \QCubed\Project\Control\FormBase with all our Qcontrols
-class ExamplesForm extends \QCubed\Project\Control\FormBase
+// Define the \QCubed\Project\Control\FormBase with all our Controls
+class ExamplesForm extends FormBase
 {
 
-    // Local declarations of our Qcontrols
-    protected $lblMessage;
-    protected $btnButton;
-    protected $btnButton2;
+    // Local declarations of our Controls
+    protected Label $lblMessage;
+    protected Button $btnButton;
+    protected Button $btnButton2;
 
     // Initialize our Controls during the Form Creation process
-    protected function formCreate()
+    protected function formCreate(): void
     {
         // Define the Label
         $this->lblMessage = new Label($this);
@@ -40,7 +41,7 @@ class ExamplesForm extends \QCubed\Project\Control\FormBase
     }
 
     // The "btnButton_Click" Event handler
-    protected function btnButton_Click($strFormId, $strControlId, $strParameter)
+    protected function btnButton_Click(string $strFormId, string $strControlId, string $strParameter): void
     {
         $strMessage = 'Hello, world!';
         // Let's add artificial latency/wait to show the spinner

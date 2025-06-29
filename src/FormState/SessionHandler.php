@@ -10,17 +10,17 @@
 namespace QCubed\FormState;
 
 use QCubed\ObjectBase;
-use \QCubed\Project\Control\FormBase;
+use QCubed\Project\Control\FormBase as QForm;
 use QCubed\Cryptography;
 
 /**
  * Class SessionHandler
  *
- * Session-based FormState handler.  Uses PHP Sessions to store the form state.
+ * Session-based FormState handler. Use PHP Sessions to store the form state.
  *
- * Stores the variables in the following format:
+ * Store the variables in the following format:
  * $_SESSION[static::SESSION_KEY][form_uniquid][state#]
- *   where the form_uniquid is a unique id that sticks with the window that the
+ *   where the form uniquid is a unique id that sticks with the window that the
  *   form is on, and state# is the formstate associated with that window. Multiple
  *   formstates need to be saved to support the browser back button.
  *
@@ -31,18 +31,29 @@ use QCubed\Cryptography;
  *
  * This handler is compatible with asynchronous ajax calls.
  *
- * @was QSessionFormStateHandler
  * @package QCubed\FormState
  */
 class SessionHandler extends ObjectBase
 {
     const SESSION_KEY = 'qformstate';
     
-    public static $BackButtonMax = 20; // maximum number of back button states we remember
+    public static int $BackButtonMax = 20; // maximum number of back button states we remember
 
-    public static $EncryptionHashKey = '23c&jhd';   // Change this if using encryption if you want. Changing it does not enhance security all that much.
+    public static string $EncryptionHashKey = '23c&jhd';   // Change this if using encryption is you want. Changing it does not enhance security all that much.
 
-    public static function save($strFormState, $blnBackButtonFlag)
+    /**
+     * Saves the given form state into the session and returns an identifier for the saved state.
+     *
+     * This method compresses the form state if compression is available, manages the session data
+     * for the form state, supports back button functionality, and can encrypt/decrypt the form state
+     * using a configured encryption key.
+     *
+     * @param string $strFormState The serialized form state to save.
+     * @param bool $blnBackButtonFlag Whether to allow back button usage to reuse or discard the state.
+     * @return string The identifier for the saved form state, encrypted if an encryption key is defined.
+     * @throws \QCubed\Exception\Cryptography
+     */
+    public static function save(string $strFormState, bool $blnBackButtonFlag): string
     {
         // Compress (if available)
         if (function_exists('gzcompress')) {
@@ -56,10 +67,10 @@ class SessionHandler extends ObjectBase
         } else {
             $strPriorState = $_POST['Qform__FormState'];
 
-            if (!is_null(FormBase::$EncryptionKey)) {
+            if (!is_null(QForm::$EncryptionKey)) {
                 // Use \QCubed\Cryptography to Decrypt
-                $objCrypto = new Cryptography(FormBase::$EncryptionKey, true);
-                $strPriorState = $objCrypto->Decrypt($strPriorState);
+                $objCrypto = new Cryptography(QForm::$EncryptionKey, true);
+                $strPriorState = $objCrypto->decrypt($strPriorState);
             }
 
             $a = explode('_', $strPriorState);
@@ -82,7 +93,7 @@ class SessionHandler extends ObjectBase
                     }
                 }
             } else {
-                // couldn't find old session variables, so create new one
+                // couldn't find old session variables, so create a new one
                 $strFormInstance = uniqid();
                 $intFormStateIndex = 1;
             }
@@ -102,21 +113,28 @@ class SessionHandler extends ObjectBase
         $strPostDataState = $strFormInstance . '_' . $intFormStateIndex;
 
         // Return StateIndex
-        if (!is_null(FormBase::$EncryptionKey)) {
+        if (!is_null(QForm::$EncryptionKey)) {
             // Use \QCubed\Cryptography to Encrypt
-            $objCrypto = new Cryptography(FormBase::$EncryptionKey, true, null, self::$EncryptionHashKey);
+            $objCrypto = new Cryptography(QForm::$EncryptionKey, true, null, self::$EncryptionHashKey);
             return $objCrypto->encrypt($strPostDataState);
         } else {
             return $strPostDataState;
         }
     }
 
-    public static function load($strPostDataState)
+    /**
+     * Loads the serialized form data from the session based on the provided encoded state string.
+     *
+     * @param string $strPostDataState The encoded state string containing the reference to the serialized form data.
+     * @return string|null Returns the serialized form data as a string or null if the data cannot be retrieved or is invalid.
+     * @throws \QCubed\Exception\Cryptography
+     */
+    public static function load(string $strPostDataState): ?string
     {
         // Pull Out intStateIndex
-        if (!is_null(FormBase::$EncryptionKey)) {
+        if (!is_null(QForm::$EncryptionKey)) {
             // Use \QCubed\Cryptography to Decrypt
-            $objCrypto = new Cryptography(FormBase::$EncryptionKey, true, null, self::$EncryptionHashKey);
+            $objCrypto = new Cryptography(QForm::$EncryptionKey, true, null, self::$EncryptionHashKey);
             $strPostDataState = $objCrypto->decrypt($strPostDataState);
         }
 
@@ -133,7 +151,7 @@ class SessionHandler extends ObjectBase
         // Uncompress (if available)
         // NOTE: if gzcompress is used, we are restoring the *BINARY* data stream of the compressed formstate
         // In theory, this SHOULD work.  But if there is a webserver/os/php version that doesn't like
-        // binary session streams, you can first base64_decode before restoring from session (see note above).
+        // binary session streams, you can first base64_decode before restoring from a session (see note above).
         if (function_exists('gzcompress')) {
             $strSerializedForm = gzuncompress($strSerializedForm);
         }

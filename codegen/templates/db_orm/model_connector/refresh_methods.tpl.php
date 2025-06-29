@@ -1,23 +1,23 @@
 <?php
 /**
- * @var QSqlTable $objTable
- * @var QCodeGenBase $objCodeGen
+ * @var SqlTable $objTable
+ * @var CodeGenBase $objCodeGen
  */
 ?>
-
     /**
-     * Refresh this ModelConnector with Data from the local <?= $objTable->ClassName ?> object.
-     * @param boolean $blnReload reload <?= $objTable->ClassName ?> from the database
-     * @return void
-     */
-    public function refresh($blnReload = false)
+    * Refresh this ModelConnector with Data from the local <?= $objTable->ClassName ?> object.
+    * @param boolean $blnReload reload <?= $objTable->ClassName ?> from the database
+    * @return void
+    * @throws Caller
+    * @throws DateMalformedStringException
+    * @throws InvalidCast
+    */
+    public function refresh(?bool $blnReload = false): void
     {
-        assert($this-><?= $objCodeGen->ModelVariableName($objTable->Name); ?>); // Notify in development version
-        if (!($this-><?= $objCodeGen->ModelVariableName($objTable->Name); ?>)) return; // Quietly fail in production
-
         if ($blnReload) {
-            $this-><?= $objCodeGen->ModelVariableName($objTable->Name); ?>->Reload();
+            $this-><?= $objCodeGen->ModelVariableName($objTable->Name); ?>->reload();
         }
+
 <?php
 
         foreach ($objTable->ColumnArray as $objColumn) {
@@ -59,42 +59,70 @@
     }
 
 <?php
-    foreach ($objTable->PrimaryKeyColumnArray as $objColumn) {
-        $aStrs[] = '$' . $objColumn->VariableName . ' = null';
+// All the parameterization, type detection, and verification logic together
+$aParamTypes = [];
+$aDocTypes = [];
+$aChecks = [];
+
+foreach ($objTable->PrimaryKeyColumnArray as $objColumn) {
+    if ($objColumn->VariableType === 'string') {
+        $typeHint = '?string';
+        $docType = 'null|string';
+        $check = '($'.$objColumn->VariableName.' !== null && $'.$objColumn->VariableName.' !== \'\')';
+    } elseif (
+        in_array($objColumn->VariableType, ['int', 'integer'])
+    ) {
+        $typeHint = '?int';
+        $docType = 'null|int';
+        $check = '$'.$objColumn->VariableName.' !== null';
+    } elseif (
+        in_array($objColumn->VariableType, ['float', 'double', 'real'])
+    ) {
+        $typeHint = '?float';
+        $docType = 'null|float';
+        $check = '$'.$objColumn->VariableName.' !== null';
+    } elseif (
+        in_array($objColumn->VariableType, ['bool', 'boolean'])
+    ) {
+        // Boolean: do you allow null or always bool? If the key is NOT nullable, you can replace "?bool" with "bool"
+        $typeHint = '?bool';
+        $docType = 'null|bool';
+        $check = '$'.$objColumn->VariableName.' !== null';
+    } else {
+        $typeHint = '?'.$objColumn->VariableType;
+        $docType = 'null|'.$objColumn->VariableType;
+        $check = '$'.$objColumn->VariableName.' !== null';
     }
+    $aParamTypes[] = $typeHint.' $'.$objColumn->VariableName.' = null';
+    $aDocTypes[] = '    * @param '.$docType.' $'.$objColumn->VariableName;
+    $aChecks[] = $check;
+}
 ?>
     /**
-     * Load this ModelConnector with a <?= $objTable->ClassName ?> object. Returns the object found, or null if not
-     * successful. The primary reason for failure would be that the key given does not exist in the database. This
-     * might happen due to a programming error, or in a multi-user environment, if the record was recently deleted.
-<?php foreach ($objTable->PrimaryKeyColumnArray as $objColumn) { ?>
-     * @param null|<?= $objColumn->VariableType ?> $<?= $objColumn->VariableName ?>
-<?php } ?>
+    * Load this ModelConnector with a <?= $objTable->ClassName ?> object. Returns the object found, or null if not
+    * successful. The primary reason for failure would be that the key given does not exist in the database. This
+    * might happen due to a programming error, or in a multi-user environment, if the record was recently deleted.
+<?= implode("\n", $aDocTypes)."\n"; ?>
+    * @param array|null $objClauses
+    * @return null|<?= $objCodeGen->ModelClassName($objTable->Name); ?>
 
-     * @param $objClauses
-     * @return null|<?= $objCodeGen->ModelClassName($objTable->Name); ?>
+    * @throws Caller
+    * @throws DateMalformedStringException
+    * @throws InvalidCast
+    */
+    public function load(<?= implode(", ", $aParamTypes); ?>, ?array $objClauses = null): ?<?= $objCodeGen->ModelClassName($objTable->Name); ?>
 
-     */
-    public function load(<?= implode (',', $aStrs) ?>, $objClauses = null)
     {
-        if (<?php
-foreach ($objTable->PrimaryKeyColumnArray as $objColumn) {
-if ($objColumn->VariableType == \QCubed\Type::STRING) {
-    $strCheck = 'strlen';
-} else {
-    $strCheck = '!is_null';
-}?><?= $strCheck ?>($<?= $objColumn->VariableName  ?>) && <?php } ?><?php GO_BACK(4); ?>) {
-            $this-><?= $objCodeGen->ModelVariableName($objTable->Name); ?> = <?= $objTable->ClassName ?>::Load(<?php foreach ($objTable->PrimaryKeyColumnArray as $objColumn) { ?>$<?= $objColumn->VariableName ?>, <?php } ?><?php GO_BACK(2); ?>, $objClauses);
+        if (<?php foreach ($aChecks as $i => $check): ?><?= $check ?><?= $i < count($aChecks)-1 ? " &&" : "" ?><?php endforeach; ?>) {
+            $this-><?= $objCodeGen->ModelVariableName($objTable->Name); ?> = <?= $objTable->ClassName ?>::load(<?php foreach ($objTable->PrimaryKeyColumnArray as $objColumn): ?>$<?= $objColumn->VariableName ?>,<?php endforeach; ?> $objClauses);
             $this->strTitleVerb = t('Edit');
             $this->blnEditMode = true;
-        }
-        else {
+        } else {
             $this-><?= $objCodeGen->ModelVariableName($objTable->Name); ?> = new <?= $objTable->ClassName ?>();
             $this->strTitleVerb = t('Create');
             $this->blnEditMode = false;
         }
-        if ($this-><?= $objCodeGen->ModelVariableName($objTable->Name); ?>) {
-            $this->refresh ();
-        }
+
+        $this->refresh();
         return $this-><?= $objCodeGen->ModelVariableName($objTable->Name); ?>;
     }

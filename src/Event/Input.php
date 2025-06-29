@@ -17,7 +17,6 @@ namespace QCubed\Event;
  * Not in IE8 or below. Buggy in IE9. Full support in IE10 and above.
  * No support in Safari 5 and below for textarea elements.
  *
- * @was QInputEvent
  * @package QCubed\Event
  */
 class Input extends EventBase

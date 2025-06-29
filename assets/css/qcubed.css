@@ -7,6 +7,34 @@ body {
   margin:0;
   padding: 0;
 }
+.variable-dump {
+  cursor: pointer;
+  color: #1d7596;
+}
+.flap {
+  display: block;
+  margin-bottom: 10px;
+  cursor: pointer;
+  color: #333;
+}
+.flap span {
+  margin: 10px 0;
+  padding: 5px 0;
+  color: #333 !important;
+}
+.variable-dump-collapsed {
+  display: none;
+}
+.variable-dump-expanded {
+  display: block;
+}
+.variable-dump:hover, .variable-dump:active,
+.flap:hover, .flap:active {
+  color: #d90d0d;
+}
+.hidden {
+  display: none;
+}
 a, a:visited, a:link {
   color: #1d7596;
 }

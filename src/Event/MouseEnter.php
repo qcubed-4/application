@@ -14,7 +14,6 @@ namespace QCubed\Event;
  *
  * When the mouse cursor enters the control
  *
- * @was QMouseEnterEvent
  * @package QCubed\Event
  */
 class MouseEnter extends EventBase

@@ -1,5 +1,5 @@
 <?php
-	/** @var QSqlTable $objTable */
+	/** @var SqlTable $objTable */
 	/** @var \QCubed\Codegen\DatabaseCodeGen $objCodeGen */
 	global $_TEMPLATE_SETTINGS;
 	$_TEMPLATE_SETTINGS = array(
@@ -14,7 +14,7 @@
 require(QCUBED_PROJECT_MODELCONNECTOR_GEN_DIR . '/<?= $objTable->ClassName ?>ConnectorGen.php');
 
 /**
- * This is a ModelConnector customizable subclass, providing a Form or Panel access to event handlers
+ * This is a ModelConnector customizable subclass, providing Form or Panel access to event handlers
  * and QControls to perform the Create, Edit, and Delete functionality of the
  * <?= $objTable->ClassName ?> class.  This code-generated class extends from
  * the generated ModelConnector class, which contains all the basic elements to help a Panel or Form

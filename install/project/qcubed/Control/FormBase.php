@@ -2,14 +2,12 @@
 
 namespace QCubed\Project\Control;
 
-
 /**
  * Class FormBase
  *
  * This form base gives you opportunities to override key functions and values for all of your forms.
  *
  * @package QCubed\Project\Control
- * @was QForm
  */
 abstract class FormBase extends \QCubed\Control\FormBase
 {
@@ -23,73 +21,70 @@ abstract class FormBase extends \QCubed\Control\FormBase
      * on QCryptography will be used, and because the resulting encrypted data will be
      * sent via HTTP POST, it will be Base64 encoded.
      *
-     * @var string EncryptionKey the key to use, or NULL if no encryption is required
+     * @var string|null EncryptionKey the key to use, or NULL if no encryption is required
      * TODO: Do this some other way, likely more specifically in the formstate handlers that use it
      */
-    public static $EncryptionKey = null;
+    public static ?string $EncryptionKey = null;
 
     /**
-     * The QFormStateHandler to use to handle the actual serialized form.
-     * Please refer configuration.inc.php file (in includes/configuration directory) to learn more
-     * about what __FORM_STATE_HANDLER__ does. Though you can change it here,
-     * try to change the __FORM_STATE_HANDLER__ in the configuration file alone.
+     * The FormStateHandler to use to handle the actual serialized form.
+     * Please refer to the configuration.inc.php file (in the includes / configuration directory) to learn more
+     * about what FORM_STATE_HANDLER does. Though you can change it here,
+     * try to change the FORM_STATE_HANDLER in the configuration file alone.
      *
-     * It overrides the default value in the QFormBase Class file
+     * It overrides the default value in the FormBase Class file
      *
      * @var string FormStateHandler the classname of the FormState handler to use
      */
-    public static $FormStateHandler = __FORM_STATE_HANDLER__;
+    public static string $FormStateHandler = FORM_STATE_HANDLER;
 
     /**
      * These are the list of JavaScript files that should NOT be loaded by the framework,
      * event if a particular control asks for it.
      *
      * In particular, specify any files that you know to be already loaded by a hardcoded
-     * include of the javascript in your html or template files.
+     * include of the JavaScript in your HTML or template files.
      *
      * @var array
      */
-    protected $strIgnoreJavaScriptFileArray = array();
+    protected array $strIgnoreJavaScriptFileArray = array();
 
     /**
      * These are the list of style sheet files that should NOT be loaded by the framework,
      * event if a particular control asks for it.
      *
      * In particular, specify any files that you know to be already loaded by a hardcoded
-     * include of the style sheet in your html or template files.
+     * include of the style sheet in your HTML or template files.
      *
      * @var array
      */
-    protected $strIgnoreStyleSheetFileArray = array();
+    protected array $strIgnoreStyleSheetFileArray = array();
 
     /**
-     * Return any java scripts that should be loaded always. In particular, these would
-     * be javascripts that you would use in your application even if no particular control
+     * Return any JavaScripts that should be loaded always. In particular, these would
+     * be JavaScripts that you would use in your application even if no particular control
      * asked for it. For example, if you did some manual styling with Bootstrap and you
-     * needed the bootstrap javascript file.
+     * needed the bootstrap JavaScript file.
      *
      * @return array
      */
-    protected function getFormJavaScripts() {
-        $a = parent::getFormJavaScripts();
-        //$a[] = QCUBED_PROJECT_JS_URL . '/myJsFile.js';
-        //$a[] = QCUBED_BOOTSTRAPT_JS_URL;
-        return $a;
+    protected function getFormJavaScripts(): array
+    {
+        return parent::getFormJavaScripts();
     }
 
     /**
-     * Return any style sheet files that should be loaded always. In particular, these would
-     * be javascripts that you would use in your application even if no particular control
-     * asked for it. For example, if you did some manual styling with Bootstrap on a form
-     * that did not have any bootstrap controls on it.
+     * Return any stylesheets that should be loaded always. These would include
+     * stylesheets that are utilized globally in your application, regardless
+     * of whether a specific control requires them. For example, a global
+     * Bootstrap CSS can be included for consistent styling.
      *
      * @return array
      */
 
-    protected function getFormStyles() {
-        $a = parent::getFormStyles();
+    protected function getFormStyles(): array
+    {
         //$a[] = QCUBED_BOOTSTRAP_CSS;
-        return $a;
+        return parent::getFormStyles();
     }
-
 }

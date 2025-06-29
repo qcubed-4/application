@@ -16,16 +16,16 @@ use QCubed\Codegen\SqlTable;
 use QCubed\Codegen\SqlColumn;
 use QCubed\Codegen\DatabaseCodeGen;
 use QCubed\Exception\Caller;
+use QCubed\Exception\InvalidCast;
 
 /**
  * Class Control
  * @package QCubed\Codegen\Generator
- * @was QControlBase_CodeGenerator
  */
 abstract class Control extends GeneratorBase
 {
 
-    public function connectorImports(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn)
+    public function connectorImports(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn): array
     {
         $a[] = ['class' => $this->strControlClassName];
         return $a;
@@ -35,23 +35,26 @@ abstract class Control extends GeneratorBase
      * @param DatabaseCodeGen $objCodeGen
      * @param ColumnInterface $objColumn
      * @return string
+     * @throws Caller
+     * @throws InvalidCast
      */
-    public function connectorVariableDeclaration(DatabaseCodeGen $objCodeGen, ColumnInterface $objColumn)
+    public function connectorVariableDeclaration(DatabaseCodeGen $objCodeGen, ColumnInterface $objColumn): string
     {
         $strClassName = $this->getControlClass();
         $strControlVarName = $objCodeGen->modelConnectorVariableName($objColumn);
 
-        $strRet = <<<TMPL
+        $strSelectedOut = substr($strClassName, strrpos($strClassName, '\\') + 1);
+
+        return <<<TMPL
     /**
-     * @var {$strClassName}
+     * @var $strSelectedOut
 
      * @access protected
      */
-    protected \${$strControlVarName};
+    protected $strSelectedOut \${$strControlVarName};
 
 
 TMPL;
-        return $strRet;
     }
 
     /**
@@ -63,7 +66,7 @@ TMPL;
      * @param string $strControlVarName
      * @return string
      */
-    public function connectorCreateOptions(DatabaseCodeGen $objCodeGen, SqlTable $objTable, $objColumn, $strControlVarName)
+    public function connectorCreateOptions(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ?ColumnInterface $objColumn, string $strControlVarName): string
     {
         $strRet = '';
 
@@ -102,8 +105,8 @@ TMPL;
                     // looks like a number
                     $strVal = $val;
                 } elseif (is_string($val)) {
-                    if (strpos($val, '::') !== false &&
-                        strpos($val, ' ') === false
+                    if (str_contains($val, '::') &&
+                        !str_contains($val, ' ')
                     ) {
                         // looks like a constant
                         $strVal = $val;
@@ -128,10 +131,10 @@ TMPL;
 
     /**
      * @param string $strPropName
-     * @throws Caller
      * @return string
+     *@throws Caller
      */
-    public function varName($strPropName)
+    public function varName(string $strPropName): string
     {
         throw new Caller('VarName() method not implemented');
     }
@@ -146,7 +149,7 @@ TMPL;
      * @throws Caller
      * @return string
      */
-    public function connectorCreate(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn)
+    public function connectorCreate(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn): mixed
     {
         throw new Caller('ConnectorCreate() method not implemented');
     }
@@ -158,10 +161,10 @@ TMPL;
      * @param SqlTable $objTable
      * @param ColumnInterface $objColumn
      * @param bool $blnInit
-     * @throws Caller
      * @return string
+     *@throws Caller
      */
-    public function connectorRefresh(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn, $blnInit = false)
+    public function connectorRefresh(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn, ?bool $blnInit = false): string
     {
         throw new Caller('ConnectorRefresh() method not implemented');
     }
@@ -173,7 +176,7 @@ TMPL;
      * @throws Caller
      * @return string
      */
-    public function connectorUpdate(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn)
+    public function connectorUpdate(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn): string
     {
         throw new Caller('ConnectorUpdate() method not implemented');
     }
@@ -188,7 +191,7 @@ TMPL;
      * @throws Caller
      * @return string
      */
-    public function connectorUpdateMethod(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn)
+    public function connectorUpdateMethod(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn): string
     {
         throw new Caller('ConnectorUpdateMethod() method not implemented');
     }
@@ -201,7 +204,7 @@ TMPL;
      * @param ColumnInterface $objColumn
      * @return string
      */
-    public function connectorSet(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn)
+    public function connectorSet(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn): string
     {
         return "";
     }
@@ -214,7 +217,7 @@ TMPL;
      * @param ColumnInterface $objColumn
      * @return string
      */
-    public function connectorGet(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn)
+    public function connectorGet(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn): string
     {
         return "";
     }
@@ -226,10 +229,9 @@ TMPL;
      * @param SqlTable $objTable
      * @param ColumnInterface $objColumn
      *
-     * @throws Caller
      * @return string
      */
-    public function connectorPropertyComments(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn)
+    public function connectorPropertyComments(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn): string
     {
         return "";
     }

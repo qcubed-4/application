@@ -10,8 +10,7 @@
 namespace QCubed\Jqui\Event;
 
 /**
- * Class QJqUiEvent: When an event is triggered by jQuery-UI (drag, drop, resize etc.)
- * @was QJqUiEvent
+ * Class QJqUiEvent: When an event is triggered by jQuery-UI (drag, drop, resize, etc.)
  * @package QCubed\Event
  */
 abstract class EventBase extends \QCubed\Event\EventBase {

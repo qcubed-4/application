@@ -13,9 +13,8 @@ use QCubed\Exception\Caller;
 use QCubed\Project\Application;
 
 /**
- * An abstract utility class to handle Html tag rendering, as well as utilities to render
+ * An abstract utility class to handle HTML tag rendering, as well as utilities to render
  * pieces of HTML and CSS code.  All methods are static.
- * @was QHtml
  */
 abstract class Html {
 
@@ -50,7 +49,7 @@ abstract class Html {
     const OL_UPPERCASE_ROMAN = 'I';
     const OL_LOWERCASE_ROMAN = 'i';
 
-    // list-style-type property for unordered list
+    // list-style-type property for an unordered list
     const UL_DISC = 'disc';
     const UL_CIRCLE = 'circle';
     const UL_SQUARE = 'square';
@@ -67,7 +66,7 @@ abstract class Html {
 
     /**
      * This faux constructor method throws a caller exception.
-     * The Css object should never be instantiated, and this constructor
+     * The CSS object should never be instantiated, and this constructor
      * override simply guarantees it.
      *
      * @throws Caller
@@ -77,29 +76,30 @@ abstract class Html {
     }
 
     /**
-     * Renders an html tag with the given attributes and inner html.
+     * Renders an HTML tag with the given attributes and inner HTML.
      *
-     * If the innerHtml is detected as being wrapped in an html tag of some sort, it will attempt to format the code so that
-     * it has a structured view in a browser, with the inner html indented and on a new line in between the tags. You
-     * can turn this off by setting QCUBED_MINIMIZE, or by passing in true to $blnNoSpace.
+     * If the innerHtml is detected as being wrapped in an HTML tag of some sort, it will attempt to format the code so that
+     * it has a structured view in a browser, with the inner HTML indented and on a new line in between the tags. You
+     * can turn this off by setting QCUBED_MINIMIZE or bypassing in true to $blnNoSpace.
      *
-     * There area a few special cases to consider:
+     * There are a few special cases to consider:
      * - Void elements will not be formatted to avoid adding unnecessary white space since these are generally
      *   inline elements
      * - Non-void elements always use internal newlines, even in QCUBED_MINIMIZE mode. This is to prevent different behavior
      *   from appearing in QCUBED_MINIMIZE mode on inline elements, because inline elements with internal space will render with space to separate
      *   from surrounding elements. Usually, this is not an issue, but in the special situations where you really need inline
-     *   elements to be right up against its siblings, set $blnNoSpace to true.
+     *   elements to be right up against their siblings, set $blnNoSpace to true.
      *
      *
-     * @param string 		$strTag				The tag name
+     * @param string $strTag				The tag name
      * @param null|mixed 	$mixAttributes 		String of attribute values or array of attribute values.
-     * @param null|string 	$strInnerHtml 		The html to print between the opening and closing tags. This will NOT be escaped.
-     * @param boolean		$blnIsVoidElement 	True to print as a tag with no closing tag.
-     * @param boolean		$blnNoSpace		 	Renders with no white-space. Useful in special inline situations.
+     * @param string|null $strInnerHtml 		The HTML to print between the opening and closing tags. This will NOT be escaped.
+     * @param boolean $blnIsVoidElement 	True to print as a tag with no closing tag.
+     * @param boolean $blnNoSpace		 	Renders with no white-space. Useful in special inline situations.
      * @return string						The rendered html tag
      */
-    public static function renderTag($strTag, $mixAttributes, $strInnerHtml = null, $blnIsVoidElement = false, $blnNoSpace = false) {
+    public static function renderTag(string $strTag, mixed $mixAttributes, ?string $strInnerHtml = null, ?bool $blnIsVoidElement = false, ?bool $blnNoSpace = false): string
+    {
         assert (!empty($strTag));
         $strToReturn = '<' . $strTag;
 
@@ -107,7 +107,7 @@ abstract class Html {
             if (is_string($mixAttributes)) {
                 $strToReturn .=  ' ' . trim($mixAttributes);
             } else {
-                // assume array
+                // assume an array
                 $strToReturn .=  self::renderHtmlAttributes($mixAttributes);
             }
         }
@@ -116,10 +116,10 @@ abstract class Html {
             $strToReturn .= ' />'; // conforms to both XHTML and HTML5 for both normal and foreign elements
         }
         else {
-            // Kontrollime, kas $strInnerHtml on null ja asendame tühja stringiga kui on
+            // We check if $strInnerHtml is null and replace it with an empty string if it is
             $strInnerHtml = $strInnerHtml === null ? '' : $strInnerHtml;
 
-            if ($blnNoSpace || substr(trim($strInnerHtml), 0, 1) !== '<') {
+            if ($blnNoSpace || !str_starts_with(trim($strInnerHtml), '<')) {
                 $strToReturn .= '>' . $strInnerHtml . '</' . $strTag . '>';
             } else {
                 // the hardcoded newlines below are important to prevent different drawing behavior in MINIMIZE mode
@@ -138,14 +138,15 @@ abstract class Html {
      * Note that if you are not setting $blnWrapped, it is up to you to insert the "for" attribute into
      * the label attributes.
      *
-     * @param $strLabel
-     * @param $blnTextLeft
-     * @param $strAttributes
-     * @param $strLabelAttributes
-     * @param $blnWrapped
-     * @return string
+     * @param string $strLabel The text content for the label element.
+     * @param bool $blnTextLeft Determines whether the label appears to the left of the input element.
+     * @param string $strAttributes The attributes to be applied to the input element.
+     * @param string $strLabelAttributes The attributes to be applied to the label element.
+     * @param bool $blnWrapped Specifies whether the label and input should be wrapped together within a single label element.
+     * @return string The rendered HTML string with the input element and associated label.
      */
-    public static function renderLabeledInput($strLabel, $blnTextLeft, $strAttributes, $strLabelAttributes, $blnWrapped) {
+    public static function renderLabeledInput(string $strLabel, bool $blnTextLeft, string $strAttributes, string $strLabelAttributes, bool $blnWrapped): string
+    {
         $strHtml = trim(self::renderTag('input', $strAttributes, null, true));
 
         if ($blnWrapped) {
@@ -169,12 +170,17 @@ abstract class Html {
     }
 
     /**
-     * Returns the formatted value of type <length>.
-     * See http://www.w3.org/TR/CSS1/#units for more info.
-     * @param 	string 	$strValue 	The number or string to be formatted to the <length> compatible value.
-     * @return 	string 	the formatted value of type <length>.
+     * Formats the given value as a CSS-compliant length.
+     *
+     * If the input is numeric and non-zero, it appends "px" to the value.
+     * If the input is zero, it returns the value as is.
+     * If the input is not numeric, it is returned as is without modification.
+     *
+     * @param mixed $strValue The input value to be formatted, which can be numeric or a string.
+     * @return string The formatted length with or without "px", or the unmodified string if input is non-numeric.
      */
-    public final static function formatLength($strValue) {
+    public final static function formatLength(mixed $strValue): string
+    {
         if (is_numeric($strValue)) {
             if (0 == $strValue) {
                 if (!is_int($strValue)) {
@@ -197,14 +203,25 @@ abstract class Html {
     }
 
     /**
-     * Sets the given length string to the new length value.
-     * If the new length is preceded by a math operator (+-/*), then arithmetic is performed on the previous
-     * value. Returns true if the length changed.
-     * @param 	string 	$strOldLength
-     * @param 	string 	$newLength
-     * @return 	bool	true if the length was changed
+     * Updates the given length value based on the specified new length input.
+     *
+     * This method supports updating the length through direct assignment or applying
+     * mathematical operations such as addition, subtraction, multiplication, or division.
+     * If a mathematical operator is detected in the new length input, the corresponding
+     * operation is performed on the old length's numeric value, preserving its units. If
+     * no mathematical operator is present, the new length is directly formatted and set
+     * as the updated length. The method determines if any change has occurred and adjusts
+     * the old length accordingly.
+     *
+     * @param mixed &$strOldLength A reference to the old length value, typically a string in a
+     *                             CSS-compliant format (e.g., "10px"). This value gets modified
+     *                             if a valid change is applied.
+     * @param mixed $newLength The new length input, which can include mathematical operations
+     *                         (e.g., "+5px") or directly specify a new CSS-compliant length value.
+     * @return bool True if the length was updated successfully, false if no changes were made.
      */
-    public static function setLength(&$strOldLength, $newLength) {
+    public static function setLength(mixed &$strOldLength, mixed $newLength): bool
+    {
         if ($newLength && preg_match('#^(\+|\-|/|\*)(.+)$#',$newLength, $matches)) { // do math operation
             $strOperator = $matches[1];
             $newValue = $matches[2];
@@ -258,14 +275,18 @@ abstract class Html {
 
 
     /**
-     * Helper to add a class or classes to a pre-existing space-separated list of classes. Checks to make sure the
-     * class isn't already in the list. Returns true to indicate a change in the list.
+     * Adds new CSS class names to an existing class list, ensuring no duplicates.
      *
-     * @param string 	$strClassList	Current list of classes separated by a space
-     * @param string 	$strNewClasses 	New class to add. Could be a list separated by spaces.
-     * @return bool 	true if the class list was changed.
+     * This function takes an existing list of CSS class names and appends new class names to it,
+     * only if they are not already present. Class names are separated by spaces.
+     *
+     * @param string &$strClassList The current list of CSS class names, passed by reference.
+     *                              It may be empty or already contain class names.
+     * @param string $strNewClasses A space-separated string of new class names to be added.
+     * @return bool Returns true if at least one new class was added, otherwise false.
      */
-    public static function addClass(&$strClassList, $strNewClasses) {
+    public static function addClass(string &$strClassList, string $strNewClasses): bool
+    {
         $strNewClasses = trim($strNewClasses);
         if (empty($strNewClasses)) return false;
 
@@ -291,14 +312,18 @@ abstract class Html {
     }
 
     /**
-     * Helper to remove a class or classes from a list of space-separated classes.
+     * Removes specified CSS class names from a given class list.
      *
-     * @param string $strClassList        class list string to search
-     * @param string $strCssNamesToRemove space separated list of names to remove
+     * This method checks if the class list contains any of the class names to be removed
+     * and removes them if present. Updates the original class list reference and indicates
+     * whether any modifications were made.
      *
-     * @return bool    true if the class list was changed
+     * @param string &$strClassList A reference to the original list of CSS class names, separated by spaces.
+     * @param string $strCssNamesToRemove A space-separated string of CSS class names to be removed from the class list.
+     * @return bool True if one or more class names were removed, false otherwise.
      */
-    public static function removeClass(&$strClassList, $strCssNamesToRemove) {
+    public static function removeClass(string &$strClassList, string $strCssNamesToRemove): bool
+    {
         $strNewCssClass = '';
         $blnRemoved = false;
         $strCssNamesToRemove = trim($strCssNamesToRemove);
@@ -329,20 +354,25 @@ abstract class Html {
     }
 
     /**
-     * Many CSS frameworks use families of classes, which are built up from a base family name. For example,
-     * Bootstrap uses 'col-lg-6' to represent a column that is 6 units wide on large screens and Foundation
-     * uses 'large-6' to do the same thing. This utility removes classes that start with a particular prefix
-     * to remove whatever sizing class was specified.
+     * Removes classes from a space-separated list of classes that start with a specific prefix.
      *
-     * @param  $strClassList
-     * @param  $strPrefix
-     * @return bool true if the class list changed
+     * This function iterates through the provided list of classes and removes any class that begins
+     * with the specified prefix. If at least one class is removed, it updates the original list
+     * and returns true. Otherwise, it returns false.
+     *
+     * @param string &$strClassList A space-separated list of classes to be filtered.
+     *                              This parameter is passed by reference and will be updated
+     *                              to exclude classes with the specified prefix.
+     * @param string $strPrefix The prefix to match against each class in the list.
+     *                          Any class that starts with this prefix will be removed.
+     * @return bool True if one or more classes were removed, otherwise false.
      */
-    public static function removeClassesByPrefix(&$strClassList, $strPrefix) {
+    public static function removeClassesByPrefix(string &$strClassList, string $strPrefix): bool
+    {
         $aRet = array();
         $blnChanged = false;
         if ($strClassList) foreach (explode (' ', $strClassList) as $strClass) {
-            if (strpos($strClass, $strPrefix) !== 0) {
+            if (!str_starts_with($strClass, $strPrefix)) {
                 $aRet[] = $strClass;
             }
             else {
@@ -354,13 +384,19 @@ abstract class Html {
     }
 
     /**
-     * Render the given attribute array for html output. Escapes html entities enclosed in values. Uses
-     * double-quotes to surround the value. Precedes the resulting text with a space character.
+     * Renders an associative array of HTML attributes into a string format.
      *
-     * @param array|null $attributes
-     * @return string
+     * Each key-value pair in the array is converted into an HTML attribute, where the key
+     * represents the attribute name and the value corresponds to the attribute's value.
+     * - If a value is `false`, only the attribute name is included in the output.
+     * - If a value is `null`, the attribute is excluded from the output.
+     * - All attribute values are properly escaped using HTML entities.
+     *
+     * @param array $attributes An associative array where keys are attribute names and values are attribute values.
+     * @return string A string containing the rendered HTML attributes, ready to be included in an HTML element tag.
      */
-    public static function renderHtmlAttributes($attributes) {
+    public static function renderHtmlAttributes(array $attributes): string
+    {
         $strToReturn = '';
         if ($attributes) {
             foreach ($attributes as $strName=>$strValue) {
@@ -376,12 +412,17 @@ abstract class Html {
 
 
     /**
-     * Render the given array as a css style string. It will NOT be escaped.
+     * Converts an associative array of styles into a formatted CSS style string.
      *
-     * @param array 	$styles		key/value array representing the styles.
-     * @return string	a string suitable for including in a css 'style' property
+     * The method takes an array of styles where the keys represent CSS property names
+     * and the values represent the corresponding properties' values. The styles are
+     * joined together as a single string with each property: a value pair separated by a semicolon.
+     *
+     * @param array|null $styles An associative array where keys are CSS property names and values are their associated values. If null or empty, an empty string is returned.
+     * @return string A CSS style string formatted as "property:value; property:value". If no styles are provided, an empty string is returned.
      */
-    public static function renderStyles($styles) {
+    public static function renderStyles(?array $styles): string
+    {
         if (!$styles) return '';
         return implode('; ', array_map(
             function ($v, $k) { return $k . ':' . $v; },
@@ -391,12 +432,17 @@ abstract class Html {
     }
 
     /**
-     * Returns the given string formatted as an html comment that will go on its own line.
-     * @param string 	$strText
-     * @param bool 		$blnRemoveOnMinimize
-     * @return string
+     * Generates an HTML comment string based on the provided text.
+     *
+     * If the minimized mode is enabled in the application and the removal flag is set, an empty string is returned.
+     * Otherwise, the comment is formatted with newline characters and encapsulated in HTML comment tags.
+     *
+     * @param string $strText The text to be included inside the HTML comment.
+     * @param bool $blnRemoveOnMinimize Specifies whether the comment should be removed when minimize mode is active. Default is true.
+     * @return string The generated HTML comment or an empty string based on the minimized mode and removal flag.
      */
-    public static function comment($strText, $blnRemoveOnMinimize = true) {
+    public static function comment(string $strText, bool $blnRemoveOnMinimize = true): string
+    {
         if ($blnRemoveOnMinimize && Application::instance()->minimize()) {
             return '';
         }
@@ -405,7 +451,7 @@ abstract class Html {
     }
 
     /**
-     * Generate a URL from components. This URL can be used in the Application::tedirect function, or applied to
+     * Generate a URL from components. This URL can be used in the Application::redirect function or applied to
      * an anchor tag by setting the href attribute.
      *
      * You can also use this to modify a URL by passing a complete URL in the location. The URL will be modified by the parameters given.
@@ -413,14 +459,23 @@ abstract class Html {
      * @param string $strLocation			absolute or relative path to resource, depending on your protocol. If not needed, enter an empty string. Can be a complete URL.
      * @param array|null $queryParams		key->value array of query parameters to add to the location.
      * @param string|null $strAnchor		anchor to add to the url
-     * @param string|null $strScheme		protocol if specifying a resource outside of the current server (i.e. http)
+     * @param string|null $strScheme		protocol if specifying a resource outside of the current server (i.e., http)
      * @param string|null $strHost			server that the resource is on. Required if specifying a scheme.
      * @param string|null $strUser			user name if needed. Some protocols like mailto and ftp need this
-     * @param string|null $strPassword		password if needed. Note that password is sent in the clear.
+     * @param string|null $strPassword		password if needed. Note that the password is sent in the clear.
      * @param string|null $intPort			port if different from default
      * @return string
      */
-    public static function makeUrl($strLocation, $queryParams = null, $strAnchor = null, $strScheme = null, $strHost = null, $strUser = null, $strPassword = null, $intPort = null) {
+    public static function makeUrl(
+        string  $strLocation,
+        ?array  $queryParams = null,
+        ?string $strAnchor = null,
+        ?string $strScheme = null,
+        ?string $strHost = null,
+        ?string $strUser = null,
+        ?string  $strPassword = null,
+        ?string $intPort = null
+    ): string {
         // Decompose
         if ($strLocation) {
             $params = parse_url($strLocation);
@@ -477,7 +532,7 @@ abstract class Html {
             // We do not do any checking at this point since URLs can be complex. It is up to you to build a correct URL.
             // If you use a protocol that expects an absolute path, you must start with a slash (http), or a relative path (mailto), leave the slash off.
 
-            // Build server portion.
+            // Build a server portion.
             if ($intPort) {
                 $strHost .= ':' . $intPort;
             }
@@ -494,15 +549,24 @@ abstract class Html {
     }
 
     /**
-     * Returns a MailTo url.
+     * Constructs a mailto URL based on user and server details, with optional query parameters and a display name.
      *
-     * @param string $strUser
-     * @param string| null $strServer optional server. If missing, will assume server and "@" are already in strUser
-     * @param array|null $queryParams
-     * @param string|null $strName Optional name to associate with the email address. Some email clients will show this instead of the address.
-     * @return string	The mailto url.
+     * The method builds a properly encoded mailto URL for email links.
+     * It supports adding query parameters such as subject or body, and can include a display name for the recipient.
+     *
+     * @param string $strUser The email username (local part before the "@" symbol).
+     * @param string|null $strServer The email server (domain), optional. If null, only the username is used.
+     * @param array|null $queryParams An associative array of query parameters to append to the mailto URL, optional.
+     * @param string|null $strName A display name for the email recipient, optional.
+     * @return string The encoded mailto URL string.
      */
-    public static function mailToUrl($strUser, $strServer = null, $queryParams = null, $strName = null) {
+    public static function mailToUrl(
+        string $strUser,
+        ?string $strServer = null,
+        ?array $queryParams = null,
+        ?string $strName = null
+    ): string
+    {
         if ($strServer) {
             $strUrl = $strUser . '@' . $strServer;
         } else {
@@ -519,15 +583,19 @@ abstract class Html {
     }
 
     /**
-     * Utility function to create a link, i.e. an "a" tag.
+     * Renders an HTML anchor tag with the specified URL, text, attributes, and an option to encode text content.
      *
-     * @param string $strUrl URL to link to. Use MakeUrl or MailToUrl to create the URL.
-     * @param string $strText The inner text. This WILL be escaped.
-     * @param array $attributes Other html attributes to include in the tag
-     * @param boolean $blnHtmlEntities False to prevent encoding
-     * @return string
+     * Generates an anchor ("a") tag using the given URL and text.
+     * Optionally, applies HTML entity encoding to the text content and includes any additional attributes provided.
+     *
+     * @param string $strUrl The URL to be assigned to the anchor's "href" attribute.
+     * @param string $strText The text content to display for the anchor.
+     * @param array|null $attributes An associative array of additional HTML attributes to include in the anchor tag. Default is null.
+     * @param bool $blnHtmlEntities Whether to apply HTML entity encoding to the text content. Default is true.
+     * @return string The rendered HTML anchor tag as a string.
      */
-    public static function renderLink($strUrl, $strText, $attributes = null, $blnHtmlEntities = true) {
+    public static function renderLink(string $strUrl, string $strText, ?array $attributes = null, bool $blnHtmlEntities = true): string
+    {
         $attributes["href"] = $strUrl;
         if ($blnHtmlEntities) {
             $strText = QString::htmlEntities($strText);
@@ -536,42 +604,46 @@ abstract class Html {
     }
 
     /**
-     * Renders a PHP string as HTML text. Makes sure special characters are encoded, and <br /> tags are substituted
-     * for newlines.
-     * @param string $strText
-     * @return string
+     * Converts the given string into a safe HTML-renderable format.
+     *
+     * The method escapes special HTML characters in the input text to prevent XSS attacks
+     * and converts newline characters into HTML line breaks for proper display in an HTML context.
+     *
+     * @param string $strText The input string that needs to be processed for safe HTML output.
+     * @return string The processed string with escaped HTML characters and converted line breaks.
      */
-    public static function renderString($strText) {
+    public static function renderString(string $strText): string
+    {
         return nl2br(htmlspecialchars($strText, ENT_COMPAT | ENT_HTML5, Application::encodingType()));
     }
 
     /**
-     * A quick way to render an HTML table from an array of data. For more control, or to automatically render
+     * Renders an HTML table from the provided data array.
+     *
+     * A quick way to render an HTML table from an array of data. For more control or to automatically render
      * data that may change, see QHtmlTable and its subclasses.
      *
      * Example:
      * $data = [
-     * 				['name'=>'apple', 'type'=>'fruit'],
-     * 				['name'=>'carrot', 'type'=>'vegetable']
-     * 	];
+     * ['name'=>'apple', 'type'=>'fruit'],
+     * ['name'=>'carrot', 'type'=>'vegetable']
+     * ];
      *
-     * 	print(Html::renderTable($data, ['name','type'], ['class'=>'mytable'], ['Name', 'Type']);
+     * print(Html::renderTable($data, ['name','type'], ['class'=>'mytable'], ['Name', 'Type']);
      *
+     * Converts the input data into an HTML table string, including optional headers, attributes, and text escaping.
+     * Specific fields from the data can be used to populate the table, and headers can be included optionally.
      *
-     * @param []mixed			$data				An array of objects, or an array of arrays
-     * @param []string|null 	$strFields			An array of fields to display from the data. If the data contains objects,
-     * 												the fields will be accessed using $obj->$strFieldName. If an array of arrays,
-     * 												it will be accessed using $obj[$strFieldName]. If no fields specified, it will
-     * 												treat the data as an array of arrays and just create cells for whatever it finds.
-     * @param array|null 		$attributes			Optional array of attributes to be inserted into the table tag (like a class or id).
-     * @param []string|null 	$strHeaderTitles	Optional array of titles to be added as a header row.
-     * @param int 				$intHeaderColumnCount	Optional count of the number of columns on the left that will be
-     * 													rendered using a 'th' tag instead of a 'td' tag.
-     * @param bool 				$blnHtmlEntities	True (default) to run all titles and text through the HTMLEntities renderer. Set this to
-     * 												false if you are trying to display raw html.
-     * @return string
+     * @param array $data The input data to be rendered in the table. Each element should represent a row.
+     * @param array|null $strFields Optional list of specific fields to extract and display in the table.
+     * @param array|null $attributes Optional associative array of HTML attributes for the table element.
+     * @param array|null $strHeaderTitles Optional list of header titles for the table's columns.
+     * @param int|null $intHeaderColumnCount Number of columns to be treated as headers in the table body rows.
+     * @param bool $blnHtmlEntities Whether to escape cell content using HTML entities for safe display. Default is true.
+     * @return string The rendered HTML table as a string.
      */
-    public static function renderTable(array $data, $strFields = null, $attributes = null, $strHeaderTitles = null, $intHeaderColumnCount = 0, $blnHtmlEntities = true) {
+    public static function renderTable(array $data, ?array $strFields = null, ?array $attributes = null, ?array $strHeaderTitles = null, ?int $intHeaderColumnCount = 0, bool $blnHtmlEntities = true): string
+    {
         if (!$data) {
             return '';
         }
@@ -625,8 +697,7 @@ abstract class Html {
             $strBody .= $strRow;
         }
         $strBody = '<tbody>' . $strBody . '</tbody>';
-        $strTable = self::renderTag('table', $attributes , $strHeader . $strBody);
-        return $strTable;
+        return self::renderTag('table', $attributes , $strHeader . $strBody);
     }
 
 }

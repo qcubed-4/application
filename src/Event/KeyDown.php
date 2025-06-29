@@ -14,7 +14,6 @@ namespace QCubed\Event;
  *
  * When a keyboard key is pressed down (without having been released) while the control is in focus
  *
- * @was QKeyDownEvent
  * @package QCubed\Event
  */
 class KeyDown extends EventBase

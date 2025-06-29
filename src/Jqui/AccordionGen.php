@@ -1,9 +1,10 @@
 <?php
 namespace QCubed\Jqui;
 
-use QCubed;
+use QCubed\Control\Panel;
 use QCubed\Type;
 use QCubed\Project\Application;
+use QCubed\ApplicationBase;
 use QCubed\Exception\InvalidCast;
 use QCubed\Exception\Caller;
 use QCubed\ModelConnector\Param as QModelConnectorParam;
@@ -11,7 +12,7 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
 /**
  * Class AccordionGen
  *
- * This is the AccordionGen class which is automatically generated
+ * This is the AccordionGen class that is automatically generated
  * by scraping the JQuery UI documentation website. As such, it includes all the options
  * as listed by the JQuery UI website, which may or may not be appropriate for QCubed. See
  * the AccordionBase class for any glue code to make this class more
@@ -20,7 +21,7 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
  * @see AccordionBase
  * @package QCubed\Jqui
  * @property mixed $Active
- * Which panel is currently open.Multiple types supported:
+ * Which panel is currently open.Multiple types are supported:
  * 
  * 	* Boolean: Setting active to false will collapse all panels. This
  * requires the collapsible option to be true.
@@ -30,7 +31,7 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
 
  *
  * @property mixed $Animate
- * If and how to animate changing panels.Multiple types supported:
+ * If and how to animate changing panels. Multiple types are supported:
  * 
  * 	* Boolean: A value of false will disable animations.
  * 	* Number: Duration in milliseconds with default easing.
@@ -46,10 +47,10 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
 
  *
  * @property mixed $Classes
- * Specify additional classes to add to the widgets elements. Any of
- * classes specified in the Theming section can be used as keys to
+ * Specify additional classes to add to the widget elements. Any of
+ * the classes specified in the Theming section can be used as keys to
  * override their value. To learn more about this option, check out the
- * learn article about the classes option.
+ * learned article about the classes option.
 
  *
  * @property boolean $Collapsible
@@ -74,7 +75,7 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
  * Controls the height of the accordion and each panel. Possible values:
  * 
  * 	* "auto": All panels will be set to the height of the tallest panel.
- * 	* "fill": Expand to the available height based on the accordions
+ * 	* "fill": Expand to the available height based on the accordion
  * parent height.
  * 	* "content": Each panel will be only as tall as its content.
  * 
@@ -82,46 +83,43 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
  *
  * @property mixed $Icons
  * Icons to use for headers, matching an icon provided by the jQuery UI
- * CSS Framework. Set to false to have no icons displayed.
+ * CSS Framework. Set too false to have no icons displayed.
  * 
  * 	* header (string, default: "ui-icon-triangle-1-e")
  * 	* activeHeader (string, default: "ui-icon-triangle-1-s")
- * 
-
  *
- * @was QAccordionGen
-
  */
 
-class AccordionGen extends QCubed\Control\Panel
+class AccordionGen extends Panel
 {
-    protected $strJavaScripts = QCUBED_JQUI_JS;
-    protected $strStyleSheets = QCUBED_JQUI_CSS;
+    protected string $strJavaScripts = QCUBED_JQUI_JS;
+    protected string $strStyleSheets = QCUBED_JQUI_CSS;
     /** @var mixed */
-    protected $mixActive;
+    protected mixed $mixActive = null;
     /** @var mixed */
-    protected $mixAnimate = null;
+    protected mixed $mixAnimate = null;
     /** @var mixed */
-    protected $mixClasses = null;
+    protected mixed $mixClasses = null;
     /** @var boolean */
-    protected $blnCollapsible = null;
+    protected ?bool $blnCollapsible = null;
     /** @var boolean */
-    protected $blnDisabled = null;
-    /** @var string */
-    protected $strEvent = null;
+    protected ?bool $blnDisabled = null;
+    /** @var string|null */
+    protected ?string $strEvent = null;
     /** @var mixed */
-    protected $mixHeader = null;
-    /** @var string */
-    protected $strHeightStyle = null;
+    protected mixed $mixHeader = null;
+    /** @var string|null */
+    protected ?string $strHeightStyle = null;
     /** @var mixed */
-    protected $mixIcons = null;
+    protected mixed $mixIcons = null;
 
     /**
      * Builds the option array to be sent to the widget constructor.
      *
      * @return array key=>value array of options
      */
-    protected function makeJqOptions() {
+    protected function makeJqOptions(): array
+    {
         $jqOptions = parent::MakeJqOptions();
         if (!is_null($val = $this->Active)) {$jqOptions['active'] = $val;}
         if (!is_null($val = $this->Animate)) {$jqOptions['animate'] = $val;}
@@ -140,11 +138,10 @@ class AccordionGen extends QCubed\Control\Panel
      *
      * @return string
      */
-    public function getJqSetupFunction()
+    public function getJqSetupFunction(): string
     {
         return 'accordion';
     }
-
 
     /**
      * Removes the accordion functionality completely. This will return the
@@ -152,28 +149,31 @@ class AccordionGen extends QCubed\Control\Panel
      * 
      * 	* This method does not accept any arguments.
      */
-    public function destroy()
+    public function destroy(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "destroy", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "destroy", ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Disables the accordion.
      * 
      * 	* This method does not accept any arguments.
      */
-    public function disable()
+    public function disable(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "disable", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "disable", ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Enables the accordion.
      * 
      * 	* This method does not accept any arguments.
      */
-    public function enable()
+    public function enable(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "enable", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "enable", ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Retrieves the accordions instance object. If the element does not have
      * an associated instance, undefined is returned.
@@ -183,62 +183,67 @@ class AccordionGen extends QCubed\Control\Panel
      * 
      * 	* This method does not accept any arguments.
      */
-    public function instance()
+    public function instance(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "instance", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "instance", ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Gets the value currently associated with the specified optionName.
-     * 
+     *
      * Note: For options that have objects as their value, you can get the
      * value of a specific key by using dot notation. For example, "foo.bar"
      * would get the value of the bar property on the foo option.
-     * 
-     * 	* optionName Type: String The name of the option to get.
-     * @param $optionName
+     *
+     *    * optionName Type: String The name of the option to get.
+     * @param string $optionName
      */
-    public function option($optionName)
+    public function option(string $optionName): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $optionName, Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $optionName, ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Gets an object containing key/value pairs representing the current
      * accordion options hash.
      * 
      * 	* This signature does not accept any arguments.
      */
-    public function option1()
+    public function option1(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Sets the value of the accordion option associated with the specified
      * optionName.
-     * 
+     *
      * Note: For options that have objects as their value, you can set the
      * value of just one property by using dot notation for optionName. For
      * example, "foo.bar" would update only the bar property of the foo
      * option.
-     * 
-     * 	* optionName Type: String The name of the option to set.
-     * 	* value Type: Object A value to set for the option.
-     * @param $optionName
-     * @param $value
+     *
+     *    * optionName Type: String The name of the option to set.
+     *    * value Type: Object A value to set for the option.
+     * @param string $optionName
+     * @param string $value
      */
-    public function option2($optionName, $value)
+    public function option2(string $optionName, string $value): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $optionName, $value, Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $optionName, $value, ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Sets one or more options for the accordion.
-     * 
-     * 	* options Type: Object A map of option-value pairs to set.
-     * @param $options
+     *
+     *    * options Type: Object A map of option-value pairs to set.
+     * @param array $options
      */
-    public function option3($options)
+    public function option3(array $options): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $options, Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $options, ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Process any headers and panels that were added or removed directly in
      * the DOM and recompute the height of the accordion panels. Results
@@ -246,13 +251,12 @@ class AccordionGen extends QCubed\Control\Panel
      * 
      * 	* This method does not accept any arguments.
      */
-    public function refresh()
+    public function refresh(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "refresh", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "refresh", ApplicationBase::PRIORITY_LOW);
     }
 
-
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             case 'Active': return $this->mixActive;
@@ -274,7 +278,7 @@ class AccordionGen extends QCubed\Control\Panel
         }
     }
 
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             case 'Active':
@@ -360,17 +364,19 @@ class AccordionGen extends QCubed\Control\Panel
     }
 
     /**
-    * If this control is attachable to a codegenerated control in a ModelConnector, this function will be
-    * used by the ModelConnector designer dialog to display a list of options for the control.
-    * @return QModelConnectorParam[]
-    **/
-    public static function getModelConnectorParams()
+     * If this control is attachable to a codegenerated control in a ModelConnector, this function will be
+     * used by the ModelConnector designer dialog to display a list of options for the control.
+     * @return QModelConnectorParam[]
+     *
+     * @throws Caller
+     */
+    public static function getModelConnectorParams(): array
     {
         return array_merge(parent::GetModelConnectorParams(), array(
-            new QModelConnectorParam (get_called_class(), 'Collapsible', 'Whether all the sections can be closed at once. Allows collapsing theactive section.', Type::BOOLEAN),
+            new QModelConnectorParam (get_called_class(), 'Collapsible', 'Whether all the sections can be closed at once. Allows collapsing the active section.', Type::BOOLEAN),
             new QModelConnectorParam (get_called_class(), 'Disabled', 'Disables the accordion if set to true.', Type::BOOLEAN),
-            new QModelConnectorParam (get_called_class(), 'Event', 'The event that accordion headers will react to in order to activatethe associated panel. Multiple events can be specified, separated by aspace.', Type::STRING),
-            new QModelConnectorParam (get_called_class(), 'HeightStyle', 'Controls the height of the accordion and each panel. Possible values:	* \"auto\": All panels will be set to the height of the tallest panel.	* \"fill\": Expand to the available height based on the accordionsparent height.	* \"content\": Each panel will be only as tall as its content.', Type::STRING),
+            new QModelConnectorParam (get_called_class(), 'Event', 'The event that accordion headers will react to in order to activate the associated panel. Multiple events can be specified, separated by space.', Type::STRING),
+            new QModelConnectorParam (get_called_class(), 'HeightStyle', 'Controls the height of the accordion and each panel. Possible values:	* \"auto\": All panels will be set to the height of the tallest panel.	* \"fill\": Expand to the available height based on the accordion parent height.	* \"content\": Each panel will be only as tall as its content.', Type::STRING),
         ));
     }
 }

@@ -9,16 +9,16 @@
     of this is that it can make the browser appear more responsive. The browser will not "freeze" up
         waiting for the response of one event before allowing the user to do another action. The disadvantage
     of this mechanism is that it can be difficult to manage events that depend on the response of previous events,
-    since it allows an event to be sent to the server before previous events have completed.
+    since it allows an event to be sent to the server before previous events have been completed.
 
-    <p>QCubed's event mechanism queues and synchronizes events, so that the results of each event are available
+    <p>QCubed-4's event mechanism queues and synchronizes events so that the results of each event are available
     to the next event. This allows the browser to be responsive while also allowing events to perform
     as expected in the program.</p>
 
         <p>However, there are times when you may want an event to be a one-time event, preventing
             all other events from even being added to the queue until a particular event is done
-            processing. The classic example of this is a submit button that allows a customer to process a payment for
-    a product. If the user accidentally presses the submit button more than once very quickly, multiple
+            processing. The classic example of this is a submitted button that allows a customer to process a payment for
+    a product. If the user accidentally presses the submitted button more than once very quickly, multiple
     submits will be sent to the server and the customer might then be charged more than once for the
     same product.</p>
 

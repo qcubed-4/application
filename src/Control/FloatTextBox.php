@@ -9,8 +9,7 @@
 
 namespace QCubed\Control;
 
-require_once(dirname(dirname(__DIR__)) . '/i18n/i18n-lib.inc.php');
-use QCubed\Application\t;
+require_once(dirname(__DIR__, 2) . '/i18n/i18n-lib.inc.php');
 
 use QCubed\Exception\Caller;
 use QCubed\Type;
@@ -22,14 +21,13 @@ use QCubed as Q;
  * A subclass of QNumericTextBox -- Validate will also ensure
  * that the Text is a valid float and (if applicable) is in the range of Minimum <= x <= Maximum
  *
- * We do not use the sanitize capability of TextBox here. Sanitizing the data will change the data, and
+ * We do not use the sanitized capability of TextBox here. Sanitizing the data will change the data, and
  * if the user does not type in a valid float, we will not be able to put up a warning telling the user they made
  * a mistake. You can easily change this behavior by setting the following:
  *    SanitizeFilter = FILTER_SANITIZE_NUMBER_FLOAT
  *  SanitizeFilterOptions = FILTER_FLAG_ALLOW_FRACTION
  *
  * @property int|null $Value            Returns the integer value of the text, sanitized.
- * @was QFloatTextBox
  * @package QCubed\Control
  */
 class FloatTextBox extends NumericTextBox
@@ -42,15 +40,16 @@ class FloatTextBox extends NumericTextBox
      *
      * @param ControlBase|FormBase $objParentObject
      * @param null|string $strControlId
+     * @throws Caller
      */
-    public function __construct($objParentObject, $strControlId = null)
+    public function __construct(ControlBase|FormBase $objParentObject, ?string $strControlId = null)
     {
         parent::__construct($objParentObject, $strControlId);
         $this->strLabelForInvalid = t('This must be a number');
         $this->strDataType = Type::FLOAT;
     }
 
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             case "Value":
@@ -73,9 +72,10 @@ class FloatTextBox extends NumericTextBox
     /**
      * Returns the generator corresponding to this control.
      *
-     * @return Q\Codegen\Generator\GeneratorBase
+     * @return Q\Codegen\Generator\TextBox
      */
-    public static function getCodeGenerator() {
+    public static function getCodeGenerator(): Q\Codegen\Generator\TextBox
+    {
         return new Q\Codegen\Generator\TextBox(__CLASS__); // reuse the TextBox generator
     }
 }

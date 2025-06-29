@@ -4,7 +4,7 @@
 	<div id="instructions">
 		<h1>Implementing Custom Business Logic</h1>
 		
-		<p>Almost no application can be purely code generated. As you develop your application, you will likely
+		<p>Almost no application can be purely code-generated. As you develop your application, you will likely
 		have to implement your own custom business rules and functionality.</p>
 		
 		<p>At the object level, these business rules can be implemented in the custom subclasses. In our
@@ -27,18 +27,24 @@
 	class Project extends ProjectGen {
 		const TAX_PERCENTAGE = .0825;
 
-		public function __toString() {
+		public function __toString(): string
+        {
 		    return $this->Name;
         }
 
-		public function getPrice($fltDiscount) {
+        /**
+         * Calculates the final price based on the initial budget, a discount rate, and a tax percentage.
+         *
+         * @param float $fltDiscount The discount rate to be applied. Must be a decimal value between 0 and 1.
+         * @return float The final price after applying the discount and adding the tax.
+         */
+        public function getPrice(float $fltDiscount): float
+        {
 			// Note that strBudget is a DECIMAL type
 			// Use the bcmath library if you need better precision than float
 			$fltPrice = floatval($this->Budget);
 			$fltPrice = $fltPrice * (1.0 - $fltDiscount);
-			$fltPrice = $fltPrice * (1.0 + Project::TAX_PERCENTAGE);
-
-			return $fltPrice;
+            return $fltPrice * (1.0 + Project::TAX_PERCENTAGE);
 		}
 	}
 

@@ -11,16 +11,16 @@ namespace QCubed\Codegen\Generator;
 
 use QCubed\Codegen\ColumnInterface;
 use QCubed\Codegen\DatabaseCodeGen;
+use QCubed\Codegen\ManyToManyReference;
 use QCubed\Codegen\SqlTable;
 
 /**
  * Class ListBox
  * @package QCubed\Codegen\Generator
- * @was QListBoxBase_CodeGenerator
  */
 class ListBox extends ListControl
 {
-    public function __construct($strControlClassName = 'QCubed\\Project\\Control\\ListBox')
+    public function __construct(string $strControlClassName = 'QCubed\\Project\\Control\\ListBox')
     {
         parent::__construct($strControlClassName);
     }
@@ -33,13 +33,13 @@ class ListBox extends ListControl
      * @param string $strControlVarName
      * @return string
      */
-    public function connectorCreateOptions(DatabaseCodeGen $objCodeGen, SqlTable $objTable, $objColumn, $strControlVarName)
+    public function connectorCreateOptions(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ?ColumnInterface $objColumn, string $strControlVarName): string
     {
         $strRet = parent::connectorCreateOptions($objCodeGen, $objTable, $objColumn, $strControlVarName);
 
-        if ($objColumn instanceof QManyToManyReference) {
+        if ($objColumn instanceof ManyToManyReference) {
             $strRet .= <<<TMPL
-			\$this->{$strControlVarName}->SelectionMode = ListBox::MULTIPLE;
+            \$this->{$strControlVarName}->SelectionMode = ListBox::MULTIPLE;
 
 TMPL;
         }

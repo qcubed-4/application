@@ -16,8 +16,10 @@
 ?>
 <?php print("<?php\n"); ?>
 
-use QCubed\Project\Control\FormBase;
-use QCubed\Project\Control\ControlBase;
+use QCubed\Control\FormBase;
+use QCubed\Control\ControlBase;
+use QCubed\Exception\Caller;
+use QCubed\Exception\InvalidCast;
 
 require(QCUBED_PROJECT_DIALOG_GEN_DIR . '/<?= $strPropertyName ?>EditDlgGen.php');
 
@@ -31,20 +33,23 @@ require(QCUBED_PROJECT_DIALOG_GEN_DIR . '/<?= $strPropertyName ?>EditDlgGen.php'
  */
 class <?= $strPropertyName ?>EditDlg extends <?= $strPropertyName ?>EditDlgGen
 {
+    /**
+    * @param FormBase|ControlBase $objParentObject
+    * @param string|null $strControlId
+    * @throws DateMalformedStringException
+    * @throws Caller
+    * @throws InvalidCast
+    */
+    public function __construct(FormBase|ControlBase $objParentObject, ?string $strControlId = null)
+    {
+        parent::__construct($objParent, $strControlId);
 
-	/**
-	 * @param FormBase|ControlBase $objParentObject
-	 * @param null|string $strControlId
-	 */
-	public function __construct($objParent = null, $strControlId = null) {
-		parent::__construct($objParent, $strControlId);
+        /**
+         * Setting AutoRenderChildren will automatically draw the <?= $strPropertyName ?>EditPanel panel that is
+         * a member of this class, and anything else you add. To customize how the dialog renders, create a template
+         * and set the Template property of the dialog.
+         */
 
-		/**
-		 * Setting AutoRenderChildren will automatically draw the <?= $strPropertyName ?>EditPanel panel that is
-		 * a member of this class, and anything else you add. To customize how the dialog renders, create a template
-		 * and set the Template property of the dialog.
-		 **/
-
-		$this->AutoRenderChildren = true;
-	}
+        $this->AutoRenderChildren = true;
+    }
 }

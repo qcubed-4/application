@@ -14,7 +14,7 @@ namespace QCubed\Jqui\Event;
  *
  * The abstract ResizableStart class defined here is
  * code-generated. The code to generate this file is
- * in the /tools/jquery_ui_gen/jq_control_gen.php file
+ * in the /tools/jquery_ui_gen/jq_control_gen.php file,
  * and you can regenerate the files if you need to.
  *
  * The comments in this file are taken from the api reference site, so they do
@@ -28,21 +28,20 @@ namespace QCubed\Jqui\Event;
  * 
  * 	* element Type: jQuery The jQuery object representing the element to
  * be resized
- * 	* helper Type: jQuery The jQuery object representing the helper
- * thats being resized
+ * helper Type: jQuery The jQuery object representing the helper
+ * that's being resized
  * 	* originalElement Type: jQuery The jQuery object representing the
  * original element before it is wrapped
- * 	* originalPosition Type: Object The position represented as { left,
+ * originalPosition Type: Object The position represented as { left,
  * top } before the resizable is resized
  * 	* originalSize Type: Object The size represented as { width, height
  * } before the resizable is resized
- * 	* position Type: Object The current position represented as { left,
+ * position Type: Object The current position represented as { left,
  * top }
  * 	* size Type: Object The current size represented as { width, height
  * }
  * 
  *
- * @was QResizable_StartEvent
  */
 class ResizableStart extends EventBase
 {

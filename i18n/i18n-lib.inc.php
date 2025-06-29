@@ -15,7 +15,7 @@ const I18N_DOMAIN = 'qcubed-4/application'; // replace this with your package na
  * @param string|null $strContext	Context string, if the same string gets translated in different ways depending on context
  * @return string
  */
-function t($strmsgid, $strContext = null)
+function t(string $strmsgid, ?string $strContext = null)
 {
 	if (class_exists("\\QCubed\\I18n\\TranslationService") && TranslationService::instance()->translator()) {
 		if (!defined (I18N_DOMAIN . '__BOUND')) {

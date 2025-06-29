@@ -22,13 +22,13 @@
 		that is attached to the row or cell tags.</p>
 
 	<p>In the example, you can click on any of the rows, and the id of the row clicked on will be past to the action.
-		The action then looks up the person clicked on and displays the person's name in a dialog. If you examine the html
+		The action then looks up the person clicked on and displays the person's name in a dialog. If you examine the HTML
 		source generated, you will see that each row is given a 'data-value' attribute that is the id of the person being clicked on.
 		The <strong>CellClick</strong> reads that value and sends it to the action handler.</p>
 </div>
 
 <div id="demoZone">
-	<?php $this->dtgPersons->Render(); ?>
+	<?php $this->dtgPersons->render(); ?>
 </div>
 
 <?php $this->renderEnd(); ?>

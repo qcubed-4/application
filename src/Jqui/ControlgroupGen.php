@@ -1,7 +1,8 @@
 <?php
 namespace QCubed\Jqui;
 
-use QCubed;
+use QCubed\ApplicationBase;
+use QCubed\Control\Panel;
 use QCubed\Type;
 use QCubed\Project\Application;
 use QCubed\Exception\InvalidCast;
@@ -11,7 +12,7 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
 /**
  * Class ControlgroupGen
  *
- * This is the ControlgroupGen class which is automatically generated
+ * This is the ControlgroupGen class that is automatically generated
  * by scraping the JQuery UI documentation website. As such, it includes all the options
  * as listed by the JQuery UI website, which may or may not be appropriate for QCubed. See
  * the ControlgroupBase class for any glue code to make this class more
@@ -20,14 +21,14 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
  * @see ControlgroupBase
  * @package QCubed\Jqui
  * @property mixed $Classes
- * Specify additional classes to add to the widgets elements. Any of
- * classes specified in the Theming section can be used as keys to
+ * Specify additional classes to add to the widget elements. Any of
+ * the classes specified in the Theming section can be used as keys to
  * override their value. To learn more about this option, check out the
- * learn article about the classes option.
+ * learned article about the classes option.
 
  *
  * @property string $Direction
- * By default, controlgroup displays its controls in a horizontal layout.
+ * By default, the controlgroup displays its controls in a horizontal layout.
  * Use this option to use a vertical layout instead.
 
  *
@@ -41,7 +42,7 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
  * 	* controlgroupLabel: Any elements matching the selector for this will
  * be wrapped in a span with the ui-controlgroup-label-contents class.
  * 	* spinner: This uses a class selector as the value. Requires either
- * adding the class manually or initializing the spinner manually. Can be
+ * adding the class manually or initializing the spinner manually. It Can be
  * overridden to use input[type=number], but that also requires custom
  * CSS to remove the native number controls.
  * 
@@ -58,31 +59,30 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
  * hidden, the controlgroup will not have rounded corners on the top
  * edge.
  *
- * @was QControlgroupGen
-
  */
 
-class ControlgroupGen extends QCubed\Control\Panel
+class ControlgroupGen extends Panel
 {
-    protected $strJavaScripts = QCUBED_JQUI_JS;
-    protected $strStyleSheets = QCUBED_JQUI_CSS;
+    protected string $strJavaScripts = QCUBED_JQUI_JS;
+    protected string $strStyleSheets = QCUBED_JQUI_CSS;
     /** @var mixed */
-    protected $mixClasses = null;
-    /** @var string */
-    protected $strDirection = null;
+    protected mixed $mixClasses = null;
+    /** @var string|null */
+    protected ?string $strDirection = null;
     /** @var boolean */
-    protected $blnDisabled = null;
+    protected ?bool $blnDisabled = null;
     /** @var mixed */
-    protected $mixItems = null;
+    protected mixed $mixItems = null;
     /** @var boolean */
-    protected $blnOnlyVisible = null;
+    protected ?bool $blnOnlyVisible = null;
 
     /**
      * Builds the option array to be sent to the widget constructor.
      *
      * @return array key=>value array of options
      */
-    protected function makeJqOptions() {
+    protected function makeJqOptions(): array
+    {
         $jqOptions = parent::MakeJqOptions();
         if (!is_null($val = $this->Classes)) {$jqOptions['classes'] = $val;}
         if (!is_null($val = $this->Direction)) {$jqOptions['direction'] = $val;}
@@ -97,11 +97,10 @@ class ControlgroupGen extends QCubed\Control\Panel
      *
      * @return string
      */
-    public function getJqSetupFunction()
+    public function getJqSetupFunction(): string
     {
         return 'controlgroup';
     }
-
 
     /**
      * Removes the controlgroup functionality completely. This will return
@@ -109,28 +108,31 @@ class ControlgroupGen extends QCubed\Control\Panel
      * 
      * 	* This method does not accept any arguments.
      */
-    public function destroy()
+    public function destroy(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "destroy", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "destroy", ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Disables the controlgroup.
      * 
      * 	* This method does not accept any arguments.
      */
-    public function disable()
+    public function disable(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "disable", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "disable", ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Enables the controlgroup.
      * 
      * 	* This method does not accept any arguments.
      */
-    public function enable()
+    public function enable(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "enable", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "enable", ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Retrieves the controlgroups instance object. If the element does not
      * have an associated instance, undefined is returned.
@@ -140,75 +142,80 @@ class ControlgroupGen extends QCubed\Control\Panel
      * 
      * 	* This method does not accept any arguments.
      */
-    public function instance()
+    public function instance(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "instance", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "instance", ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Gets the value currently associated with the specified optionName.
-     * 
+     *
      * Note: For options that have objects as their value, you can get the
      * value of a specific key by using dot notation. For example, "foo.bar"
      * would get the value of the bar property on the foo option.
-     * 
-     * 	* optionName Type: String The name of the option to get.
-     * @param $optionName
+     * optionName Type: String The name of the option to get.
+     *
+     * @param string $optionName The name of the option to update or retrieve.
+     * @return void
      */
-    public function option($optionName)
+    public function option(string $optionName): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $optionName, Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $optionName, ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Gets an object containing key/value pairs representing the current
      * controlgroup options hash.
      * 
      * 	* This signature does not accept any arguments.
      */
-    public function option1()
+    public function option1(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Sets the value of the controlgroup option associated with the
      * specified optionName.
-     * 
+     *
      * Note: For options that have objects as their value, you can set the
      * value of just one property by using dot notation for optionName. For
      * example, "foo.bar" would update only the bar property of the foo
      * option.
-     * 
-     * 	* optionName Type: String The name of the option to set.
-     * 	* value Type: Object A value to set for the option.
-     * @param $optionName
-     * @param $value
+     *
+     * @param string $optionName The name of the option to set.
+     * @param mixed $value The value to assign to the specified option.
+     * @return void
      */
-    public function option2($optionName, $value)
+    public function option2(string $optionName, mixed $value): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $optionName, $value, Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $optionName, $value, ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Sets one or more options for the controlgroup.
-     * 
-     * 	* options Type: Object A map of option-value pairs to set.
-     * @param $options
+     * Options Type: Object A map of option-value pairs to set.
+     *
+     * @param mixed $options The options to be applied to the jQuery widget. Expected to be an associative array.
+     * @return void
      */
-    public function option3($options)
+    public function option3(mixed $options): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $options, Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $options, ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Process any widgets that were added or removed directly in the DOM.
-     * Results depend on the items option.
+     * Results depend on the item option.
      * 
      * 	* This method does not accept any arguments.
      */
-    public function refresh()
+    public function refresh(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "refresh", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "refresh", ApplicationBase::PRIORITY_LOW);
     }
 
-
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             case 'Classes': return $this->mixClasses;
@@ -226,7 +233,7 @@ class ControlgroupGen extends QCubed\Control\Panel
         }
     }
 
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             case 'Classes':
@@ -287,16 +294,18 @@ class ControlgroupGen extends QCubed\Control\Panel
     }
 
     /**
-    * If this control is attachable to a codegenerated control in a ModelConnector, this function will be
-    * used by the ModelConnector designer dialog to display a list of options for the control.
-    * @return QModelConnectorParam[]
-    **/
-    public static function getModelConnectorParams()
+     * If this control is attachable to a codegenerated control in a ModelConnector, this function will be
+     * used by the ModelConnector designer dialog to display a list of options for the control.
+     * @return QModelConnectorParam[]
+     *
+     * @throws Caller
+     */
+    public static function getModelConnectorParams(): array
     {
         return array_merge(parent::GetModelConnectorParams(), array(
-            new QModelConnectorParam (get_called_class(), 'Direction', 'By default, controlgroup displays its controls in a horizontal layout.Use this option to use a vertical layout instead.', Type::STRING),
+            new QModelConnectorParam (get_called_class(), 'Direction', 'By default, the controlgroup displays its controls in a horizontal layout.Use this option to use a vertical layout instead.', Type::STRING),
             new QModelConnectorParam (get_called_class(), 'Disabled', 'Disables the controlgroup if set to true.', Type::BOOLEAN),
-            new QModelConnectorParam (get_called_class(), 'OnlyVisible', 'Sets whether to exclude invisible children in the assignment ofrounded corners. When set to false, all children of a controlgroup aretaken into account when assigning rounded corners, including hiddenchildren. Thus, if, for example, the controlgroups first child ishidden and the default horizontal layout is applied, the controlgroupwill, in effect, not have rounded corners on the left edge. Likewise,if the controlgroup has a vertical layout and its first child ishidden, the controlgroup will not have rounded corners on the topedge.', Type::BOOLEAN),
+            new QModelConnectorParam (get_called_class(), 'OnlyVisible', 'Sets whether to exclude invisible children in the assignment of rounded corners. When set to false, all children of a controlgroup took into account when assigning rounded corners, including hidden children. Thus, if, for example, the controlgroups first child is hidden and the default horizontal layout is applied, the controlgroupwill, in effect, not have rounded corners on the left edge. Likewise, if the controlgroup has a vertical layout and its first child is hidden, the controlgroup will not have rounded corners on the typed.', Type::BOOLEAN),
         ));
     }
 }

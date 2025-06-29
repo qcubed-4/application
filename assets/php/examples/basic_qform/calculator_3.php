@@ -16,17 +16,17 @@ class CalculatorForm extends FormBase
     // A listbox of operations to choose from
     // A button to execute the calculation
     // And a label to output the result
-    protected $txtValue1;
-    protected $txtValue2;
-    protected $lstOperation;
-    protected $btnCalculate;
-    protected $lblResult;
+    protected IntegerTextBox $txtValue1;
+    protected IntegerTextBox $txtValue2;
+    protected ListBox $lstOperation;
+    protected Button $btnCalculate;
+    protected Label $lblResult;
 
-    // Define all the QContrtol objects for our Calculator
+    // Define all the QControl objects for our Calculator
     // Add Names to the Controls so that our RenderWithName method can display it
     // Randomly add properties both here and in the HTML file to show how to change
     // the design/appearance of these controls
-    protected function formCreate()
+    protected function formCreate(): void
     {
         $this->txtValue1 = new IntegerTextBox($this);
         $this->txtValue1->Required = true;
@@ -49,18 +49,24 @@ class CalculatorForm extends FormBase
         $this->btnCalculate->Text = 'Calculate';
         $this->btnCalculate->addAction(new Click(), new Server('btnCalculate_Click'));
         $this->btnCalculate->CausesValidation = true;
+        $this->btnCalculate->Width = 200;
+        $this->btnCalculate->Height = 100;
+        $this->btnCalculate->FontNames = 'Courier';
 
         $this->lblResult = new Label($this);
         $this->lblResult->HtmlEntities = false;
+
+        $this->lblResult->FontSize = 20;
+        $this->lblResult->FontItalic = true;
     }
 
-    protected function formLoad()
+    protected function formLoad(): void
     {
         // Let's always clear the Result label
         $this->lblResult->Text = '';
     }
 
-    protected function formValidate()
+    protected function formValidate(): bool
     {
         // If we are Dividing and if the divisor is 0, then this is not valid
         if (($this->lstOperation->SelectedValue == 'divide') &&
@@ -74,25 +80,19 @@ class CalculatorForm extends FormBase
         return true;
     }
 
-    // Perform the necessary operations on the operands, and output the value to the lblResult
-    protected function btnCalculate_Click($strFormId, $strControlId, $strParameter)
+    // Perform the necessary operations on the operands and output the value to the lblResult
+    protected function btnCalculate_Click(string $strFormId, string $strControlId, string $strParameter): void
     {
-        switch ($this->lstOperation->SelectedValue) {
-            case 'add':
-                $mixResult = $this->txtValue1->Text + $this->txtValue2->Text;
-                break;
-            case 'subtract':
-                $mixResult = $this->txtValue1->Text - $this->txtValue2->Text;
-                break;
-            case 'multiply':
-                $mixResult = $this->txtValue1->Text * $this->txtValue2->Text;
-                break;
-            case 'divide':
-                $mixResult = $this->txtValue1->Text / $this->txtValue2->Text;
-                break;
-            default:
-                throw new Exception('Invalid Action');
-        }
+        $value1 = (float) $this->txtValue1->Text;
+        $value2 = (float) $this->txtValue2->Text;
+
+        $mixResult = match ($this->lstOperation->SelectedValue) {
+            'add' => $value1 + $value2,
+            'subtract' => $value1 - $value2,
+            'multiply' => $value1 * $value2,
+            'divide' => $value2 != 0 ? $value1 / $value2 : 'Division by zero is not allowed',
+            default => throw new Exception('Invalid Action'),
+        };
 
         if (isset($mixResult)) {
             $this->lblResult->Text = '<b>Your Result:</b> ' . $mixResult;

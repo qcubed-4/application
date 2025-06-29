@@ -9,11 +9,11 @@ require_once('../qcubed.inc.php');
 class DataRepeaterExample extends FormBase
 {
     /** @var  DataRepeater */
-    protected $dtrPersons;
+    protected DataRepeater $dtrPersons;
     /** @var  DataRepeater */
-    protected $dtrBig;
+    protected DataRepeater $dtrBig;
 
-    protected function formCreate()
+    protected function formCreate(): void
     {
 
         /*--- Using a Template ---*/
@@ -45,14 +45,14 @@ class DataRepeaterExample extends FormBase
         $this->dtrBig->ItemInnerHtmlCallback = [$this, 'BigItem_Render'];
     }
 
-    protected function dtrPersons_Bind()
+    protected function dtrPersons_Bind(): void
     {
         // This function defines how we load the data source into the Data Repeater
         $this->dtrPersons->TotalItemCount = Person::countAll();
         $this->dtrPersons->DataSource = Person::loadAll(QQ::clause($this->dtrPersons->LimitClause));
     }
 
-    protected function dtrBig_Bind()
+    protected function dtrBig_Bind(): void
     {
         // This function defines how we load the data source into the Data Repeater
         $this->dtrBig->TotalItemCount = 1000;
@@ -62,7 +62,14 @@ class DataRepeaterExample extends FormBase
         $this->dtrBig->DataSource = $a;
     }
 
-    public function bigItem_Render($objItem, $intIndex)
+    /**
+     * Renders the given item based on the specified index with different styles.
+     *
+     * @param mixed $objItem The item to be rendered.
+     * @param int $intIndex The index of the item, used to determine the rendering style.
+     * @return string Returns the rendered item as a styled string.
+     */
+    public function bigItem_Render(mixed $objItem, int $intIndex): string
     {
         if ($intIndex % 2) {
             return '<b>' . $objItem . '</b>';

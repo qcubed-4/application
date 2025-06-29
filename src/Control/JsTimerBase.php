@@ -9,6 +9,8 @@
 
 namespace QCubed\Control;
 
+use QCubed\Action\ActionBase;
+use QCubed\Action\ActionParams;
 use QCubed\Exception\Caller;
 use QCubed\Exception\InvalidCast;
 use QCubed\Project\Application;
@@ -19,9 +21,9 @@ use QCubed\Type;
  * Class JsTimerBase
  *
  * Timer Control:
- * This control uses a javascript timer to execute Actions after a defined time
+ * This control uses a JavaScript timer to execute Actions after a defined time
  * Periodic or one shot timers are possible.
- * You can add only one type of Event to to this control: TimerExpiredEvent
+ * You can add only one type of Event to this control: TimerExpiredEvent,
  * but multiple actions can be registered for this event
  * @property int $DeltaTime Time till the timer fires and executes the Actions added.
  * @property boolean $Periodic  <ul>
@@ -30,12 +32,11 @@ use QCubed\Type;
  *                              </ul>
  *
  * @property boolean $Started <strong>true</strong>: timer is running / <strong>false</strong>: stopped
- * @property boolean $RestartOnServerAction After a 'Server Action' (QServerAction) the executed java script
+ * @property boolean $RestartOnServerAction After a 'Server Action' (QServerAction) the executed JavaScript
  *                                                        (including the timer) is stopped!
  *                                                        Set this parameter to true to restart the timer automatically.
  * @notes <ul><li>You do not need to render this control!</li>
  *            <li>QTimerExpiredEvent - condition and delay parameters of the constructor are ignored (for now) </li>
- * @was QJsTimerBase
  * @package QCubed\Event
  */
 class JsTimerBase extends Q\Project\Control\ControlBase
@@ -45,34 +46,36 @@ class JsTimerBase extends Q\Project\Control\ControlBase
     const STOPPED = 0;
     /** Constant used to indicate that the timer has started */
     const STARTED = 1;
-    /** Constant used to indicate that the timer has autostart enabled (starts with the page load) */
+    /** Constant used to indicate that the timer has autostarted enabled (starts with the page load) */
+
+
     const AUTO_START = 2;
 
     /** @var bool does the timer run periodically once started? */
-    protected $blnPeriodic = true;
+    protected bool $blnPeriodic = true;
     /** @var int The duration after which the timer will fire (in milliseconds) */
-    protected $intDeltaTime = 0;
+    protected int $intDeltaTime = 0;
     /** @var int default state in which timer will be (stopped) */
-    protected $intState = self::STOPPED;
-    /** @var bool should the timer start after a QServerAction occurrs. */
-    protected $blnRestartOnServerAction = false;
+    protected int $intState = self::STOPPED;
+    /** @var bool should the timer start after a QServerAction occurs? */
+    protected ?bool $blnRestartOnServerAction = false;
 
 
     /**
-     * @param FormBase|ControlBase $objParentObject the form or parent control
-     * @param int $intTime timer interval in ms
-     * @param boolean $blnPeriodic if true the timer is "restarted" automatically after it has fired
+     * @param ControlBase|FormBase $objParentObject the form or parent control
+     * @param int|null $intTime timer interval in ms
+     * @param boolean $blnPeriodic if true, the timer is "restarted" automatically after it has fired
      * @param boolean $blnStartNow starts the timer automatically after adding the first action
-     * @param string $strTimerId
+     * @param string|null $strTimerId
      *
      * @throws Caller
      */
     public function __construct(
-        $objParentObject,
-        $intTime = 0,
-        $blnPeriodic = true,
-        $blnStartNow = true,
-        $strTimerId = null
+        FormBase|ControlBase    $objParentObject,
+        ?int                     $intTime = 0,
+        bool                    $blnPeriodic = true,
+        bool                    $blnStartNow = true,
+        ?string                 $strTimerId = null
     ) {
         try {
             parent::__construct($objParentObject, $strTimerId);
@@ -94,29 +97,28 @@ class JsTimerBase extends Q\Project\Control\ControlBase
      * Returns the callback string
      * @return string
      */
-    private function callbackString()
+    private function callbackString(): string
     {
         return "qcubed._objTimers['" . $this->strControlId . "_cb']";
     }
 
     /**
-     * Returns a timer ID (string) as an element of the 'qcubed._objTimers' javascript array.
+     * Returns a timer ID (string) as an element of the 'qcubed._objTimers' JavaScript array.
      * This array is used to start and stop timers (and keep track)
      * @return string
      */
-    private function tidString()
+    private function tidString(): string
     {
         return "qcubed._objTimers['" . $this->strControlId . "_tId']";
     }
 
     /**
-     * @param int $intTime (optional)
-     *              sets the interval/delay, after that the timer executes the registered actions
+     * @param ActionParams|null $intTime (optional)
+     *              Sets the interval/delay, after that the timer executes the registered actions
      *              if no parameter is given the time stored in $intDeltaTime is used
-     * @throws Caller
      * @return void
      */
-    public function start($intTime = null)
+    public function start(?ActionParams $intTime = null): void
     {
         $this->stop();
         if ($intTime != null && is_int($intTime)) {
@@ -138,9 +140,9 @@ class JsTimerBase extends Q\Project\Control\ControlBase
     }
 
     /**
-     * stops the timer
+     * Stops the timer
      */
-    public function stop()
+    public function stop(): void
     {
         Application::executeJsFunction('qc.stopTimer', $this->strControlId, $this->blnPeriodic);
         $this->intState = self::STOPPED;
@@ -156,10 +158,10 @@ class JsTimerBase extends Q\Project\Control\ControlBase
      * @throws Caller
      * @return void
      */
-    public function addAction(Q\Event\EventBase $objEvent, Q\Action\ActionBase $objAction)
+    public function addAction(Q\Event\EventBase $objEvent, Q\Action\ActionBase $objAction): void
     {
         if (!($objEvent instanceof Q\Event\TimerExpired)) {
-            throw new Caller('First parameter of JsTimer::AddAction is expecting an object of type Event\\TimerExpired');
+            throw new Caller('The first parameter of JsTimer::AddAction is expecting an object of type Event\\TimerExpired');
         }
 
         parent::addAction($objEvent, $objAction);
@@ -172,17 +174,17 @@ class JsTimerBase extends Q\Project\Control\ControlBase
     /**
      * Returns all actions connected/attached to the timer
      * @param string $strEventName
-     * @param null $strActionClass
-     * @return Q\Action\ActionBase[]
+     * @param string|null $strActionClass
+     * @return ActionBase[]
      */
-    public function getAllActions($strEventName, $strActionClass = null)
+    public function getAllActions(string $strEventName, ?string $strActionClass = null): array
     {
-        if (($strEventName == Q\Event\TimerExpired::EVENT_NAME && $this->blnPeriodic == false) &&
+        if (($strEventName == Q\Event\TimerExpired::EVENT_NAME && !$this->blnPeriodic) &&
             (($strActionClass == '\QCubed\Action\Ajax' && Application::isAjax()) ||
                 ($strActionClass == '\QCubed\Action\Server' && Application::instance()->context()->requestMode() == Q\Context::REQUEST_MODE_QCUBED_SERVER))
         ) {
             //if we are in an ajax or server post and our timer is not periodic
-            //and this method gets called then the timer has finished(stopped) --> set the State flag to "stopped"
+            //and this method gets called, then the timer has finished(stopped) --> set the State flag to "stopped"
             $this->intState = self::STOPPED;
         }
         return parent::getAllActions($strEventName, $strActionClass);
@@ -190,20 +192,20 @@ class JsTimerBase extends Q\Project\Control\ControlBase
 
     /**
      * Remove all actions attached to the timer
-     * @param null $strEventName
+     * @param string|null $strEventName
      */
-    public function removeAllActions($strEventName = null)
+    public function removeAllActions(?string $strEventName = null): void
     {
-        $this->stop(); //no actions are registered for this timer stop it
+        $this->stop(); //no actions are registered for this timer to stop it
         parent::removeAllActions($strEventName);
     }
 
     /**
-     * Returns all Javscript that needs to be executed after rendering of this control
-     * (It overrides the GetEndScript of the parent to handle specific case of JsTimers)
+     * Returns all JavaScript that needs to be executed after rendering of this control
+     * (It overrides the GetEndScript of the parent to handle a specific case of JsTimers)
      * @return string
      */
-    public function getEndScript()
+    public function getEndScript(): string
     {
         if (Application::instance()->context()->requestMode() == Q\Context::REQUEST_MODE_QCUBED_SERVER) {
             //this point is not reached on initial rendering
@@ -225,7 +227,7 @@ class JsTimerBase extends Q\Project\Control\ControlBase
      * @return mixed
      * @throws Caller
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             case 'DeltaTime':
@@ -249,13 +251,13 @@ class JsTimerBase extends Q\Project\Control\ControlBase
     /**
      * PHP Magic function to set property values for an object of this class
      * @param string $strName Name of the property
-     * @param string $mixValue Value of the property
+     * @param mixed $mixValue Value of the property
      *
      * @return void
      * @throws Caller
      * @throws InvalidCast
      */
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             case "DeltaTime":
@@ -266,7 +268,6 @@ class JsTimerBase extends Q\Project\Control\ControlBase
                     $objExc->incrementOffset();
                     throw $objExc;
                 }
-                break;
             case 'Periodic':
                 try {
                     $newMode = Type::cast($mixValue, Type::BOOLEAN);
@@ -309,24 +310,24 @@ class JsTimerBase extends Q\Project\Control\ControlBase
      *
      * @throws Caller
      */
-    public function addChildControl(ControlBase $objControl)
+    public function addChildControl(ControlBase $objControl): void
     {
         throw new Caller('Do not add child-controls to an instance of JsTimer!');
     }
 
     /**
-     * Get the HTML for the control (blank in this case becuase JsTimer cannot be rendered)
+     * Get the HTML for the control (blank in this case because JsTimer cannot be rendered)
      * @return string
      */
-    protected function getControlHtml()
+    protected function getControlHtml(): string
     {
-        return parent::renderTag('span');   // render invisible tag so we get a control id in javascript to attach events to
+        return parent::renderTag('span');   // render invisible tag so we get a control id in JavaScript to attach events to
     }
 
     /**
      * This function would typically parse the data posted back by the control.
      */
-    public function parsePostData()
+    public function parsePostData(): void
     {
     }
 
@@ -334,7 +335,7 @@ class JsTimerBase extends Q\Project\Control\ControlBase
      * Validation logic for control. Since we never render, we must return true to continue using the control.
      * @return bool
      */
-    public function validate()
+    public function validate(): bool
     {
         return true;
     }

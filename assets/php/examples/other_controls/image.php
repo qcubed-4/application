@@ -1,6 +1,7 @@
 <?php
 use QCubed\Action\ActionParams;
 use QCubed\Action\Ajax;
+use QCubed\Action\Alert;
 use QCubed\Action\RegisterClickPosition;
 use QCubed\Control\Image;
 use QCubed\Control\ImageArea;
@@ -13,15 +14,14 @@ require_once('../qcubed.inc.php');
 
 class ExampleForm extends FormBase
 {
-    protected $lblImage;
-    protected $btnImageInput;
-    protected $btnImage;
-    protected $txtMessage2;
-    protected $lblImage2;
-    protected $btnBgImage;
-    protected $btnImageMap;
+    protected Image $lblImage;
+    protected ImageInput $btnImageInput;
+    protected Button $btnImage;
+    protected Image $lblImage2;
+    protected Button $btnBgImage;
+    protected Image $btnImageMap;
 
-    protected function formCreate()
+    protected function formCreate(): void
     {
         $this->lblImage = new Image($this);
         $this->lblImage->ImageUrl = "../images/emoticons/1.png";
@@ -53,21 +53,15 @@ class ExampleForm extends FormBase
         $area = new ImageArea($this->btnImageMap);
         $area->Shape = ImageArea::SHAPE_CIRCLE;
         $area->Coordinates = [80, 55, 20];
-        $area->setHtmlAttribute("href", "#"); // Makes the pointer show its clickable
-        $area->onClick(new \QCubed\Action\Alert("Eyeball"));
+        $area->setHtmlAttribute("href", "#"); // Makes the pointer show it clickable
+        $area->onClick(new Alert("Eyeball"));
     }
 
-    protected function btnImage_Click(ActionParams $params)
+    protected function btnImage_Click(ActionParams $params): void
     {
         /** @var ImageInput $btn */
         $btn = $params->Control;
-        Application::displayAlert("Clicked at " . $btn->ClickX . "," . $btn->ClickY);
-    }
-
-    protected function lstFont_Change($strFormId, $strControlId, $strParameter)
-    {
-        // Set the lblMessage's font to the new font file
-        $this->lblMessage->FontNames = $this->lstFont->SelectedValue;
+        Application::displayAlert("Click at " . $btn->ClickX . "," . $btn->ClickY);
     }
 }
 

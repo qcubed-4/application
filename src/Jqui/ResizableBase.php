@@ -9,10 +9,12 @@
 
 namespace QCubed\Jqui;
 
+use QCubed\ApplicationBase;
 use QCubed\Exception\Caller;
 use QCubed\Exception\InvalidCast;
 use QCubed\Project\Application;
 use QCubed\Type;
+use Throwable;
 
 /**
  * Class ResizableBase
@@ -20,7 +22,7 @@ use QCubed\Type;
  * Implements the JQuery UI Resizable capabilities into a QCubed Control
  *
  * The ResizableBase class defined here provides an interface between the generated
- * ResizableGen class, and QCubed. This file is part of the core and will be overwritten
+ * ResizableGen class and QCubed. This file is part of the core and will be overwritten
  * when you update QCubed. To override, make your changes to the QResizable.class.php file instead.
  *
  * This class is designed to work as a kind of add-on class to a QCubed Control, giving its capabilities
@@ -31,58 +33,60 @@ use QCubed\Type;
  * @property-read Integer $DeltaY Amount of change in height that happened on the last drag
  *
  * @link http://jqueryui.com/resizable/
- * @was QResizableBase
  * @package QCubed\Jqui
  */
 class ResizableBase extends ResizableGen
 {
-    /** @var array */
-    protected $aryOriginalSize = null;
-    /** @var array */
-    protected $aryNewSize = null;
+    /** @var array|null */
+    protected ?array $aryOriginalSize = null;
+    /** @var array|null */
+    protected ?array $aryNewSize = null;
 
-    // redirect all js requests to the parent control
-    public function getJqControlId()
+    // redirect all JS requests to the parent control
+    public function getJqControlId(): string
     {
         return $this->objParentControl->ControlId;
     }
 
-    public function render($blnDisplayOutput = true)
+    public function render(bool|array $blnDisplayOutput = true): string
     {
+        return '';
     }
 
-    protected function getControlHtml()
+    protected function getControlHtml(): string
     {
+        return '';
     }
 
-    public function validate()
+    public function validate(): bool
     {
         return true;
     }
 
-    public function parsePostData()
+    public function parsePostData(): void
     {
     }
 
     /**
-     * Attach the javascript to the control.
+     * Attach the JavaScript to the control.
      */
-    protected function makeJqWidget()
+    protected function makeJqWidget(): void
     {
         parent::makeJqWidget();
         Application::executeJsFunction('qcubed.resizable', $this->getJqControlId(), $this->ControlId,
-            Application::PRIORITY_HIGH);
+            ApplicationBase::PRIORITY_HIGH);
     }
 
 
     /**
      * @param string $strName
-     * @param string $mixValue
-     * @throws Caller
-     * @throws InvalidCast
+     * @param mixed $mixValue
      * @return void
+     * @throws InvalidCast
+     * @throws Caller
+     * @throws Throwable Exception
      */
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             case '_ResizeData': // Internal only. Do not use. Called by qcubed.resizable to keep track of changes.
@@ -116,7 +120,7 @@ class ResizableBase extends ResizableGen
      * @return mixed
      * @throws Caller
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             case 'DeltaX':

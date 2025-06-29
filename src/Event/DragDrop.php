@@ -14,7 +14,6 @@ namespace QCubed\Event;
  *
  * Drop event: When an element is dropped onto another element
  *
- * @was QDragDropEvent
  * @package QCubed\Event
  */
 class DragDrop extends EventBase

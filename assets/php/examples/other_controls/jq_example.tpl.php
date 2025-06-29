@@ -4,14 +4,14 @@
 <div id="instructions">
 	<h1>jQuery UI Controls</h1>
 	
-	<p>QCubed includes a library of controls that implement the JQuery UI set of javascript interactive controls found
-        at <a href="http://www.jquery.com/ui">jQuery UI</a> .
+	<p>QCubed-4 includes a library of controls that implement the JQuery UI set of JavaScript interactive controls found
+        at <a href="http://www.jquery.com/ui">jQuery UI</a>.
        </p>
 	
-	<p>Explore the variety of these controls on this page, and proceed to the <a href="js_return_param_example.php">next tutorial</a> 
+	<p>Explore the variety of these controls on this page and proceed to the <a href="js_return_param_example.php">next tutorial</a>
 	to learn how to attach events to these controls and use them in your Forms.</p>
 
-    <p>QCubed comes with a default JQuery UI theme, but you can use JQuery UI Themeroller to create your own and point to
+    <p>QCubed-4 comes with a default JQuery UI theme, but you can use JQuery UI Themeroller to create your own and point to
     it in your assets.cfg.php file.</p>
 
 
@@ -43,7 +43,7 @@
 	
 	<div class="example"><h2>Selectable</h2>
 		<p>Drag a box (aka lasso) with the mouse over the items.
-			Items can be selected by click or drag while holding the Ctrl/Meta key, 
+			Items can be selected by a click or drag while holding the Ctrl/Meta key,
 			allowing for multiple (non-contiguous) selections.</p>
 		<?php $this->Selectable->render(); ?>
 	</div>
@@ -65,7 +65,7 @@
 	<div class="example"><h2>Ajax Autocomplete</h2>
 		 <p>Type "s" to test</p>
 			<?php $this->AjaxAutocomplete->renderWithName(); ?>
-		<p>See the Autocomplete2 QCubed plugin for additional extensions to the Autocomplete control. </p>
+		<p>See the Autocomplete2 QCubed-4 plugin for additional extensions to the Autocomplete control. </p>
 	</div>
 	
 	<div class="example"><h2>Buttons</h2>

@@ -12,15 +12,15 @@ namespace QCubed\Event;
 /**
  * Class DialogButton
  *
- * Special event to handle button clicks in dialogs.
+ * A special event to handle button clicks in dialogs.
  *
  * Add an action to this event to get a button click.
  * The action parameter will be the id of the button that was clicked.
  *
- * This current implementation is JQuery UI and relies on the ui javascript parameter being the button id.
+ * This current implementation is JQuery UI and relies on the ui JavaScript parameter being the button id.
  *
- * @usage    $dlg->addAction(new QDialog_ButtonEvent(), new QAjaxAction($this, 'ButtonClick'));
- * @was QDialog_ButtonEvent
+ * @usage    $dlg->Action(new QDialog_ButtonEvent(), new AjaxControl($this, 'ButtonClick'));
+ *
  * @package QCubed\Event
  */
 class DialogButton extends EventBase

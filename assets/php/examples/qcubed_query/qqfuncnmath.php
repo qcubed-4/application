@@ -1,4 +1,5 @@
-<?php use QCubed\Query\QQ;
+<?php use QCubed\Database\Service;
+use QCubed\Query\QQ;
 
 require_once('../qcubed.inc.php'); ?>
 <?php require('../includes/header.inc.php'); ?>
@@ -6,9 +7,9 @@ require_once('../qcubed.inc.php'); ?>
 <div id="instructions">
 	<h1>SQL functions and math operations for QQuery</h1>
 
-    <p>At times, you may need to create  database queries which retrieve
-        values which are calculated values or custom SQL values. In QCubed, we call these <strong>virtual attributes</strong>.
-        Each virtual attribute must be given a name, and a definition. The definition can be taken from a query built with
+    <p>At times, you may need to create database queries which retrieve
+        values which are calculated values or custom SQL values. In QCubed-4, we call these <strong>virtual attributes</strong>.
+        Each virtual attribute must be given a name and a definition. The definition can be taken from a query built with
         QQ operations, a custom sub-SQL clause, or a fully custom SQL statement.
     </p>
 
@@ -22,17 +23,17 @@ require_once('../qcubed.inc.php'); ?>
 		<li><strong>QQ::Neg</strong> the unary negative (-),</li>
 	</ul>
 
-	<p>You can also use  <strong>QQ::MathOp</strong> to apply any math operator that your particular flavor of SQL might
+	<p>You can also use <strong>QQ::MathOp</strong> to apply any math operator that your particular flavor of SQL might
 		provide. For example, you can use QQ::MathOp to execute a bitwise shift operation ("&lt;&lt;") if you are using
 		MySQL or Postgres, even though that operator is not included in the SQL standard.
 	</p>
 
 
-	<p>Similarly you can get the results of standard SQL functions, like:
+	<p>Similarly, you can get the results of standard SQL functions, like:
 	<ul>
 	<li><strong>QQ::Abs</strong> for the absolute value (ABS), </li>
 	<li><strong>QQ::Ceil</strong> for the smallest integer value not less than the argument (CEIL), </li>
-	<li><strong>QQ::Floor</strong> for largest integer value not greater than the argument (FLOOR), </li>
+	<li><strong>QQ::Floor</strong> for the largest integer value not greater than the argument (FLOOR), </li>
 	<li><strong>QQ::Mod</strong> for the remainder (MOD), </li>
 	<li><strong>QQ::Power</strong> for the argument raised to the specified power (POWER), </li>
 	<li><strong>QQ::Sqrt</strong> for the square root of the argument (SQRT), </li>
@@ -90,10 +91,10 @@ require_once('../qcubed.inc.php'); ?>
 	<p>This also demonstrates how to use the \QCubed\Query\QQ::MathOp and \QCubed\Query\QQ::Neg functions. </p>
 <?php
 
-	\QCubed\Database\Service::getDatabase(1)->EnableProfiling();
+	Service::getDatabase(1)->EnableProfiling();
 	$objPersonArray = Person::QueryArray(
 		/* Only return the persons who have AT LEAST ONE overdue project */
-		/* Note below we are adding a negative. This is for demo purposes. We could have just used \QCubed\Query\QQ:Sub as above. */
+		/* Note below we are adding a negative. This is for demo purposes. We could have just used \QCubed\Query\QQ: Subs above. */
 		QQ::GreaterThan(
 			QQ::Virtual('diff', QQ::MathOp(
 				'+', // Note the plus operation sign here
@@ -120,13 +121,13 @@ require_once('../qcubed.inc.php'); ?>
 		_p('<br/>', false);
 	}
 ?>
-	<p><?php \QCubed\Database\Service::getDatabase(1)->OutputProfiling(); ?></p>
+	<p><?php Service::getDatabase(1)->OutputProfiling(); ?></p>
 
 	<h2>SQL Function Example</h2>
 	<p>Use the \QCubed\Query\QQ::Abs and \QCubed\Query\QQ::Sub functions to retrieve projects both over-budget and under-budget by $20.</p>
 <?php
 
-	\QCubed\Database\Service::getDatabase(1)->EnableProfiling();
+	Service::getDatabase(1)->EnableProfiling();
 	$objPersonArray = Person::QueryArray(
 		/* Only return the persons who have AT LEAST ONE overdue project */
 		QQ::GreaterThan(
@@ -156,7 +157,7 @@ require_once('../qcubed.inc.php'); ?>
 		_p('<br/>', false);
 	}
 ?>
-	<p><?php \QCubed\Database\Service::getDatabase(1)->OutputProfiling(); ?></p>
+	<p><?php Service::getDatabase(1)->OutputProfiling(); ?></p>
 </div>
 
 <?php require('../includes/footer.inc.php'); ?>

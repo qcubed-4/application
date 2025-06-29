@@ -18,16 +18,16 @@ class ExampleForm extends FormBase
     // Declare the Proxy Control
     // Notice how this control is NEVER RENDERED outright.  Instead, we use
     // RenderAsHref() and RenderAsEvents() on it.
-    protected $pxyExample;
-    protected $pnlHover;
+    protected Proxy $pxyExample;
+    protected Panel $pnlHover;
 
     // For this example, show how to use custom HTML to trigger events that updates this Message label
-    protected $lblMessage;
+    protected Label $lblMessage;
 
     /**
      *
      */
-    protected function formCreate()
+    protected function formCreate(): void
     {
         // Define the Proxy
         $this->pxyExample = new Proxy($this);
@@ -56,7 +56,7 @@ class ExampleForm extends FormBase
     }
 
     // Notice how the optional "action parameter" we used in the RenderAsHref() or RenderEvents() call gets passed in as $strParameter here.
-    protected function pxyExample_Click($strFormId, $strControlId, $strParameter)
+    protected function pxyExample_Click(string $strFormId, string $strControlId,string  $strParameter): void
     {
         $this->lblMessage->Text = 'You clicked on: ' . $strParameter;
     }

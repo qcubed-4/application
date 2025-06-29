@@ -12,6 +12,7 @@ namespace QCubed\Table;
 use QCubed\Control\FormBase;
 use QCubed\Exception\Caller;
 use QCubed\Exception\InvalidCast;
+use Exception;
 use QCubed\Project\Control\ControlBase;
 use QCubed\QDateTime;
 use QCubed\Type;
@@ -20,7 +21,7 @@ use QCubed\Type;
  * Class DataColumn
  *
  * An abstract column designed to work with DataGrid and other tables that require more than basic columns.
- * Supports post processing of cell contents for further formatting, and OrderBy clauses.
+ * Supports post-processing of cell contents for further formatting and OrderBy clauses.
  *
  * @property mixed $OrderByClause        order by info for sorting the column in ascending order. Used by subclasses.
  *    Most often this is a \QCubed\Query\QQ::Clause, but can be any data needed.
@@ -30,41 +31,40 @@ use QCubed\Type;
  * @property-write string $PostMethod           after the cell object is retrieved, call this method on the obtained object
  * @property-write callback $PostCallback         after the cell object is retrieved, call this callback on the obtained object.
  *    If $PostMethod is also set, this will be called after that method call.
- * @was QAbstractHtmlTableDataColumn
  * @package QCubed\Table
  */
 abstract class DataColumn extends ColumnBase
 {
     /** @var mixed Order By information. Can be a \QCubed\Query\QQ::Clause, or any kind of object depending on your need */
-    protected $objOrderByClause = null;
+    protected mixed $objOrderByClause = null;
     /** @var mixed */
-    protected $objReverseOrderByClause = null;
-    /** @var string */
-    protected $strFormat = null;
-    /** @var string */
-    protected $strPostMethod = null;
+    protected mixed $objReverseOrderByClause = null;
+    /** @var string|null */
+    protected ?string $strFormat = null;
+    /** @var string|null */
+    protected ?string $strPostMethod = null;
     /** @var callback */
     protected $objPostCallback = null;
 
     /**
      * Return the raw string that represents the cell value.
-     * This version uses a combination of post processing strategies so that you can set
+     * This version uses a combination of post-processing strategies so that you can set
      * column options to format the raw data. If no
      * options are set, then $item will just pass through, or __toString() will be called
-     * if its an object. If none of these work for you, just override FetchCellObject and
+     * if it's an object. If none of these work for you, just override FetchCellObject and
      * return your formatted string from there.
      *
      * @param mixed $item
      *
-     * @return mixed|string
+     * @return string
      */
-    public function fetchCellValue($item)
+    public function fetchCellValue(mixed $item): string
     {
         $cellValue = $this->fetchCellObject($item);
 
         if ($cellValue !== null && $this->strPostMethod) {
             $strPostMethod = $this->strPostMethod;
-            assert(is_callable([$cellValue, $strPostMethod]));    // Malformed post method, or the item is not an object
+            assert(is_callable([$cellValue, $strPostMethod]));    // Malformed post-method, or the item is not an object
             $cellValue = $cellValue->$strPostMethod();
         }
         if ($this->objPostCallback) {
@@ -89,16 +89,16 @@ abstract class DataColumn extends ColumnBase
 
     /**
      * Return the value of the cell. FetchCellValue will process this more if needed.
-     * Default returns an entire data row and relies on FetchCellValue to extract the needed data.
+     * Default returns an entire data row and relies on FetchCellValue to extract the necessary data.
      *
      * @param mixed $item
      */
-    abstract public function fetchCellObject($item);
+    abstract public function fetchCellObject(mixed $item): mixed;
 
     /**
-     * Fix up possible embedded reference to the form.
+     * Fix up a possible embedded reference to the form.
      */
-    public function sleep()
+    public function sleep(): void
     {
         $this->objPostCallback = ControlBase::sleepHelper($this->objPostCallback);
         parent::sleep();
@@ -108,7 +108,7 @@ abstract class DataColumn extends ColumnBase
      * The object has been unserialized, so fix up pointers to embedded objects.
      * @param FormBase $objForm
      */
-    public function wakeup(FormBase $objForm)
+    public function wakeup(FormBase $objForm): void
     {
         parent::wakeup($objForm);
         $this->objPostCallback = ControlBase::wakeupHelper($objForm, $this->objPostCallback);
@@ -122,7 +122,7 @@ abstract class DataColumn extends ColumnBase
      * @return mixed
      * @throws Caller
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             case "OrderByClause":
@@ -146,33 +146,23 @@ abstract class DataColumn extends ColumnBase
      * PHP magic method
      *
      * @param string $strName
-     * @param string $mixValue
+     * @param mixed $mixValue
      *
-     * @return mixed|void
-     * @throws \Exception
+     * @return void
+     * @throws Exception
      * @throws Caller
      * @throws InvalidCast
      */
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             case "OrderByClause":
-                try {
-                    $this->objOrderByClause = $mixValue;
-                    break;
-                } catch (InvalidCast $objExc) {
-                    $objExc->incrementOffset();
-                    throw $objExc;
-                }
+                $this->objOrderByClause = $mixValue;
+                break;
 
             case "ReverseOrderByClause":
-                try {
-                    $this->objReverseOrderByClause = $mixValue;
-                    break;
-                } catch (InvalidCast $objExc) {
-                    $objExc->incrementOffset();
-                    throw $objExc;
-                }
+                $this->objReverseOrderByClause = $mixValue;
+                break;
 
             case "Format":
                 try {

@@ -188,7 +188,7 @@ class FileAssetBase extends Panel
         $this->Refresh();
     }
 
-    public function __get($strName)
+    protected function __get(string $strName)
     {
         switch ($strName) {
             case 'File':
@@ -349,7 +349,7 @@ class FileAssetBase extends Panel
         return $intFileAssetType;
     }
 
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, string $mixValue)
     {
         $this->blnModified = true;
 

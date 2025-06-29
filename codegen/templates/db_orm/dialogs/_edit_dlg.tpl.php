@@ -19,10 +19,12 @@ $_TEMPLATE_SETTINGS = array(
 <?php print("<?php\n"); ?>
 
 use QCubed as Q;
+use QCubed\Exception\InvalidCast;
+use QCubed\Control\FormBase;
+use QCubed\Control\ControlBase;
 use QCubed\Exception\Caller;
 use QCubed\Database\Exception\OptimisticLocking;
 use QCubed\Project\Jqui\Dialog;
-
 
 include (QCUBED_PROJECT_PANEL_DIR . '/<?= $strPropertyName ?>EditPanel.php');
 
@@ -31,11 +33,10 @@ include (QCUBED_PROJECT_PANEL_DIR . '/<?= $strPropertyName ?>EditPanel.php');
 * <?= $strPropertyName ?>EditPanel class, which has all the controls for editing
 * a record in the <?= $objTable->Name ?> table.
 *
-*
 * @package <?php echo CodegenBase::$ApplicationName; ?>
 
 */
-class <?= $strPropertyName ?>EditDlgGen extends \QCubed\Project\Control\Dialog
+class <?= $strPropertyName ?>EditDlgGen extends Q\Project\Control\Dialog
 {
 
 <?php include('dlg_protected_member_variables.tpl.php'); ?>

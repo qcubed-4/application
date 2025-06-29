@@ -2,8 +2,9 @@
 use QCubed\Project\Codegen\CodegenBase as QCodegen;
 use QCubed\QString;
 
-/** @var QSqlTable $objTable */
-/** @var QDatabaseCodeGen $objCodeGen */
+/** @var SqlTable $objTable */
+
+/** @var DatabaseCodeGen $objCodeGen */
 global $_TEMPLATE_SETTINGS;
 
 $strPropertyName = QCodeGen::dataListPropertyName($objTable);

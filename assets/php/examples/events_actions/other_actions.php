@@ -3,6 +3,7 @@ use QCubed\Action\CssAction;
 use QCubed\Action\CssClass;
 use QCubed\Action\FocusControl;
 use QCubed\Action\SelectControl;
+use QCubed\Action\ToggleDisplay;
 use QCubed\Action\ToggleEnable;
 use QCubed\Control\Panel;
 use QCubed\Event\Click;
@@ -16,21 +17,21 @@ require_once('../qcubed.inc.php');
 
 class ExampleForm extends FormBase
 {
-    protected $btnFocus;
-    protected $btnSelect;
-    protected $txtFocus;
+    protected Button $btnFocus;
+    protected Button $btnSelect;
+    protected TextBox $txtFocus;
 
-    protected $btnToggleDisplay;
-    protected $txtDisplay;
+    protected Button $btnToggleDisplay;
+    protected TextBox $txtDisplay;
 
-    protected $btnToggleEnable;
-    protected $txtEnable;
+    protected Button $btnToggleEnable;
+    protected TextBox $txtEnable;
 
-    protected $pnlHover;
+    protected Panel $pnlHover;
 
-    protected $btnCssAction;
+    protected Button $btnCssAction;
 
-    protected function formCreate()
+    protected function formCreate(): void
     {
         // Define the Textboxes
         $this->txtFocus = new TextBox($this);
@@ -54,7 +55,7 @@ class ExampleForm extends FormBase
         $this->btnToggleDisplay = new Button($this);
         $this->btnToggleDisplay->Text = 'Toggle the Display (show/hide)';
         $this->btnToggleDisplay->addAction(new Click(),
-            new \QCubed\Action\ToggleDisplay($this->txtDisplay));
+            new ToggleDisplay($this->txtDisplay));
 
         // \QCubed\Action\ToggleEnable example
         $this->btnToggleEnable = new Button($this);

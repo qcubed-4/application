@@ -14,16 +14,16 @@ namespace QCubed\Jqui\Event;
  *
  * The abstract SliderSlide class defined here is
  * code-generated. The code to generate this file is
- * in the /tools/jquery_ui_gen/jq_control_gen.php file
+ * in the /tools/jquery_ui_gen/jq_control_gen.php file,
  * and you can regenerate the files if you need to.
  *
  * The comments in this file are taken from the api reference site, so they do
  * not always make sense with regard to QCubed. They are simply provided
  * as reference.
- * Triggered on every mouse move during slide. The value provided in the
+ * Triggered on every mouse move during a slide. The value provided in the
  * event as ui.value represents the value that the handle will have as a
  * result of the current movement. Canceling the event will prevent the
- * handle from moving and the handle will continue to have its previous
+ * handle from moving, and the handle will continue to have its previous
  * value.
  * 
  * 	* event Type: Event 
@@ -40,7 +40,6 @@ namespace QCubed\Jqui\Event;
  * multi-handled slider.
  * 
  *
- * @was QSlider_SlideEvent
  */
 class SliderSlide extends EventBase
 {

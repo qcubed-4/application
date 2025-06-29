@@ -2,6 +2,7 @@
 namespace QCubed\Jqui;
 
 use QCubed;
+use QCubed\Control\Panel;
 use QCubed\Type;
 use QCubed\Project\Application;
 use QCubed\Exception\InvalidCast;
@@ -11,7 +12,7 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
 /**
  * Class SelectableGen
  *
- * This is the SelectableGen class which is automatically generated
+ * This is the SelectableGen class that is automatically generated
  * by scraping the JQuery UI documentation website. As such, it includes all the options
  * as listed by the JQuery UI website, which may or may not be appropriate for QCubed. See
  * the SelectableBase class for any glue code to make this class more
@@ -32,15 +33,15 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
  * Prevents selecting if you start on elements matching the selector.
  *
  * @property mixed $Classes
- * Specify additional classes to add to the widgets elements. Any of
- * classes specified in the Theming section can be used as keys to
+ * Specify additional classes to add to the widget elements. Any of
+ * the classes specified in the Theming section can be used as keys to
  * override their value. To learn more about this option, check out the
- * learn article about the classes option.
+ * learned article about the classes option.
 
  *
  * @property integer $Delay
  * Time in milliseconds to define when the selecting should start. This
- * helps prevent unwanted selections when clicking on an element.(version
+ * helps prevent unwanted selections when clicking on an element. (version
  * deprecated: 1.12)
  *
  * @property boolean $Disabled
@@ -49,54 +50,52 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
  * @property integer $Distance
  * Tolerance, in pixels, for when selecting should start. If specified,
  * selecting will not start until the mouse has been dragged beyond the
- * specified distance.(version deprecated: 1.12)
+ * specified distance. (version deprecated: 1.12)
  *
  * @property mixed $Filter
  * The matching child elements will be made selectees (able to be
  * selected).
  *
  * @property string $Tolerance
- * Specifies which mode to use for testing whether the lasso should
+ * Specify which mode to use for testing whether the lasso should
  * select an item. Possible values: 
  * 
  * 	* "fit": Lasso overlaps the item entirely.
  * 	* "touch": Lasso overlaps the item by any amount.
- * 
-
  *
- * @was QSelectableGen
-
+ *
  */
 
-class SelectableGen extends QCubed\Control\Panel
+class SelectableGen extends Panel
 {
-    protected $strJavaScripts = QCUBED_JQUI_JS;
-    protected $strStyleSheets = QCUBED_JQUI_CSS;
+    protected string $strJavaScripts = QCUBED_JQUI_JS;
+    protected string $strStyleSheets = QCUBED_JQUI_CSS;
     /** @var mixed */
-    protected $mixAppendTo = null;
+    protected mixed $mixAppendTo = null;
     /** @var boolean */
-    protected $blnAutoRefresh = null;
+    protected ?bool $blnAutoRefresh = null;
     /** @var mixed */
-    protected $mixCancel = null;
+    protected mixed $mixCancel = null;
     /** @var mixed */
-    protected $mixClasses = null;
-    /** @var integer */
-    protected $intDelay;
+    protected mixed $mixClasses = null;
+    /** @var integer|null */
+    protected ?int $intDelay = null;
     /** @var boolean */
-    protected $blnDisabled = null;
-    /** @var integer */
-    protected $intDistance;
+    protected ?bool $blnDisabled = null;
+    /** @var integer|null */
+    protected ?int $intDistance = null;
     /** @var mixed */
-    protected $mixFilter = null;
-    /** @var string */
-    protected $strTolerance = null;
+    protected mixed $mixFilter = null;
+    /** @var string|null */
+    protected ?string $strTolerance = null;
 
     /**
      * Builds the option array to be sent to the widget constructor.
      *
      * @return array key=>value array of options
      */
-    protected function makeJqOptions() {
+    protected function makeJqOptions(): array
+    {
         $jqOptions = parent::MakeJqOptions();
         if (!is_null($val = $this->AppendTo)) {$jqOptions['appendTo'] = $val;}
         if (!is_null($val = $this->AutoRefresh)) {$jqOptions['autoRefresh'] = $val;}
@@ -115,7 +114,7 @@ class SelectableGen extends QCubed\Control\Panel
      *
      * @return string
      */
-    public function getJqSetupFunction()
+    public function getJqSetupFunction(): string
     {
         return 'selectable';
     }
@@ -127,28 +126,31 @@ class SelectableGen extends QCubed\Control\Panel
      * 
      * 	* This method does not accept any arguments.
      */
-    public function destroy()
+    public function destroy(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "destroy", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "destroy", QCubed\ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Disables the selectable.
      * 
      * 	* This method does not accept any arguments.
      */
-    public function disable()
+    public function disable(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "disable", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "disable", QCubed\ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Enables the selectable.
      * 
      * 	* This method does not accept any arguments.
      */
-    public function enable()
+    public function enable(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "enable", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "enable", QCubed\ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Retrieves the selectables instance object. If the element does not
      * have an associated instance, undefined is returned.
@@ -158,62 +160,67 @@ class SelectableGen extends QCubed\Control\Panel
      * 
      * 	* This method does not accept any arguments.
      */
-    public function instance()
+    public function instance(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "instance", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "instance", QCubed\ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Gets the value currently associated with the specified optionName.
-     * 
+     *
      * Note: For options that have objects as their value, you can get the
      * value of a specific key by using dot notation. For example, "foo.bar"
      * would get the value of the bar property on the foo option.
-     * 
-     * 	* optionName Type: String The name of the option to get.
-     * @param $optionName
+     *
+     *    * optionName Type: String The name of the option to get.
+     * @param string $optionName
      */
-    public function option($optionName)
+    public function option(string $optionName): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $optionName, Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $optionName, QCubed\ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Gets an object containing key/value pairs representing the current
      * selectable options hash.
      * 
      * 	* This signature does not accept any arguments.
      */
-    public function option1()
+    public function option1(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", QCubed\ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Sets the value of the selectable option associated with the specified
      * optionName.
-     * 
+     *
      * Note: For options that have objects as their value, you can set the
      * value of just one property by using dot notation for optionName. For
      * example, "foo.bar" would update only the bar property of the foo
      * option.
-     * 
-     * 	* optionName Type: String The name of the option to set.
-     * 	* value Type: Object A value to set for the option.
-     * @param $optionName
-     * @param $value
+     *
+     *    * optionName Type: String The name of the option to set.
+     *    * value Type: Object A value to set for the option.
+     * @param string $optionName
+     * @param object $value
      */
-    public function option2($optionName, $value)
+    public function option2(string $optionName, object $value): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $optionName, $value, Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $optionName, $value, QCubed\ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Sets one or more options for the selectable.
-     * 
-     * 	* options Type: Object A map of option-value pairs to set.
-     * @param $options
+     *
+     *    * options Type: Object A map of option-value pairs to set.
+     * @param object $options
      */
-    public function option3($options)
+    public function option3(object $options): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $options, Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $options, QCubed\ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Refresh the position and size of each selectee element. This method
      * can be used to manually recalculate the position and size of each
@@ -221,13 +228,13 @@ class SelectableGen extends QCubed\Control\Panel
      * 
      * 	* This method does not accept any arguments.
      */
-    public function refresh()
+    public function refresh(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "refresh", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "refresh", QCubed\ApplicationBase::PRIORITY_LOW);
     }
 
 
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             case 'AppendTo': return $this->mixAppendTo;
@@ -249,7 +256,7 @@ class SelectableGen extends QCubed\Control\Panel
         }
     }
 
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             case 'AppendTo':
@@ -340,18 +347,20 @@ class SelectableGen extends QCubed\Control\Panel
     }
 
     /**
-    * If this control is attachable to a codegenerated control in a ModelConnector, this function will be
-    * used by the ModelConnector designer dialog to display a list of options for the control.
-    * @return QModelConnectorParam[]
-    **/
-    public static function getModelConnectorParams()
+     * If this control is attachable to a codegenerated control in a ModelConnector, this function will be
+     * used by the ModelConnector designer dialog to display a list of options for the control.
+     * @return QModelConnectorParam[]
+     *
+     * @throws Caller
+     */
+    public static function getModelConnectorParams(): array
     {
         return array_merge(parent::GetModelConnectorParams(), array(
-            new QModelConnectorParam (get_called_class(), 'AutoRefresh', 'This determines whether to refresh (recalculate) the position and sizeof each selectee at the beginning of each select operation. If youhave many items, you may want to set this to false and call therefresh() method manually.', Type::BOOLEAN),
-            new QModelConnectorParam (get_called_class(), 'Delay', 'Time in milliseconds to define when the selecting should start. Thishelps prevent unwanted selections when clicking on an element.(versiondeprecated: 1.12)', Type::INTEGER),
+            new QModelConnectorParam (get_called_class(), 'AutoRefresh', 'This determines whether to refresh (recalculate) the position and sizeof each selectee at the beginning of each select operation. If you have many items, you may want to set this to false and call the refresh() method manually.', Type::BOOLEAN),
+            new QModelConnectorParam (get_called_class(), 'Delay', 'Time in milliseconds to define when the selecting should start. This helps prevent unwanted selections when clicking on an element. (version deprecated: 1.12)', Type::INTEGER),
             new QModelConnectorParam (get_called_class(), 'Disabled', 'Disables the selectable if set to true.', Type::BOOLEAN),
-            new QModelConnectorParam (get_called_class(), 'Distance', 'Tolerance, in pixels, for when selecting should start. If specified,selecting will not start until the mouse has been dragged beyond thespecified distance.(version deprecated: 1.12)', Type::INTEGER),
-            new QModelConnectorParam (get_called_class(), 'Tolerance', 'Specifies which mode to use for testing whether the lasso shouldselect an item. Possible values: 	* \"fit\": Lasso overlaps the item entirely.	* \"touch\": Lasso overlaps the item by any amount.', Type::STRING),
+            new QModelConnectorParam (get_called_class(), 'Distance', 'Tolerance, in pixels, for when selecting should start. If specified, selecting will not start until the mouse has been dragged beyond the specified distance. (version deprecated: 1.12)', Type::INTEGER),
+            new QModelConnectorParam (get_called_class(), 'Tolerance', 'Specify which mode to use for testing whether the lasso should select an item. Possible values:	* \"fit\": Lasso overlaps the item entirely.	* \"touch\": Lasso overlaps the item by any amount.', Type::STRING),
         ));
     }
 }

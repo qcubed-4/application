@@ -19,20 +19,19 @@ use QCubed\Control\ControlBase;
  *
  * Displays an alert to the user
  *
- * @was QAlertAction
  * @package QCubed\Action
  */
 class Alert extends ActionBase
 {
     /** @var string Message to be shown as the alert */
-    protected $strMessage;
+    protected string $strMessage;
 
     /**
      * Constructor
      *
      * @param string $strMessage Message to be shown as the alert
      */
-    public function __construct($strMessage)
+    public function __construct(string $strMessage)
     {
         $this->strMessage = $strMessage;
     }
@@ -45,7 +44,7 @@ class Alert extends ActionBase
      * @return mixed|null|string
      * @throws Caller
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             case 'Message':
@@ -67,7 +66,7 @@ class Alert extends ActionBase
      *
      * @return string
      */
-    public function renderScript(ControlBase $objControl)
+    public function renderScript(ControlBase $objControl): string
     {
         $strMessage = Js\Helper::toJsObject($this->strMessage);
 

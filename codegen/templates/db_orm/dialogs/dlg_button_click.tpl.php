@@ -1,23 +1,25 @@
-	/**
-	 * A button was clicked. Override to do something different than the default or process further.
-	 * @param string $strFormId
-	 * @param string $strControlId
-	 * @param mixed $param
-	 */
-	public function buttonClick($strFormId, $strControlId, $param)
+    /**
+    * A button was clicked. Override to do something different than the default or process further.
+    * @param string $strFormId
+    * @param string $strControlId
+    * @param mixed $param
+    * @throws Caller
+    * @throws InvalidCast
+    */
+    public function buttonClick(string $strFormId, string $strControlId, string $param): void
     {
-		switch ($param) {
-			case 'save':
-				$this->save();
-				break;
+        switch ($param) {
+            case 'save':
+                $this->save();
+                break;
 
-			case 'delete':
-				$this->pnl<?= $strPropertyName ?>->delete();
-                $this->close();
-				break;
-
-			case 'cancel':
+            case 'delete':
+                $this->pnl<?= $strPropertyName ?>->delete();
                 $this->close();
                 break;
-		}
-	}
+
+            case 'cancel':
+                $this->close();
+                break;
+        }
+    }

@@ -1,9 +1,10 @@
 <?php
 namespace QCubed\Jqui;
 
-use QCubed;
+use QCubed\Project\Control\ControlBase;
 use QCubed\Type;
 use QCubed\Project\Application;
+use QCubed\ApplicationBase;
 use QCubed\Exception\InvalidCast;
 use QCubed\Exception\Caller;
 use QCubed\ModelConnector\Param as QModelConnectorParam;
@@ -11,7 +12,7 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
 /**
  * Class DroppableGen
  *
- * This is the DroppableGen class which is automatically generated
+ * This is the DroppableGen class that is automatically generated
  * by scraping the JQuery UI documentation website. As such, it includes all the options
  * as listed by the JQuery UI website, which may or may not be appropriate for QCubed. See
  * the DroppableBase class for any glue code to make this class more
@@ -40,24 +41,24 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
  * (version deprecated: 1.12)
  *
  * @property boolean $AddClasses
- * If set to false, will prevent the ui-droppable class from being added.
+ * If set to false, it will prevent the ui-droppable class from being added.
  * This may be desired as a performance optimization when calling
  * .droppable() init on hundreds of elements.
  *
  * @property mixed $Classes
- * Specify additional classes to add to the widgets elements. Any of
- * classes specified in the Theming section can be used as keys to
+ * Specify additional classes to add to the widget elements. Any of
+ * the classes specified in the Theming section can be used as keys to
  * override their value. To learn more about this option, check out the
- * learn article about the classes option.
+ * learned article about the classes option.
 
  *
  * @property boolean $Disabled
  * Disables the droppable if set to true.
  *
  * @property boolean $Greedy
- * By default, when an element is dropped on nested droppables, each
+ * By default, when an element is dropped on a nested droppable, each
  * droppable will receive the element. However, by setting this option to
- * true, any parent droppables will not receive the element. The drop
+ * true, any parent droppable will not receive the element. The drop
  * event will still bubble normally, but the event.target can be checked
  * to see which droppable received the draggable element.
  *
@@ -75,50 +76,47 @@ use QCubed\ModelConnector\Param as QModelConnectorParam;
  * droppable will be accepted.
  *
  * @property string $Tolerance
- * Specifies which mode to use for testing whether a draggable is
+ * Specify which mode to use for testing whether a draggable is
  * hovering over a droppable. Possible values: 
  * 
  * 	* "fit": Draggable overlaps the droppable entirely.
  * 	* "intersect": Draggable overlaps the droppable at least 50% in both
  * directions.
- * 	* "pointer": Mouse pointer overlaps the droppable.
+ * 	* "pointer": A mouse pointer overlaps the droppable.
  * 	* "touch": Draggable overlaps the droppable any amount.
- * 
-
  *
- * @was QDroppableGen
-
  */
 
-abstract class DroppableGen extends QCubed\Project\Control\ControlBase
+abstract class DroppableGen extends ControlBase
 {
-    protected $strJavaScripts = QCUBED_JQUI_JS;
-    protected $strStyleSheets = QCUBED_JQUI_CSS;
+    protected string $strJavaScripts = QCUBED_JQUI_JS;
+    protected string $strStyleSheets = QCUBED_JQUI_CSS;
     /** @var mixed */
-    protected $mixAccept = null;
-    /** @var string */
-    protected $strActiveClass = null;
+    protected mixed $mixAccept = null;
+    /** @var string|null */
+    protected ?string $strActiveClass = null;
     /** @var boolean */
-    protected $blnAddClasses = null;
+    protected ?bool $blnAddClasses = null;
     /** @var mixed */
-    protected $mixClasses = null;
+    protected mixed $mixClasses = null;
     /** @var boolean */
-    protected $blnDisabled = null;
+    protected ?bool $blnDisabled = null;
     /** @var boolean */
-    protected $blnGreedy = null;
-    /** @var string */
-    protected $strHoverClass = null;
-    /** @var string */
-    protected $strScope = null;
-    /** @var string */
-    protected $strTolerance = null;
+    protected ?bool $blnGreedy = null;
+    /** @var string|null */
+    protected ?string $strHoverClass = null;
+    /** @var string|null */
+    protected ?string $strScope = null;
+    /** @var string|null */
+    protected ?string $strTolerance = null;
 
     /**
      * Builds the option array to be sent to the widget constructor.
      *
      * @return array key=>value array of options
      */
-    protected function makeJqOptions() {
+    protected function makeJqOptions(): array
+    {
         $jqOptions = parent::MakeJqOptions();
         if (!is_null($val = $this->Accept)) {$jqOptions['accept'] = $val;}
         if (!is_null($val = $this->ActiveClass)) {$jqOptions['activeClass'] = $val;}
@@ -137,11 +135,10 @@ abstract class DroppableGen extends QCubed\Project\Control\ControlBase
      *
      * @return string
      */
-    public function getJqSetupFunction()
+    public function getJqSetupFunction(): string
     {
         return 'droppable';
     }
-
 
     /**
      * Removes the droppable functionality completely. This will return the
@@ -149,30 +146,33 @@ abstract class DroppableGen extends QCubed\Project\Control\ControlBase
      * 
      * 	* This method does not accept any arguments.
      */
-    public function destroy()
+    public function destroy(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "destroy", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "destroy", ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Disables the droppable.
      * 
      * 	* This method does not accept any arguments.
      */
-    public function disable()
+    public function disable(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "disable", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "disable", ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Enables the droppable.
      * 
      * 	* This method does not accept any arguments.
      */
-    public function enable()
+    public function enable(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "enable", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "enable", ApplicationBase::PRIORITY_LOW);
     }
+
     /**
-     * Retrieves the droppables instance object. If the element does not have
+     * Retrieves the droppable instance object. If the element does not have
      * an associated instance, undefined is returned.
      * 
      * Unlike other widget methods, instance() is safe to call on any element
@@ -180,65 +180,68 @@ abstract class DroppableGen extends QCubed\Project\Control\ControlBase
      * 
      * 	* This method does not accept any arguments.
      */
-    public function instance()
+    public function instance(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "instance", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "instance", ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Gets the value currently associated with the specified optionName.
-     * 
+     *
      * Note: For options that have objects as their value, you can get the
      * value of a specific key by using dot notation. For example, "foo.bar"
      * would get the value of the bar property on the foo option.
-     * 
-     * 	* optionName Type: String The name of the option to get.
-     * @param $optionName
+     *
+     *    * optionName Type: String The name of the option to get.
+     * @param string $optionName
      */
-    public function option($optionName)
+    public function option(string $optionName): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $optionName, Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $optionName, ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Gets an object containing key/value pairs representing the current
      * droppable options hash.
      * 
      * 	* This signature does not accept any arguments.
      */
-    public function option1()
+    public function option1(): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Sets the value of the droppable option associated with the specified
      * optionName.
-     * 
+     *
      * Note: For options that have objects as their value, you can set the
      * value of just one property by using dot notation for optionName. For
      * example, "foo.bar" would update only the bar property of the foo
      * option.
-     * 
-     * 	* optionName Type: String The name of the option to set.
-     * 	* value Type: Object A value to set for the option.
-     * @param $optionName
-     * @param $value
+     *
+     *    * optionName Type: String The name of the option to set.
+     *    * value Type: Object A value to set for the option.
+     * @param string $optionName
+     * @param string $value
      */
-    public function option2($optionName, $value)
+    public function option2(string $optionName, string $value): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $optionName, $value, Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $optionName, $value, ApplicationBase::PRIORITY_LOW);
     }
+
     /**
      * Sets one or more options for the droppable.
-     * 
-     * 	* options Type: Object A map of option-value pairs to set.
-     * @param $options
+     *
+     *    * options Type: Object A map of option-value pairs to set.
+     * @param array $options
      */
-    public function option3($options)
+    public function option3(array $options): void
     {
-        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $options, Application::PRIORITY_LOW);
+        Application::executeControlCommand($this->getJqControlId(), $this->getJqSetupFunction(), "option", $options, ApplicationBase::PRIORITY_LOW);
     }
 
-
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             case 'Accept': return $this->mixAccept;
@@ -260,7 +263,7 @@ abstract class DroppableGen extends QCubed\Project\Control\ControlBase
         }
     }
 
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             case 'Accept':
@@ -361,20 +364,22 @@ abstract class DroppableGen extends QCubed\Project\Control\ControlBase
     }
 
     /**
-    * If this control is attachable to a codegenerated control in a ModelConnector, this function will be
-    * used by the ModelConnector designer dialog to display a list of options for the control.
-    * @return QModelConnectorParam[]
-    **/
-    public static function getModelConnectorParams()
+     * If this control is attachable to a codegenerated control in a ModelConnector, this function will be
+     * used by the ModelConnector designer dialog to display a list of options for the control.
+     * @return QModelConnectorParam[]
+     *
+     * @throws Caller
+     */
+    public static function getModelConnectorParams(): array
     {
         return array_merge(parent::GetModelConnectorParams(), array(
-            new QModelConnectorParam (get_called_class(), 'ActiveClass', 'If specified, the class will be added to the droppable while anacceptable draggable is being dragged.The activeClass option has been deprecated in favor of the classesoption, using the ui-droppable-active property.(version deprecated: 1.12)', Type::STRING),
-            new QModelConnectorParam (get_called_class(), 'AddClasses', 'If set to false, will prevent the ui-droppable class from being added.This may be desired as a performance optimization when calling.droppable() init on hundreds of elements.', Type::BOOLEAN),
+            new QModelConnectorParam (get_called_class(), 'ActiveClass', 'If specified, the class will be added to the droppable while an acceptable draggable is being dragged. The activeClass option has been deprecated in favor of the classes option, using the ui-droppable-active property. (version deprecated: 1.12)', Type::STRING),
+            new QModelConnectorParam (get_called_class(), 'AddClasses', 'If set to false, it will prevent the ui-droppable class from being added. This may be desired as a performance optimization when calling.droppable() init on hundreds of elements.', Type::BOOLEAN),
             new QModelConnectorParam (get_called_class(), 'Disabled', 'Disables the droppable if set to true.', Type::BOOLEAN),
-            new QModelConnectorParam (get_called_class(), 'Greedy', 'By default, when an element is dropped on nested droppables, eachdroppable will receive the element. However, by setting this option totrue, any parent droppables will not receive the element. The dropevent will still bubble normally, but the event.target can be checkedto see which droppable received the draggable element.', Type::BOOLEAN),
-            new QModelConnectorParam (get_called_class(), 'HoverClass', 'If specified, the class will be added to the droppable while anacceptable draggable is being hovered over the droppable.The hoverClass option has been deprecated in favor of the classesoption, using the ui-droppable-hover property.(version deprecated: 1.12)', Type::STRING),
-            new QModelConnectorParam (get_called_class(), 'Scope', 'Used to group sets of draggable and droppable items, in addition tothe accept option. A draggable with the same scope value as adroppable will be accepted.', Type::STRING),
-            new QModelConnectorParam (get_called_class(), 'Tolerance', 'Specifies which mode to use for testing whether a draggable ishovering over a droppable. Possible values: 	* \"fit\": Draggable overlaps the droppable entirely.	* \"intersect\": Draggable overlaps the droppable at least 50% in bothdirections.	* \"pointer\": Mouse pointer overlaps the droppable.	* \"touch\": Draggable overlaps the droppable any amount.', Type::STRING),
+            new QModelConnectorParam (get_called_class(), 'Greedy', 'By default, when an element is dropped on a nested droppable, each droppable will receive the element. However, by setting this option to true, any parent droppable will not receive the element. The drop event will still bubble normally, but the event.target can be checked to see which droppable received the draggable element.', Type::BOOLEAN),
+            new QModelConnectorParam (get_called_class(), 'HoverClass', 'If specified, the class will be added to the droppable while panacea table draggable is being hovered over the droppable. The hoverClass option has been deprecated in favor of the classes option, using the ui-droppable-hover property. (version deprecated: 1.12)', Type::STRING),
+            new QModelConnectorParam (get_called_class(), 'Scope', 'Used to group sets of draggable and droppable items, in addition to the accept option. A draggable with the same scope value as droppable will be accepted.', Type::STRING),
+            new QModelConnectorParam (get_called_class(), 'Tolerance', 'Specify which mode to use for testing whether a draggable is hovering over a droppable. Possible values: 	* \"fit\": Draggable overlaps the droppable entirely.	* \"intersect\": Draggable overlaps the droppable at least 50% in both directions.	* \"pointer\": A mouse pointer overlaps the droppable.	* \"touch\": Draggable overlaps the droppable any amount.', Type::STRING),
         ));
     }
 }

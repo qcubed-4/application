@@ -19,28 +19,23 @@ use QCubed\Type;
  * Toggle the 'enabled' status of a control
  * NOTE: It does not change the Enabled property on the server side
  *
- * @was QToggleEnableAction
  * @package QCubed\Action
  */
 class ToggleEnable extends ActionBase
 {
     /** @var null|string Control ID of the control to be Enabled/Disabled */
-    protected $strControlId = null;
+    protected ?string $strControlId = null;
     /** @var boolean|null Enforce the Enabling or Disabling action */
-    protected $blnEnabled = null;
+    protected mixed $blnEnabled = null;
 
     /**
      * @param ControlBase $objControl
-     * @param boolean $blnEnabled
+     * @param bool|null $blnEnabled
      *
      * @throws Caller
      */
-    public function __construct($objControl, $blnEnabled = null)
+    public function __construct(ControlBase $objControl, ?bool $blnEnabled = null)
     {
-        if (!($objControl instanceof ControlBase)) {
-            throw new Caller('First parameter of constructor is expecting an object of type QControl');
-        }
-
         $this->strControlId = $objControl->ControlId;
 
         if (!is_null($blnEnabled)) {
@@ -55,7 +50,7 @@ class ToggleEnable extends ActionBase
      *
      * @return string Client side JS
      */
-    public function renderScript(ControlBase $objControl)
+    public function renderScript(ControlBase $objControl): string
     {
         if ($this->blnEnabled === true) {
             $strEnableOrDisable = 'enable';

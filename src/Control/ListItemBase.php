@@ -11,24 +11,22 @@ namespace QCubed\Control;
 
 use QCubed\Exception\Caller;
 use QCubed\Exception\InvalidCast;
-use QCubed;
 use QCubed\ObjectBase;
 use QCubed\Type;
 
 /**
  * Class ListItemBase
  *
- * This base class represents an item in some kind of html item list. There are many types of possible lists, including
+ * This base class represents an item in some kind of HTML item list. There are many types of possible lists, including
  * checklists and hierarchical lists. This is the core functionality common to all of them.
  *
  * @package Controls
  * @property string $Name      Usually what gets displayed. Can be overridden by the Label attribute in certain situations.
- * @property string $Value     is any text that represents the value of the item (e.g. maybe a DB Id)
+ * @property string $Value     Is any text that represents the value of an item (e.g., maybe a DB ID)?
  * @property-read boolean $Empty     true when both $Name and $Value are null, in which case this item will be rendered with an empty value in the list control
  * @property ListItemStyle $ItemStyle Custom HTML attributes for this particular item.
  * @property string $Text      synonym of Name. Used to store longer text with the item.
- * @property string $Id    A place to save an id for the item. It is up to the corresponding list class to use this in the object.
- * @was QListItemBase
+ * @property string $Id    A place to save an ID for the item. It is up to the corresponding list class to use this in the object.
  * @package QCubed\Control
  */
 class ListItemBase extends ObjectBase
@@ -37,28 +35,26 @@ class ListItemBase extends ObjectBase
     // Private Member Variables
     ///////////////////////////
     /** @var null|string Name of the Item */
-    protected $strName = null;
+    protected ?string $strName = null;
     /** @var null|string Value of the Item */
-    protected $strValue = null;
+    protected ?string $strValue = null;
     /** @var null|ListItemStyle Custom attributes of the list item */
-    protected $objItemStyle;
-    /** @var  null|string the internal id */
-    protected $strId;
+    protected ?ListItemStyle $objItemStyle = null;
+    /** @var  string|null the internal ID */
+    protected ?string $strId = null;
+
 
 
     /////////////////////////
     // Methods
     /////////////////////////
     /**
-     * Creates a ListItem
-     *
-     * @param string $strName is the displayed Name or Text of the Item
-     * @param string|null $strValue is any text that represents the value of the ListItem (e.g. maybe a DB Id)
-     * @param null|ListItemStyle $objItemStyle is the item style. If provided here, it is referenced and shared with other items.
-     *
-     * @throws Exception|Caller
+     * @param string $strName
+     * @param null|string $strValue
+     * @param null|ListItemStyle $objItemStyle
+     * @return void
      */
-    public function __construct($strName, $strValue = null, $objItemStyle = null)
+    public function __construct(string $strName, ?string $strValue = null, ?ListItemStyle $objItemStyle = null)
     {
         $this->strName = $strName;
         $this->strValue = $strValue;
@@ -70,7 +66,7 @@ class ListItemBase extends ObjectBase
      *
      * @return null|ListItemStyle
      */
-    public function getStyle()
+    public function getStyle(): ?ListItemStyle
     {
         if (!$this->objItemStyle) {
             $this->objItemStyle = new ListItemStyle();
@@ -79,29 +75,20 @@ class ListItemBase extends ObjectBase
     }
 
     /**
-     * Returns the css style of the list item
-     * @deprecated
+     * Marks the current object or entity as modified to indicate that it has been changed.
      *
-     * @return string
+     * @return void
      */
-    /*
-    public function getAttributes()
-    {
-        $strToReturn = $this->getStyle()->getAttributes();
-        return $strToReturn;
-    }*/
-
-    /**
-     * Stub functions required for QListItemManager trait support
-     */
-    public function markAsModified()
+    public function markAsModified(): void
     {
     }
 
     /**
+     * Rebuilds or updates the index to reflect the current state of data.
      *
+     * @return void
      */
-    public function reindex()
+    public function reindex(): void
     {
     }
 
@@ -109,25 +96,25 @@ class ListItemBase extends ObjectBase
      * @param string $strId
      * @return null|ListItemBase
      */
-    public function findItem($strId)
+    public function findItem(string $strId): ?ListItemBase
     {
         return null;
     }
 
     /**
-     * Return the id. Used by trait.
-     * @return string
+     * Return the ID. Used by a trait.
+     * @return string|null
      */
-    public function getId()
+    public function getId(): ?string
     {
         return $this->strId;
     }
 
     /**
-     * Set the Id. Used by trait.
-     * @param $strId
+     * @param mixed $strId
+     * @return void
      */
-    public function setId($strId)
+    public function setId(mixed $strId): void
     {
         $this->strId = $strId;
     }
@@ -136,13 +123,11 @@ class ListItemBase extends ObjectBase
     // Public Properties: GET
     /////////////////////////
     /**
-     * PHP magic method
-     * @param string $strName
-     *
-     * @return mixed
-     * @throws Exception|Caller
+     * @param string $strName The name of the property to retrieve.
+     * @return mixed The value of the requested property, which can be of various types depending on the property.
+     * @throws Caller If the property does not exist or cannot be accessed.
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             case "Text":
@@ -171,14 +156,15 @@ class ListItemBase extends ObjectBase
     // Public Properties: SET
     /////////////////////////
     /**
-     * PHP magic method
-     * @param string $strName
-     * @param string $mixValue
+     * Sets the value of a property on the object.
      *
+     * @param string $strName The name of the property to set.
+     * @param mixed $mixValue The value to assign to the property.
      * @return void
-     * @throws Exception|Caller|InvalidCast
+     * @throws InvalidCast If the value cannot be cast to the expected type.
+     * @throws Caller If the property does not exist or is not accessible.
      */
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             case "Text":

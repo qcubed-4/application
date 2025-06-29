@@ -12,7 +12,6 @@ namespace QCubed\Event;
 /**
  * Class Select
  *
- * @was QSelectEvent
  * @package QCubed\Event
  */
 class Select extends EventBase

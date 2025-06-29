@@ -4,9 +4,9 @@ require_once('../qcubed.inc.php'); ?>
 <?php require('../includes/header.inc.php'); ?>
 
 <div id="instructions">
-	<h1>QCubed Query Clauses</h1>
+	<h1>QCubed-4 Query Clauses</h1>
 
-	<p>All <strong>QCubed Query</strong> method calls take in an optional set of <strong>Clauses</strong>. <strong>Clauses</strong> let you
+	<p>All <strong>QCubed-4 Query</strong> method calls take in an optional set of <strong>Clauses</strong>. <strong>Clauses</strong> let you
 	alter the result set by performing the equivalents of most of your major SQL clauses, including JOIN, ORDER BY,
 	GROUP BY and DISTINCT.</p>
 
@@ -31,7 +31,7 @@ require_once('../qcubed.inc.php'); ?>
 
 	<p>Specifically for <strong>orderBy()</strong>, to specify a <strong>Node</strong> that you wish to order by in descending
 	order, add a "false" after the Node.  So for example, <strong>QQ::orderBy(QQN::person()->LastName, false,
-	QQN::person()->FirstName)</strong> will do the SQL equivalent of "ORDER BY last_name DESC, first_name ASC".</p>
+	QQN::person()->FirstName)</strong> will do the SQL equivalent of "ORDER BY last_name DESC, first_name ASC."</p>
 
 	<p><strong>Count</strong>, <strong>Minimum</strong>, <strong>Maximum </strong>, <strong>Average</strong> and <strong>Sum</strong> are aggregation-related clauses, and
 	only work when <strong>groupBy()</strong> is specified.  These methods take in an attribute name, which
@@ -42,7 +42,7 @@ require_once('../qcubed.inc.php'); ?>
 	snippet you create to specify the criteria to filter on. (See the Subquery section
 	later in this tutorial for more information on those).</p>
 
-	<p><strong>expand()</strong> and <strong>exapandAsArray()</strong> deal with Object Expansion / Early Binding.  More on this
+	<p><strong>expand()</strong> and <strong>expandAsArray()</strong> deal with Object Expansion / Early Binding.  More on this
 	can be seen in the <a href="../more_codegen/early_bind.php">Early Binding of Related Objects example</a>.</p>
 
 	<p><strong>limitInfo()</strong> will limit the result set.  The first integer is the maximum number of rows
@@ -85,7 +85,7 @@ require_once('../qcubed.inc.php'); ?>
 	}
 ?>
 	</ul>
-	<h2>Select all People, those with last name Smith first, then ordered by First Name</h2>
+	<h2>Select all People, those with the last name Smith first, then ordered by First Name</h2>
 	<p><em>Using a QQ::condition as an ORDER BY clause</em></p>
 	<ul>
 <?php

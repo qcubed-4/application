@@ -5,7 +5,7 @@
 	<h1>The Four-Function Calculator: Our First Simple Application</h1>
 
 	<p>We can combine this understanding of statefulness and events to make our first simple
-		QCubed Forms application.</p>
+		QCubed-4 Forms application.</p>
 
 	<p>This calculator is just a collection of two <strong>TextBox</strong> objects (one for each operand), a
 		<strong>ListBox</strong> object containing the four arithmetic functions, a <strong>Button</strong> object to execute

@@ -9,7 +9,7 @@
 		
 		<p>The <strong>Image</strong> control allows you to create a dynamically assigned image and place it on the screen.</p>
 
-        <p>The <strong>ImageInput</strong> is similar, but also responds to actions. When you click on the image, it will
+        <p>The <strong>ImageInput</strong> is similar but also responds to actions. When you click on the image, it will
             record the location clicked, and you can query the <strong>ClickX</strong> and <strong>ClickY</strong> properties
             to get the coordinate clicked.</p>
 
@@ -19,7 +19,7 @@
          </p>
 
         <p>
-            There are other possibilities as well that may be available as additional QCubed plugins or 3rd party controls.
+            There are other possibilities as well that may be available as additional QCubed-4 plugins or 3rd party controls.
             Dynamically created images which use the GD library or ImageMagick may be available.
         </p>
     </div>
@@ -29,7 +29,7 @@
     <p>ImageInput (click on this): <?php $this->btnImageInput->render(); ?></p>
     <p>Button with internal Image: <?php $this->btnImage->render(); ?></p>
     <p>Button with background image: <?php $this->btnBgImage->render(); ?></p>
-    <p>Image with client-side map (click the right eye): <?php $this->btnImageMap->render(); ?></p>
+    <p>Image with a client-side map (click the right eye): <?php $this->btnImageMap->render(); ?></p>
 </div>
 
 <?php $this->renderEnd(); ?>

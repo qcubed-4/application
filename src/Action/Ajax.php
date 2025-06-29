@@ -10,23 +10,21 @@
 namespace QCubed\Action;
 
 use QCubed\Control\WaitIcon;
-use QCubed\Database\PostgreSql\Exception;
 use QCubed\Exception\Caller;
 use QCubed\Js\Closure;
 use QCubed\Control\ControlBase;
-use QCubed\Project\Application;
 
 /**
  * Class Ajax
  *
- * The QAjaxAction responds to events with ajax calls, which refresh a portion of a web page without reloading
+ * The AjaxAction responds to events with ajax calls, which refresh a portion of a web page without reloading
  * the entire page. They generally are faster than server requests and give a better user experience.
  *
  * The QAjaxAction will associate a callback (strMethodName) with an event as part of an AddAction call. The callback will be
  * a method in the current QForm object. To associate a method that is part of a ControlBase, or any kind of a callback,
- * use a QAjaxControlAction.
+ * use a AjaxControlAction.
  *
- * The wait icon is a spinning gif file that can be overlayed on top of the control to show that the control is in
+ * The wait icon is a spinning gif file that can be overlay on top of the control to show that the control is in
  * a "loading" state. TODO: Convert this to a FontAwesome animated icon.
  *
  * mixCausesValidationOverride allows you to selectively say whether this action causes a validation, and on what subset of controls.
@@ -44,58 +42,62 @@ use QCubed\Project\Application;
  * @property-read WaitIcon $WaitIconControl          the waiting icon control for this Ajax Action
  * @property-read mixed     $CausesValidationOverride what kind of validation over-ride is to be implemented
  *              on this action.(See the QCausesValidation class and QFormBase class to understand in greater depth)
- * @property-read string    JsReturnParam             The line of javascript which would set the 'strParameter' value on the
+ * @property-read string    JsReturnParam             The line of JavaScript which would set the 'strParameter' value on the
  *              client-side when the action occurs!
  *              (see /assets/_core/php/examples/other_controls/js_return_param_example.php for example)
  * @property-read string    Id                        The Ajax Action ID for this action.
  * @package     Actions
- * @was QAjaxAction
  * @package QCubed\Action
  */
 class Ajax extends ActionBase
 {
-    /** @var string Ajax Action ID */
-    protected $strId;
-    /** @var string The event handler function name */
-    protected $strMethodName;
-    /** @var WaitIcon Wait Icon to be used for this particular action */
-    protected $objWaitIconControl;
+    /** @var string|null Ajax Action ID */
+    protected ?string $strId = null;
+    /** @var string|null The event handler function name */
+    protected ?string $strMethodName = null;
 
-    protected $blnAsync = false;
+    /** @var string|WaitIcon|null Wait Icon to be used for this particular action */
+    protected string|WaitIcon|null $objWaitIconControl;
+
+    protected ?bool $blnAsync = false;
     /**
      * @var mixed what kind of validation over-ride is to be implemented
      *              (See the QCausesValidation class and QFormBase class to understand in greater depth)
      */
-    protected $mixCausesValidationOverride;
+    protected mixed $mixCausesValidationOverride;
     /**
-     * @var string the line of javascript which would set the 'strParameter' value on the
-     *              client-side when the action occurs!
+     * @var string the line of JavaScript which would set the 'strParameter' value on the
+     *              Client-side when the action occurs!
      */
-    protected $strJsReturnParam;
+    protected mixed $strJsReturnParam = "";
 
     /**
      * AjaxAction constructor.
-     * @param string|callable     $strMethodName            Name of the event handler function to be called, or a callable on the form or control
-     * @param string|WaitIcon $objWaitIconControl          Wait Icon for the action
-     * @param null|mixed       $mixCausesValidationOverride what kind of validation over-ride is to be implemented
-     * @param string           $strJsReturnParam            the line of javascript which would set the 'strParameter' value on the
+     * @param callable|string|null $strMethodName Name of the event handler function to be called, or a callable on the form or control
+     * @param string|WaitIcon|null $objWaitIconControl Wait Icon for the action
+     * @param mixed|null $mixCausesValidationOverride what kind of validation over-ride is to be implemented
+     * @param string $strJsReturnParam the line of JavaScript which would set the 'strParameter' value on the
      *                                                      client-side when the action occurs!
-     * @param boolean  		   $blnAsync            		True to have the events for this action fire asynchronously.
-     * 														Be careful when setting this to true. See class description.
+     * @param boolean $blnAsync True to have the events for this action fire asynchronously.
+     *                                                        Be careful when setting this to true. See class description.
      * @throws Caller
      */
-    public function __construct($strMethodName = null, $objWaitIconControl = 'default',
-        $mixCausesValidationOverride = null, $strJsReturnParam = "", $blnAsync = false)
+    public function __construct(mixed $strMethodName = null,
+                                string|WaitIcon|null    $objWaitIconControl = 'default',
+                                mixed                   $mixCausesValidationOverride = null,
+                                mixed                   $strJsReturnParam = "",
+                                ?bool                   $blnAsync = false
+    )
     {
         global $_FORM;
 
         if (is_string($strMethodName)) {
             if (!method_exists($_FORM, $strMethodName)) {
-                throw new Caller("If method name is a string, the method must belong to a form.");
+                throw new Caller("If a method name is a string, the method must belong to a form.");
             }
         }
         elseif (is_array($strMethodName) && is_callable($strMethodName)) {
-            // Assume first item is a control or form
+            // Assume the first item is a control or form
             if ($strMethodName[0] instanceof ControlBase) {
                 if (!$strMethodName[0]->ControlId) {
                     throw new Caller('You must add a control to the form before giving it an action.');
@@ -103,7 +105,7 @@ class Ajax extends ActionBase
                 $strMethodName = $strMethodName[0]->ControlId . ':' . $strMethodName[1];
             }
             elseif (!method_exists($_FORM, $strMethodName[1])) {
-                throw new Caller("If method name is a string, the method must belong to a form.");
+                throw new Caller("If a method name is a string, the method must belong to a form.");
             }
             else {
                 $strMethodName = $strMethodName[1];
@@ -121,9 +123,14 @@ class Ajax extends ActionBase
         $this->blnAsync = $blnAsync;
     }
 
-    public function __clone()
+    /**
+     * Handles cloning of the object, resetting specific properties to ensure a unique instance.
+     *
+     * @return void
+     */
+    public function __clone(): void
     {
-        $this->strId = null; //we are a fresh clone, lets reset the id and get our own later (in RenderScript)
+        $this->strId = null; //we are a fresh clone, let's reset the id and get our own later (in RenderScript)
     }
 
     /**
@@ -134,7 +141,7 @@ class Ajax extends ActionBase
      * @return mixed|null|string
      * @throws Caller
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             case 'MethodName':
@@ -158,13 +165,13 @@ class Ajax extends ActionBase
     }
 
     /**
-     * Returns the control's ActionParameter in string format
+     * Retrieves the action parameter associated with a control.
      *
-     * @param ControlBase $objControl
+     * @param ControlBase $objControl The control from which to retrieve the action parameter.
      *
-     * @return string
+     * @return string The JavaScript representation of the action parameter for the given control.
      */
-    protected function getActionParameter($objControl)
+    protected function getActionParameter(ControlBase $objControl): string
     {
         if ($objActionParameter = $this->strJsReturnParam) {
             return $objActionParameter;
@@ -194,7 +201,7 @@ class Ajax extends ActionBase
      *
      * @return string
      */
-    public function renderScript(ControlBase $objControl)
+    public function renderScript(ControlBase $objControl): string
     {
         $strWaitIconControlId = null;
         if ($this->strId == null) {

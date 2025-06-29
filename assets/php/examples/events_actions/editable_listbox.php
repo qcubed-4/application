@@ -2,6 +2,7 @@
 use QCubed\Action\Ajax;
 use QCubed\Action\Terminate;
 use QCubed\Action\ToggleEnable;
+use QCubed\Control\Label;
 use QCubed\Event\Change;
 use QCubed\Event\Click;
 use QCubed\Event\EnterKey;
@@ -14,20 +15,20 @@ require_once('../qcubed.inc.php');
 
 class ExampleForm extends FormBase
 {
-    protected $lstListbox;
-    protected $txtItem;
-    protected $btnAdd;
+    protected ListBox $lstListbox;
+    protected TextBox $txtItem;
+    protected Button $btnAdd;
 
-    protected $lblSelected;
+    protected Label $lblSelected;
 
-    protected function formCreate()
+    protected function formCreate(): void
     {
         // Define the Controls
         $this->lstListbox = new ListBox($this);
         $this->lstListbox->Name = 'Items to Choose From';
         $this->lstListbox->Rows = 6;
 
-        // When the the user changes the selection on the listbox, we'll call lstListbox_Change
+        // When the user changes the selection on the listbox, we'll call lstListbox_Change
         $this->lstListbox->addAction(new Change(), new Ajax('lstListbox_Change'));
         $this->lstListbox->addItem('Sample Item', 'Sample Item');
 
@@ -37,7 +38,7 @@ class ExampleForm extends FormBase
         $this->btnAdd = new Button($this);
         $this->btnAdd->Text = 'Add Item';
 
-        $this->lblSelected = new \QCubed\Control\Label($this);
+        $this->lblSelected = new Label($this);
         $this->lblSelected->Name = 'Item Currently Selected';
         $this->lblSelected->Text = '<none>';
 
@@ -54,23 +55,23 @@ class ExampleForm extends FormBase
         // Let's add this set of actions to the Add Button
         $this->btnAdd->addActionArray(new Click(), $objSubmitListItemActions);
 
-        // Let's add this set of actions to the Textbox, as a EnterKeyEvent
+        // Let's add this set of actions to the Textbox, as an EnterKeyEvent
         $this->txtItem->addActionArray(new EnterKey(), $objSubmitListItemActions);
 
         // Because the enter key will also call form.submit() on some browsers, which we
-        // absolutely DON'T want to have happen, let's be sure to terminate any additional
+        // absolutely DON'T want to have happened, let's be sure to terminate any additional
         // actions on EnterKey
         $this->txtItem->addAction(new EnterKey(), new Terminate());
     }
 
-    protected function lstListbox_Change()
+    protected function lstListbox_Change(): void
     {
         // Whenever the user changes the selected listbox item, let's
         // update the label to reflect the selected item
         $this->lblSelected->Text = $this->lstListbox->SelectedValue;
     }
 
-    protected function addListItem()
+    protected function addListItem(): void
     {
         // First off, let's make sure that data was typed in
         if (!strlen(trim($this->txtItem->Text))) {

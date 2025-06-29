@@ -21,33 +21,31 @@ use QCubed\Type;
  * Image inputs act like buttons, but specifically also produce an x and y coordinate for where the image was clicked.
  * There are other ways to produce image buttons, including using a Button control and adding an Image
  * control to it, or adding a background image to a Button. You can also just use an Image control and add an onClick handler.
- * Each produce different html, and you can pick which one is more suitable to your needs.
+ * Each produces different HTML, and you can pick which one is more suitable to your needs.
  *
  * @property string $AlternateText is rendered as the HTML "alt" tag
  * @property string $ImageUrl is the url of the image to be used
  * @property boolean $PrimaryButton     Set to true if you want this button to submit the form
  * @property-read integer $ClickX
  * @property-read integer $ClickY
- * @was QImageButton
  * @package QCubed\Control
  */
 class ImageInput extends ActionControl
 {
-    protected $strAlternateText = null;
-    protected $strImageUrl = null;
-    protected $intClickX;
-    protected $intClickY;
+    protected ?string $strAlternateText = null;
+    protected ?string $strImageUrl = null;
+    protected int $intClickX;
+    protected int $intClickY;
     /** @var bool True to make this button submit the form, which is the default for HTML input images */
-    protected $blnPrimaryButton = true;
+    protected bool $blnPrimaryButton = true;
 
     // SETTINGS
-    protected $blnActionsMustTerminate = true;
-
+    protected bool $blnActionsMustTerminate = true;
 
     /**
      * MUST be used in conjunction with RegisterClickPosition Action to work.
      */
-    public function parsePostData()
+    public function parsePostData(): void
     {
         $strKeyX = sprintf('%s_x', $this->strControlId);
         $strKeyY = sprintf('%s_y', $this->strControlId);
@@ -57,7 +55,7 @@ class ImageInput extends ActionControl
         }
     }
 
-    protected function getControlHtml()
+    protected function getControlHtml(): string
     {
         $overrides = [
             'name'=>$this->strControlId,
@@ -65,10 +63,6 @@ class ImageInput extends ActionControl
             'alt'=>$this->strAlternateText,
             'src'=>$this->strImageUrl
         ];
-
-        if (!$this->blnPrimaryButton) {
-            //$overrides['onclick'] = "return false;";   // prevent default behavior
-        }
 
         $strToReturn = $this->renderTag('input', $overrides,
             null, null, true);
@@ -85,7 +79,7 @@ class ImageInput extends ActionControl
     /////////////////////////
     // Public Properties: GET
     /////////////////////////
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             // APPEARANCE
@@ -115,7 +109,7 @@ class ImageInput extends ActionControl
     /////////////////////////
     // Public Properties: SET
     /////////////////////////
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         $this->blnModified = true;
 

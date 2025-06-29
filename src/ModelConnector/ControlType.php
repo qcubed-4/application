@@ -14,10 +14,9 @@ use QCubed as Q;
 /**
  * Class UnorderedListStyleType
  *
- * For specifying what to dislay in an unordered html list. Goes in the list-style-type style.
+ * For specifying what to display in an unordered HTML list. Goes in the list-style-type style.
  *
  * @package QCubed\Css
- * @was QControlCategoryType
  */
 abstract class ControlType
 {

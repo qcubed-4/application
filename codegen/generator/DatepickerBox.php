@@ -16,11 +16,10 @@ use QCubed\Codegen\SqlTable;
 /**
  * Class DatepickerBox
  * @package QCubed\Codegen\Generator
- * @was QDatepickerBoxBase_CodeGenerator
  */
 class DatepickerBox extends TextBox
 {
-    public function __construct($strControlClassName = 'QCubed\\Project\\Jqui\\DatepickerBox')
+    public function __construct(string $strControlClassName = 'QCubed\\Project\\Jqui\\DatepickerBox')
     {
         parent::__construct($strControlClassName);
     }
@@ -30,7 +29,7 @@ class DatepickerBox extends TextBox
      * @param string $strPropName
      * @return string
      */
-    public function varName($strPropName)
+    public function varName(string $strPropName): string
     {
         return 'cal' . $strPropName;
     }
@@ -44,7 +43,7 @@ class DatepickerBox extends TextBox
      * @param bool $blnInit
      * @return string
      */
-    public function connectorRefresh(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn, $blnInit = false)
+    public function connectorRefresh(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn, ?bool $blnInit = false): string
     {
         $strObjectName = $objCodeGen->modelVariableName($objTable->Name);
         $strPropName = $objColumn->Reference ? $objColumn->Reference->PropertyName : $objColumn->PropertyName;
@@ -64,15 +63,14 @@ class DatepickerBox extends TextBox
      * @param ColumnInterface $objColumn
      * @return string
      */
-    public function connectorUpdate(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn)
+    public function connectorUpdate(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn): string
     {
         $strObjectName = $objCodeGen->modelVariableName($objTable->Name);
         $strPropName = $objColumn->Reference ? $objColumn->Reference->PropertyName : $objColumn->PropertyName;
         $strControlVarName = $this->varName($strPropName);
-        $strRet = <<<TMPL
+        return <<<TMPL
 				if (\$this->{$strControlVarName}) \$this->{$strObjectName}->{$objColumn->PropertyName} = \$this->{$strControlVarName}->DateTime;
 
 TMPL;
-        return $strRet;
     }
 }

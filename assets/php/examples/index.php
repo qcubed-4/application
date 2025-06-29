@@ -2,25 +2,25 @@
 use QCubed\Project\Application;
 
 require_once('qcubed.inc.php');
-// show first section by default
+// show the first section by default
 $intSectionToShow = (!Application::instance()->context()->pathItem(0)) ? 1 : Application::instance()->context()->pathItem(0);
 // Used to distinguish the home page in the header
 $mainPage = true;
 require('includes/header.inc.php');
 ?>
 <div id="instructions" class="full">
-	<h1>QCubed Examples Site</h1>
+	<h1>QCubed-4 Examples Site</h1>
 
 	<p>This is a collection of many small examples that demonstrate the functionality
-		in QCubed.  Later examples tend to build upon functionality or concepts that are
+		in QCubed-4.  Later examples tend to build upon functionality or concepts that are
 		discussed in prior ones, which allows the Examples site to be viewed as a quasi-tutorial.
 		However, you should still feel free to check out any of the examples as you wish.</p>
 
 	<p>The Examples are broken into three main parts: the <strong>Code Generator</strong>, the <strong>Forms and Control Library</strong>, and
-		<strong>Other QCubed Functionality</strong>.</p>
+		<strong>Other QCubed-4 Functionality</strong>.</p>
 
-	<p class="bodySmall">* Some of the examples (marked with a "*") use the <strong>Examples Site Database</strong>.
-		This database (which consists of six tables and some preloaded sample data) is included in the Examples Site directories.  See
+	<p class="bodySmall">* Some of the examples (marked with a "*") use the <strong>Example Site Database</strong>.
+		This database (which consists of six tables and some preloaded sample data) is included in the Example Site directories.  See
 		<a href="<?php _p(QCUBED_EXAMPLES_URL); ?>/code_generator/intro.php" class="bodyLink" style="font-weight: bold;">Basic CodeGen &gt; About the Database</a>
 		for more information.</p>
 </div>
@@ -30,7 +30,7 @@ require('includes/header.inc.php');
 	&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
 	<a id="link2" href="<?php _p(Application::instance()->context()->scriptName()) ?>/2" onclick="return DisplayPart('2')" class="<?php _p(($intSectionToShow == 2) ? "selected" : "nav-link"); ?>">The Forms and Control Library</a>
 	&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-	<a id="link3" href="<?php _p(Application::instance()->context()->scriptName()) ?>/3" onclick="return DisplayPart('3')" class="<?php _p(($intSectionToShow == 3) ? "selected" : "nav-link"); ?>">Other QCubed Functionality</a>
+	<a id="link3" href="<?php _p(Application::instance()->context()->scriptName()) ?>/3" onclick="return DisplayPart('3')" class="<?php _p(($intSectionToShow == 3) ? "selected" : "nav-link"); ?>">Other QCubed-4 Functionality</a>
 </div>
 
 <?php
@@ -44,8 +44,8 @@ for ($intIndex = 0; $intIndex < count(Examples::$Categories); $intIndex++) {
 			<p><strong>The Code Generator</strong> is at the heart of the Model in the MVC (Model, View, Controller) architecture.
 				It uses the data model you have defined to create all your data objects, relationships and <abbr title="Create, Restore, Update, Delete">CRUD</abbr> functionality.</p>
 
-			<p>Sections 1 - 3 look specifically at the <strong>Code Generator</strong>, the <strong>Object Relational Model</strong> it creates, and the
-				<strong>QCubed Query</strong> library which powers it.</p>
+			<p>Sections 1–3 look specifically at the <strong>Code Generator</strong>, the <strong>Object Relational Model</strong> it creates, and the
+				<strong>QCubed-4 Query</strong> library which powers it.</p>
 		</div>
 		<blockquote>
 <?php
@@ -58,10 +58,10 @@ for ($intIndex = 0; $intIndex < count(Examples::$Categories); $intIndex++) {
 	<div id="part2" <?php if ($intSectionToShow != 2) { _p('style="display: none;"', false); } ?>>
 		<div class="main-info">
 			<p><em>QForms</em> is a <strong>stateful, event-driven architecture for web-based forms</strong>, providing the display and
-				presentation functionality for QCubed.  Basically, it is your "V" and "C" of the MVC architecture.</p>
+				presentation functionality for QCubed-4.  Basically, it is your "V" and "C" of the MVC architecture.</p>
 
-			<p>Sections 4 - 10 are examples on how to use <strong>Forms</strong> and the <strong>Control</strong> libraries
-				within the QCubed Development Framework.</p>
+			<p>Sections 4–10 are examples on how to use <strong>Forms</strong> and the <strong>Control</strong> libraries
+				within the QCubed-4 Development Framework.</p>
 		</div>
 		<blockquote>
 <?php
@@ -73,7 +73,7 @@ for ($intIndex = 0; $intIndex < count(Examples::$Categories); $intIndex++) {
 	</div>
 	<div id="part3" <?php if ($intSectionToShow != 3) { _p('style="display: none;"', false); } ?>>
 		<div class="main-info">
-			<p>Beyond the <strong>Code Generator</strong> and the <strong>Forms</strong> library, QCubed also has many other modules and features
+			<p>Beyond the <strong>Code Generator</strong> and the <strong>Forms</strong> library, QCubed-4 also has many other modules and features
 				that are useful for web application developers.</p>
 		</div>
 		<blockquote>
@@ -101,10 +101,10 @@ for ($intIndex = 0; $intIndex < count(Examples::$Categories); $intIndex++) {
 	 * @TODO this should be UI tabs or accordion.
 	 */
 	function DisplayPart(strPartId) {
-		var selectedClass = "selected",
-			regularClass = "nav-link";
+        const selectedClass = "selected",
+            regularClass = "nav-link";
 
-		switch (strPartId) {
+        switch (strPartId) {
 			case "1":
 				document.getElementById("part1").style.display = "block";
 				document.getElementById("part2").style.display = "none";

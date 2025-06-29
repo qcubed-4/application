@@ -4,12 +4,12 @@
 <div id="instructions">
 	<h1>QCubed and Foreign Key Relationships</h1>
 
-	<p>In addition to your basic CRUD functionality, QCubed will also analyze the foreign key relationships
+	<p>In addition to your basic CRUD functionality, QCubed-4 will also analyze the foreign key relationships
 		in your database to generate relationships between your data model's objects.</p>
 
 	<p>Whenever your table has a column which is a foreign key to another table, the dependent class
 		(the table with the FK) will have an instance of the independent class (the table where the FK
-		links to).  So in our <strong>Examples Site Database</strong>, we have a <strong>manager_person_id</strong> column in our
+		links to). So in our <strong>Example Site Database</strong>, we have a <strong>manager_person_id</strong> column in our
 		<strong>project</strong> table.  This results in a <strong>ManagerPerson</strong> property (of type <strong>Person</strong>) in our
 		<strong>Project</strong> class.</p>
 

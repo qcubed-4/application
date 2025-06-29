@@ -9,49 +9,52 @@
 
 namespace QCubed\Control;
 
-require_once(dirname(dirname(__DIR__)) . '/i18n/i18n-lib.inc.php');
-use QCubed\Application\t;
+require_once(dirname(__DIR__, 2) . '/i18n/i18n-lib.inc.php');
+
+//use QCubed\Application\t;
 
 use QCubed\Exception\Caller;
 use QCubed\Exception\InvalidCast;
+use QCubed\ModelConnector\Param;
 use QCubed\Type;
 use QCubed as Q;
 use QCubed\Project\Control\TextBox;
+use Throwable;
 
 /**
  * Class CsvTextBox
  *
  * A subclass of TextBox that allows the user to type in a list of values to be converted into
- * an array. Uses str_getcsv to process.
+ * an array. Use str_getcsv to process.
  *
- * @property string $Delimiter is the csv separator. Default: , (comma)
+ * @property string $Delimiter is the csv separator. Default: (comma)
  * @property string $Enclosure
  * @property string $Escape
  * @property integer $MinItemCount
  * @property integer $MaxItemCount
- * @was QCsvTextBox
  * @package QCubed\Control
  */
 class CsvTextBox extends TextBox
 {
     /** @var string */
-    protected $strDelimiter = ',';
+    protected string $strDelimiter = ',';
     /** @var string */
-    protected $strEnclosure = '"';
+    protected string $strEnclosure = '"';
     /** @var string */
-    protected $strEscape = '\\';
-    /** @var int */
-    protected $intMinItemCount = null;
-    /** @var int */
-    protected $intMaxItemCount = null;
+    protected string $strEscape = '\\';
+    /** @var int|null */
+    protected ?int $intMinItemCount = null;
+    /** @var int|null */
+    protected ?int $intMaxItemCount = null;
 
     /**
      * Constructor
      *
      * @param ControlBase|FormBase $objParentObject Parent of this textbox
      * @param null|string $strControlId Desired control ID for the textbox
+     * @throws Caller
      */
-    public function __construct($objParentObject, $strControlId = null)
+    public function __construct(ControlBase|FormBase $objParentObject, ?string $strControlId = null)
     {
         parent::__construct($objParentObject, $strControlId);
         // borrows too short and too long labels from super class
@@ -63,11 +66,11 @@ class CsvTextBox extends TextBox
      * Validate the control, setting validation error if there is a problem.
      * @return bool
      */
-    public function validate()
+    public function validate(): bool
     {
         $blnRet = parent::validate();
         if ($blnRet) {
-            $a = str_getcsv($this->strText);
+            $a = str_getcsv($this->strText ?? '', $this->strDelimiter, $this->strEnclosure, $this->strEscape);
 
             if ($this->intMinItemCount !== null &&
                 count($a) < $this->intMinItemCount
@@ -95,7 +98,7 @@ class CsvTextBox extends TextBox
      * @return mixed
      * @throws Caller
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             // APPEARANCE
@@ -132,12 +135,14 @@ class CsvTextBox extends TextBox
      * PHP __set magic method implementation
      *
      * @param string $strName Name of the property
-     * @param string $mixValue Value of the property
+     * @param mixed $mixValue Value of the property
      *
-     * @return mixed|void
-     * @throws Caller|InvalidCast
+     * @return void
+     * @throws Caller
+     * @throws InvalidCast
+     * @throws Throwable
      */
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         $this->blnModified = true;
 
@@ -209,11 +214,12 @@ class CsvTextBox extends TextBox
     }
 
     /**
-     * Returns an description of the options available to modify by the designer for the code generator.
+     * Returns a description of the options available to modify by the designer for the code generator.
      *
-     * @return Q\ModelConnector\Param[]
+     * @return Param[]
+     * @throws Caller
      */
-    public static function getModelConnectorParams()
+    public static function getModelConnectorParams(): array
     {
         return array_merge(parent::getModelConnectorParams(), array(
             new Q\ModelConnector\Param(get_called_class(), 'Delimiter', 'Default: , (comma)', Type::STRING),

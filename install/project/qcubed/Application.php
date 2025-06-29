@@ -6,6 +6,7 @@ use QCubed;
 use QCubed\Purifier;
 use QCubed\I18n\TranslationService;
 use QCubed\Project\Watcher\Watcher;
+use Random\RandomException;
 
 
 /**
@@ -30,19 +31,28 @@ class Application extends QCubed\ApplicationBase
      * @param string $strClassName
      * @return bool
      */
-    public static function autoload($strClassName)
+    public static function autoload(string $strClassName): bool
     {
-        if (!parent::autoload($strClassName)) {
-            // Run any custom autoloading functionality (if any) here...
-            // return true; if you find the class
-        }
-        return false;
+        return parent::autoload($strClassName);
+
+//        if (!parent::autoload($strClassName)) {
+//            // Run any custom autoloader functionality (if any) here...
+//            // return true; if you find the class
+//        }
+//        return false;
     }
 
     /**
-     * Set up your application specific services here.
+     * Initializes core services required for the application.
+     *
+     * This method ensures that essential services such as session handling,
+     * CSRF protection, translation setup, and application watcher are
+     * properly initialized to maintain system stability and security.
+     *
+     * @return void
+     * @throws RandomException
      */
-    public function initializeServices()
+    public function initializeServices(): void
     {
         $this->startSession();  // make sure we start the session first in case other services need it.
         $this->initCsrfProtection();
@@ -51,12 +61,12 @@ class Application extends QCubed\ApplicationBase
 
         //$this->authService = new \Project\Service\Auth();
     }
-    
+
     /**
      * If you want to use a custom session handler, set it up here. The commented example below uses a QCubed handler that
      * puts sessions in a database.
      */
-    protected function startSession()
+    protected function startSession(): void
     {
         /*
         QDbBackedSessionHandler::initialize(DB_BACKED_SESSION_HANDLER_DB_INDEX,
@@ -67,15 +77,19 @@ class Application extends QCubed\ApplicationBase
     }
 
     /**
-     * Initialize the translator singleton. See the I18N library for details on how to configure this.
-     * If you do nothing, no translation will happen.
+     * Initializes the translation system for the application.
+     * Configures a translator instance with the application's internationalization directory,
+     * sets the default domain, and specifies a temporary directory for caching.
+     * Register the translator within the translation service.
+     *
+     * @return void
      */
-    protected function initTranslator()
+    protected function initTranslator(): void
     {
-        $translator = new \QCubed\I18n\SimpleCacheTranslator();
+        $translator = new QCubed\I18n\SimpleCacheTranslator();
 
         $translator->bindDomain('app', QCUBED_PROJECT_DIR . "/i18n")  // set to application's i18n directory
-            ->setDefaultDomain('app')
+        ->setDefaultDomain('app')
             ->setTempDir(QCUBED_CACHE_DIR);
         TranslationService::instance()->setTranslator($translator);
 
@@ -84,17 +98,19 @@ class Application extends QCubed\ApplicationBase
     }
 
     /**
-     * Initialize the purify which purifies text that comes from the user, preventing cross-site scripting attacks.
-     * This is a default purifier. You can modify individual text boxes if needed.
+     * Initializes the purifier instance.
+     * @return void
      */
-    public function initPurifier() {
+    public function initPurifier(): void
+    {
         $this->objPurifier = new Purifier();
     }
 
     /**
      * Initialize your watcher class here, if needed.
      */
-    protected function initWatcher() {
+    protected function initWatcher(): void
+    {
         Watcher::initialize();
     }
 
@@ -102,8 +118,10 @@ class Application extends QCubed\ApplicationBase
      * Initializes CSRF protection by setting up both persistent and dynamic CSRF tokens.
      *
      * @return void
+     * @throws RandomException
      */
-    protected function initCsrfProtection() {
+    protected function initCsrfProtection(): void
+    {
         // If there is no CSRF token in the session, generate and store a persistent token
         if (empty($_SESSION['csrf_token'])) {
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // Initial persistent token
@@ -133,13 +151,13 @@ class Application extends QCubed\ApplicationBase
      *         Application::DisplayAlert('CSRF Token is invalid! The request was aborted.');
      *         // Compress session after token validation (optional):
      *         // Once the token is validated, you can "amortize" it for further use:
-     *         // $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+     *         // $_SESSION['csrf_token'] = 'binhex'(random_bytes(32));
      *         return;
      *     }
      *
      *     // If the token is valid, continue processing the data.
-     *     // Save necessary inputs or perform other actions as required by the developer.
-     * }
+     *     // Save the necessary inputs or perform other actions as required by the developer.
+     * '}'
      * </code>
      *
      * Note: This method is not limited to click events; it can also be applied to other events like change, etc.
@@ -163,14 +181,13 @@ class Application extends QCubed\ApplicationBase
     }
 
     /**
-     * This is a stub function for you to check permissions for the current user.
+     * Determines if the user or process is authorized based on the given options.
      *
-     * @param $options  Anything you want. Could be permissions required to view the current page. You would
-     * then make sure the current user is logged in, and has permissions that matched the given permissions.
-     *
-     * @return bool
+     * @param mixed|null $options Optional parameter to evaluate authorization context.
+     * @return bool Returns true if authorized, otherwise false.
      */
-    public static function isAuthorized($options = null) {
+    public static function isAuthorized(mixed $options = null): bool
+    {
         return true;
     }
 

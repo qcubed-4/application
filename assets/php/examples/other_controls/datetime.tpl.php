@@ -9,12 +9,12 @@
 		<h1>What time is it?</h1>
 
         <p>
-		QCubed includes several simple Controls that assist with user input of dates and datetimes.
+		QCubed-4 includes several simple Controls that assist with user input of dates and datetime.
         </p>
 
         <p>
 		<strong>DateTimePicker</strong> is the "default" control, in that the templates for ModelConnectors for tables with date
-		or datetime columns will, by default, generate <strong>DateTimePicker</strong> instances.  While not "sexy" or glamourous by
+		or datetime columns will, by default, generate <strong>DateTimePicker</strong> instances.  While not "sexy" or glamorous by
 		any stretch of the imagination, it offers an immense amount of utility, in that it allows for very distinct
 		control over date, time and datetime components.  By contrast, the DHTML-based <strong>Calendar</strong> control offers, by definition,
 		no support for any time-based component.
@@ -30,7 +30,7 @@
         </p>
 
         <p>
-            See also the JQuery UI Datepicker also included with QCubed.
+            See also the JQuery UI Datepicker also included with QCubed-4.
         </p>
 	</div>
 

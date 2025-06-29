@@ -10,10 +10,11 @@
 namespace QCubed;
 
 use QCubed\Exception\Caller;
+use QCubed\Exception\InvalidCast;
 use QCubed\Project\Application;
-use QCubed\Js;
 use QCubed\Database\Service as DatabaseService;
 use QCubed as Q;
+use Throwable;
 
 /**
  * Class ApplicationBase
@@ -25,56 +26,57 @@ use QCubed as Q;
  * through the application should go in the Form, and anything that is just used at the moment to build a response
  * should go here.
  * @package QCubed
- * //was QApplicationBase (do not put annotiation here, all transformations are manual)
  */
 abstract class ApplicationBase extends ObjectBase
 {
     // These constants help us to organize and build a list of responses to the client.
-    const PRIORITY_STANDARD = '*jsMed*';
-    const PRIORITY_HIGH = '*jsHigh*';
-    const PRIORITY_LOW = '*jsLow*';
+    public const PRIORITY_STANDARD = '*jsMed*';
+    public const PRIORITY_HIGH = '*jsHigh*';
+    public const PRIORITY_LOW = '*jsLow*';
     /** Execute ONLY this command and exclude all others */
-    const PRIORITY_EXCLUSIVE = '*jsExclusive*';
+    public const PRIORITY_EXCLUSIVE = '*jsExclusive*';
     /** Execute this command after all ajax commands have been completely flushed */
-    const PRIORITY_LAST = '*jsFinal*';
+    public const PRIORITY_LAST = '*jsFinal*';
 
     /**
-     * @var bool Set to true to turn on short-term caching. This is an in-memory cache that caches database
-     * objects only for as long as a single http request lasts. Depending on your application, this may speed
-     * up your database accesses. It DOES increase the amount of memory used in a request.
+     * @var bool Set to true to turn on short-term caching. This is an in-memory cache that caches a database
+     * Objects only for as long as a single http request lasts. Depending on your application, this may speed
+     * up your database access. It DOES increase the amount of memory used in a request.
      * */
-    public static $blnLocalCache = false;
+    public static bool $blnLocalCache = false;
+    public static mixed $forms;
+    public static mixed $Database;
 
     /** @var string */
-    protected static $strCacheControl = 'private';
+    protected static string $strCacheControl = 'private';
     /** @var string */
-    protected static $strContentType = "text/html";
+    protected static string $strContentType = "text/html";
 
 
-    private static $instance = null;
+    private static object|null $instance = null;
 
 
-    /** @var Context */
-    protected $objContext;
-    /** @var  JsResponse */
-    protected $objJsResponse;
+    /** @var Context|null */
+    protected ?Context $objContext = null;
+    /** @var  JsResponse|null */
+    protected ?JsResponse $objJsResponse = null;
     /** @var  bool Current state of output, whether it should be minimized or not. */
-    protected $blnMinimize = false;
-    /** @var  Purifier The purifier service. */
-    protected $objPurifier;
+    protected ?bool $blnMinimize = false;
+    /** @var  Purifier|null The purifier service. */
+    protected ?Purifier $objPurifier = null;
     /** @var bool */
-    protected $blnProcessOutput = true;
+    protected bool $blnProcessOutput = true;
     /** @var string  */
-    protected $strEncodingType = QCUBED_ENCODING;
+    protected string $strEncodingType = QCUBED_ENCODING;
 
 
     /**
      * Return and possibly create the application instance, which is a subclass of this class. It will be treated as
      * a singleton.
      *
-     * @return Application
+     * @return Application|null
      */
-    public static function instance()
+    public static function instance(): ?Application
     {
         if (!self::$instance) {
             self::$instance = new Application();
@@ -91,12 +93,12 @@ abstract class ApplicationBase extends ObjectBase
     }
 
     /**
-     * Set whether output should be minimized. Returns the prior state.
+     * Sets the minimized state of the object.
      *
-     * @param $blnMinimize
-     * @return bool
+     * @param bool $blnMinimize Indicates whether to minimize the object.
+     * @return bool The previous minimized state.
      */
-    public function setMinimize($blnMinimize)
+    public function setMinimize(bool $blnMinimize): bool
     {
         $blnRet = $this->blnMinimize;
         $this->blnMinimize = $blnMinimize;
@@ -109,7 +111,7 @@ abstract class ApplicationBase extends ObjectBase
      *
      * @return bool
      */
-    public function minimize()
+    public function minimize(): bool
     {
         return $this->blnMinimize;
     }
@@ -121,42 +123,45 @@ abstract class ApplicationBase extends ObjectBase
      *
      * @return Context
      */
-    public function context()
+    public function context(): Context
     {
         if (!$this->objContext) {
             $this->objContext = new Context();
         }
+
         return $this->objContext;
     }
 
     /**
      * Returns a singleton jsResponse object. This is for internal use of the application class only. It manages
-     * the javascript and json responses to requests.
+     * the JavaScript and JSON responses to requests.
      *
      * @return JsResponse
      */
-    public function jsResponse()
+    public function jsResponse(): JsResponse
     {
         if (!$this->objJsResponse) {
             $this->objJsResponse = new JsResponse();
         }
+
         return $this->objJsResponse;
     }
 
     /**
      * @return string   The application encoding type.
      */
-    public static function encodingType()
+    public static function encodingType(): string
     {
         return Application::instance()->strEncodingType;
     }
 
     /**
-     * Allows temporary setting of the encoding type if loading a special page.
+     * Sets the application encoding type and returns the previous encoding type.
      *
-     * @return string
+     * @param string $strEncodingType The new encoding type to be set.
+     * @return string                   The previous encoding type.
      */
-    public static function setEncodingType($strEncodingType)
+    public static function setEncodingType(string $strEncodingType): string
     {
         $strOldValue = Application::instance()->strEncodingType;
         Application::instance()->strEncodingType = $strEncodingType;
@@ -166,22 +171,21 @@ abstract class ApplicationBase extends ObjectBase
     /**
      * Returns true if this is a QCubed Ajax call. Note that if you are calling an entry point with ajax, but not through
      * qcubed.js, then it will return false. If you want to know whether a particular entry point is being called with
-     * ajax that might be serving up a REST api for example, check requestMode() for Context::REQUEST_MODE_AJAX
+     * ajax that might be serving up a REST api, for example, check requestMode() for Context::REQUEST_MODE_AJAX
      * @return bool
      */
-    public static function isAjax()
+    public static function isAjax(): bool
     {
         return Application::instance()->context()->requestMode() == Context::REQUEST_MODE_QCUBED_AJAX;
     }
 
     /**
-     * This is called by the PHP5 Autoloader.  This static method can be overridden.
+     * Attempts to load a class file based on the class name provided.
      *
-     *
-     * @param $strClassName
-     * @return boolean whether or not a class was found / included
+     * @param string $strClassName The name of the class to load.
+     * @return bool                 True if the class file was successfully loaded, false otherwise.
      */
-    public static function autoload($strClassName)
+    public static function autoload(string $strClassName): bool
     {
         if (file_exists($strFilePath = sprintf('%s/plugins/%s.php', QCUBED_PROJECT_INCLUDES_DIR, $strClassName))) {
             require_once($strFilePath);
@@ -191,36 +195,35 @@ abstract class ApplicationBase extends ObjectBase
     }
 
     /**
-     * Temprorarily overrides the default error handling mechanism.  Remember to call
-     * RestoreErrorHandler to restore the error handler back to the default.
+     * Sets a custom error handler.
      *
-     * @param string $strName the name of the new error handler function, or NULL if none
-     * @param integer $intLevel if a error handler function is defined, then the new error reporting level (if any)
+     * @param string $strName The name of the error handler.
+     * @param int|null $intLevel The error level for which the handler will be invoked, or null for all levels.
      *
-     * @deprecated Create a \QCubed\Error\Handler instead
-     * @throws Caller
+     * @throws Caller Thrown to indicate that this method is deprecated.
+     * @noinspection PhpUnusedParameterInspection
      */
-    public static function setErrorHandler($strName, $intLevel = null)
+    public static function setErrorHandler(string $strName, ?int $intLevel = null): void
     {
         throw new Caller("SetErrorHandler is deprecated. Create an Error\\Handler instead.");
     }
 
     /**
-     * Restores the temporarily overridden default error handling mechanism back to the default.
+     * Restores the error handler by throwing an exception indicating the deprecation of SetErrorHandler.
+     *
+     * @throws Caller   Thrown to indicate that SetErrorHandler is deprecated and an Error\Handler should be created instead.
      */
-    public static function restoreErrorHandler()
+    public static function restoreErrorHandler(): void
     {
         throw new Caller("SetErrorHandler is deprecated. Create an Error\\Handler instead.");
     }
 
     /**
-     * Use the purifier to purify text, initializing it if it does not exist.
-     *
-     * @param $strText
-     * @param null|\HTMLPurifier_Config $objCustomConfig
-     * @return string
+     * @param string $strText The text to be purified.
+     * @param mixed|null $objCustomConfig Optional custom configuration for the purifier.
+     * @return string The purified text.
      */
-    public static function purify($strText, $objCustomConfig = null)
+    public static function purify(string $strText, mixed $objCustomConfig = null): string
     {
         if (!Application::instance()->objPurifier) {
             Application::instance()->initPurifier();
@@ -228,24 +231,31 @@ abstract class ApplicationBase extends ObjectBase
         return Application::instance()->objPurifier->purify($strText, $objCustomConfig);
     }
 
-    abstract protected function initPurifier();
+    /**
+     * Initializes the purifier instance.
+     *
+     * This method is intended to set up and configure the required
+     * purifier implementation. It should be implemented by subclasses
+     * to ensure specific configuration or initialization tasks are handled.
+     */
+    abstract protected function initPurifier(): void;
 
     /**
      * Whether or not we are currently trying to Process the Output of the page.
-     * Used by the OutputPage PHP output_buffering handler.  As of PHP 5.2,
+     * Used by the OutputPage PHP output buffering handler.  As of PHP 5.2,
      * this gets called whenever ob_get_contents() is called.  Because some
-     * classes like QFormBase utilizes ob_get_contents() to perform template
+     * classes like QFormBase utilize ob_get_contents() to perform template
      * evaluation without wanting to actually perform OutputPage, this flag
      * can be set/modified by QFormBase::EvaluateTemplate accordingly to
      * prevent OutputPage from executing.
      *
-     * Also set this to false if you are outputting custom headers, especially
+     * Also, set this to false if you are outputting custom headers, especially
      * if you send your own "Content-Type" header.
      *
-     * @param $blnProcess
-     * @return bool
+     * @param bool $blnProcess The new value for the process output flag.
+     * @return bool The previous value of the process output flag.
      */
-    public static function setProcessOutput($blnProcess)
+    public static function setProcessOutput(bool $blnProcess): bool
     {
         $blnOldValue = Application::instance()->blnProcessOutput;
         Application::instance()->blnProcessOutput = $blnProcess;
@@ -253,22 +263,18 @@ abstract class ApplicationBase extends ObjectBase
     }
 
     /**
-     * Definition of CacheControl for the HTTP header.  In general, it is
-     * recommended to keep this as "private".  But this can/should be overriden
-     * for file/scripts that have special caching requirements.
+     * Definition of CacheControl for the HTTP header. In general, it is recommended to keep this as "private".
+     * But this can/should be overridden for a file/scripts that have special caching requirements.
      *
-     * Returns old value.
-     *
-     * @param string $strControl The new value
-     * @return string The old value
+     * @param string $strControl The new cache control value to set.
+     * @return string   The old cache control value.
      */
-    public static function setCacheControl($strControl)
+    public static function setCacheControl(string $strControl): string
     {
         $strOldValue = static::$strCacheControl;
         static::$strCacheControl = $strControl;
         return $strOldValue;
     }
-
 
     /**
      * The content type to output.
@@ -276,7 +282,7 @@ abstract class ApplicationBase extends ObjectBase
      * @param string $strContentType
      * @return string The old value
      */
-    public static function setContentType($strContentType)
+    public static function setContentType(string $strContentType): string
     {
         $strOldValue = static::$strContentType;
         static::$strContentType = $strContentType;
@@ -290,16 +296,16 @@ abstract class ApplicationBase extends ObjectBase
      * TODO: break this into two routines, since the resulting UI behavior is really different. Redirect and LoadPage??
      *
      * @param string $strLocation target patch
-     * @param bool $blnAbortCurrentScript Whether to abort the current script, or finish it out so data gets saved.
+     * @param bool $blnAbortCurrentScript Whether to abort the current script or finish it out so data gets saved.
      * @return void
+     * @throws Throwable Exception
      */
-    public static function redirect($strLocation, $blnAbortCurrentScript = true)
+    public static function redirect(string $strLocation, bool $blnAbortCurrentScript = true): void
     {
         if (!$blnAbortCurrentScript) {
-            // Use the javascript command mechanism
+            // Use the JavaScript command mechanism
             Application::instance()->jsResponse()->setLocation($strLocation);
         } else {
-            /** @var \QCubed\Project\Control\FormBase */
             global $_FORM;
 
             if ($_FORM) {
@@ -335,13 +341,14 @@ abstract class ApplicationBase extends ObjectBase
     /**
      * This will close the window.
      *
-     * @param bool $blnAbortCurrentScript Whether to abort the current script, or finish it out so data gets saved.
+     * @param bool $blnAbortCurrentScript Whether to abort the current script or finish it out so data gets saved.
      * @return void
+     * @throws Throwable Exception
      */
-    public static function closeWindow($blnAbortCurrentScript = false)
+    public static function closeWindow(bool $blnAbortCurrentScript = false): void
     {
         if (!$blnAbortCurrentScript) {
-            // Use the javascript command mechanism
+            // Use the JavaScript command mechanism
             Application::instance()->jsResponse()->closeWindow();
         } else {
             // Clear the output buffer (if any)
@@ -361,23 +368,24 @@ abstract class ApplicationBase extends ObjectBase
     }
 
     /**
-     * Set a cookie. Allows setting of cookies in responses to ajax requests.
+     * Set a cookie. Allows setting of cookies in response to ajax requests.
      *
      * @param string $strName
      * @param string $strValue
      * @param QDateTime $dttTimeout
      * @param string $strPath
-     * @param null|string $strDomain
+     * @param string|null $strDomain
      * @param bool $blnSecure
      */
     public static function setCookie(
-        $strName,
-        $strValue,
+        string    $strName,
+        string    $strValue,
         QDateTime $dttTimeout,
-        $strPath = '/',
-        $strDomain = null,
-        $blnSecure = false
-    ) {
+        string    $strPath = '/',
+        ?string    $strDomain = null,
+        ?bool $blnSecure = false
+    ): void
+    {
         if (self::isAjax()) {
             self::executeJsFunction('qcubed.setCookie',
                 $strName,
@@ -392,14 +400,15 @@ abstract class ApplicationBase extends ObjectBase
     }
 
     /**
-     * Delete's the given cookie IF its set. In other words, you cannot set a cookie and then delete a cookie right away before the
+     * Deletes the given cookie IF its set. In other words, you cannot set a cookie and then delete a cookie right away before the
      * cookie gets sent to the browser.
      *
-     * @param $strName
+     * @param string $strName The name of the cookie to be deleted.
+     * @return void
      */
-    public static function deleteCookie($strName)
+    public static function deleteCookie(string $strName): void
     {
-        if (isset($_COOKIE[$strName])) { // don't post a cookie if its not set
+        if (isset($_COOKIE[$strName])) { // don't post a cookie if it's not set
             $dttTimeout = QDateTime::now();
             $dttTimeout->addYears(-5);
 
@@ -409,10 +418,10 @@ abstract class ApplicationBase extends ObjectBase
 
 
     /**
-     * Causes the browser to display a JavaScript alert() box with supplied message
-     * @param string $strMessage Message to be displayed
+     * Causes the browser to display a JavaScript alert() box with a supplied message
+     * @param string|null $strMessage Message to be displayed
      */
-    public static function displayAlert($strMessage)
+    public static function displayAlert(?string $strMessage): void
     {
         Application::instance()->jsResponse()->displayAlert($strMessage);
     }
@@ -426,44 +435,41 @@ abstract class ApplicationBase extends ObjectBase
      *
      * @static
      *  Will be eventually removed. If you need to do something in javascript, add it to AjaxResponse.
-     * @param string $strJavaScript the javascript to execute
+     * @param string $strJavaScript the JavaScript to execute
      * @param string $strPriority
      * @throws Caller
      */
-    public static function executeJavaScript($strJavaScript, $strPriority = self::PRIORITY_STANDARD)
+    public static function executeJavaScript(string $strJavaScript, string $strPriority = self::PRIORITY_STANDARD): void
     {
         Application::instance()->jsResponse()->executeJavaScript($strJavaScript, $strPriority);
     }
 
     /**
-     * Execute a function on a particular control. Many javascript widgets are structured this way, and this gives us
-     * a general purpose way of sending commands to widgets without an 'eval' on the client side.
+     * Execute a function on a particular control. Many JavaScript widgets are structured this way, and this gives us
+     * a general-purpose way of sending commands to widgets without an 'eval' on the client side.
      *
      * Commands will be executed in the order received, along with ExecuteJavaScript commands and ExecuteObjectCommands.
      * If you want to force a command to execute first, give it high priority, or last, give it low priority.
      *
-     * @param string $strControlId Id of control to direct the command to.
-     * @param string $strFunctionName Function name to call. For jQueryUI, this would be the widget name
-     * @param string $strFunctionName,... Unlimited OPTIONAL parameters to use as a parameter list to the function. List can
+     * @param string $strControlId I'd of control to direct the command to.
+     * @param string $strFunctionName Unlimited OPTIONAL parameters to use as a parameter list to the function. List can
      *                                        end with a PRIORITY_* to prioritize the command.
      */
-    public static function executeControlCommand($strControlId, $strFunctionName /*, ..., PRIORITY_* */)
+    public static function executeControlCommand(string $strControlId, string $strFunctionName /*, ..., PRIORITY_* */): void
     {
         $args = func_get_args();
         call_user_func_array([Application::instance()->jsResponse(), 'executeControlCommand'], $args);
     }
 
     /**
-     * Call a function on a jQuery selector. The selector can be a single string, or an array where the first
+     * Call a function on a jQuery selector. The selector can be a single string or an array where the first
      * item is a selector specifying the items within the context of the second selector.
      *
      * @param array|string $mixSelector
-     * @param string $strFunctionName
-     * @param string $strFunctionName,... Unlimited OPTIONAL parameters to use as a parameter list to the function. List can
+     * @param string $strFunctionName Unlimited OPTIONAL parameters to use as a parameter list to the function. List can
      *                                        end with a PRIORITY_* to prioritize the command.
-     * @throws Caller
      */
-    public static function executeSelectorFunction($mixSelector, $strFunctionName /*, ..., PRIORITY_* */)
+    public static function executeSelectorFunction(array|string $mixSelector, string $strFunctionName /*, ..., PRIORITY_* */): void
     {
         $args = func_get_args();
         call_user_func_array([Application::instance()->jsResponse(), 'executeSelectorFunction'], $args);
@@ -473,11 +479,11 @@ abstract class ApplicationBase extends ObjectBase
     /**
      * Call the given function with the given arguments. If just a function name, then the window object is searched.
      * The function can be inside an object accessible from the global namespace by separating with periods.
-     * @param string $strFunctionName Can be namespaced, as in "qcubed.func".
-     * @param string $strFunctionName,... Unlimited OPTIONAL parameters to use as a parameter list to the function. List can
+     *
+     * @param string $strFunctionName Unlimited OPTIONAL parameters to use as a parameter list to the function. List can
      *                                        end with a PRIORITY_* to prioritize the command.
      */
-    public static function executeJsFunction($strFunctionName /*, ... */)
+    public static function executeJsFunction(string $strFunctionName /*, ... */): void
     {
         $args = func_get_args();
         call_user_func_array([Application::instance()->jsResponse(), 'executeJsFunction'], $args);
@@ -487,16 +493,16 @@ abstract class ApplicationBase extends ObjectBase
      * One time add of style sheets, to be used by QForm only for last minute style sheet injection.
      * @param string[] $strStyleSheetArray
      */
-    public static function addStyleSheets(array $strStyleSheetArray)
+    public static function addStyleSheets(array $strStyleSheetArray): void
     {
         Application::instance()->jsResponse()->addStyleSheets($strStyleSheetArray);
     }
 
     /**
-     * Add an array of javascript files for one-time inclusion. Called by QForm. Do not call.
+     * Add an array of JavaScript files for one-time inclusion. Called by QForm. Do not call.
      * @param string[] $strJavaScriptFileArray
      */
-    public static function addJavaScriptFiles($strJavaScriptFileArray)
+    public static function addJavaScriptFiles(array $strJavaScriptFileArray): void
     {
         Application::instance()->jsResponse()->addJavaScriptFiles($strJavaScriptFileArray);
     }
@@ -516,12 +522,12 @@ abstract class ApplicationBase extends ObjectBase
      *
      * @return string
      */
-    public static function outputPage($strBuffer)
+    public static function outputPage(string $strBuffer): string
     {
         global $_FORM;
 
         if (!Application::instance()->blnProcessOutput) {
-            // We are processing a template, or outputting some other kind of file, like a jpeg or pdf
+            // We are processing a template, or outputting some other kind of file, like a JPEG or PDF
             return $strBuffer;
         }
 
@@ -534,24 +540,23 @@ abstract class ApplicationBase extends ObjectBase
             if ($strScript) {
                 $strBuffer =  $strBuffer . '<script type="text/javascript">' . $strScript . '</script>';
             }
-            return $strBuffer;
         } else {
             $file = "";
             $line = 0;
             if (!headers_sent()) {
                 // We are outputting a Form
                 header('Cache-Control: ' . static::$strCacheControl);
-                // make sure the server does not override the character encoding value by explicitly sending it out as a header.
-                // some servers will use an internal default if not specified in the header, and that will override the "encoding" value sent in the text.
+                // Make sure the server does not override the character encoding value by explicitly sending it out as a header.
+                // Some servers will use an internal default if not specified in the header, and that will override the "encoding" value sent in the text.
                 header(sprintf('Content-Type: %s; charset=%s', strtolower(static::$strContentType),
                     strtolower(QCUBED_ENCODING)));
             }
 
-            return $strBuffer;
         }
+        return $strBuffer;
     }
 
-    public static function startOutputBuffering()
+    public static function startOutputBuffering(): void
     {
         if (php_sapi_name() !== 'cli' &&    // Do not buffer the command line interface
             !defined('__NO_OUTPUT_BUFFER__')
@@ -560,45 +565,46 @@ abstract class ApplicationBase extends ObjectBase
         }
     }
 
-    public static function endOutputBuffering($strBuffer)
+    public static function endOutputBuffering($strBuffer): string
     {
         return static::outputPage($strBuffer);
     }
 
 
     /**
-     * Render scripts for injecting files into the html output. This is for server only, not ajax.
-     * This list will appear ahead of the javascript commands rendered below.
+     * Render scripts for injecting files into the HTML output. This is for a server only, not ajax.
+     * This list will appear ahead of the JavaScript commands rendered below.
      *
      * @static
      * @return string
+     * @throws Caller
      */
-    public static function renderFiles()
+    public static function renderFiles(): string
     {
         return Application::instance()->jsResponse()->renderFiles();
     }
 
     /**
-     * Function renders all the Javascript commands as output to the client browser. This is a mirror of what
+     * Function renders all the JavaScript commands as output to the client browser. This is a mirror of what
      * occurs in the success function in the qcubed.js ajax code.
      *
-     * @param bool $blnBeforeControls True to only render the javascripts that need to come before the controls are defined.
+     * @param bool $blnBeforeControls True to only render the JavaScripts that need to come before the controls are defined.
      *                                This is used to break the commands issued into two groups.
      * @static
      * @return string
      */
-    public static function renderJavascript($blnBeforeControls = false)
+    public static function renderJavascript(bool $blnBeforeControls = false): string
     {
         return Application::instance()->jsResponse()->renderJavascript($blnBeforeControls);
     }
 
     /**
-     * Return the javascript command array, for use by form ajax response. Will erase the command array, so
+     * Return the JavaScript command array, for use by form ajax response. Will erase the command array, so
      * the form better use it.
      * @static
      * @return array
      */
-    public static function getJavascriptCommandArray()
+    public static function getJavascriptCommandArray(): array
     {
         return Application::instance()->jsResponse()->getJavascriptCommandArray();
     }
@@ -607,11 +613,14 @@ abstract class ApplicationBase extends ObjectBase
     /**
      * Print an ajax response to the browser.
      *
-     * @param array $strResponseArray An array keyed with AjaxResponse items. These items will be read by the qcubed.js
-     * ajax success function and operated on. The goals is to eventually have all possible response types represented
+     * Ajax's success function and operated on. The goal is to eventually have all possible response types represented
      * in the AjaxResponse so that we can remove the "eval" in qcubed.js.
+     *
+     * @param array $strResponseArray The response array to encode and send as JSON.
+     * @return void This method does not return a value.
+     * @throws Throwable Exception Throws an exception in case of a JSON encoding error.
      */
-    public static function sendAjaxResponse(array $strResponseArray)
+    public static function sendAjaxResponse(array $strResponseArray): void
     {
         header('Content-Type: text/json'); // not application/json, as IE reportedly blows up on that, but jQuery knows what to do.
         array_walk_recursive($strResponseArray, function (&$item) {
@@ -623,11 +632,11 @@ abstract class ApplicationBase extends ObjectBase
         $strJSON = Js\Helper::toJSON($strResponseArray);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \Exception("JSON encoding error: " . json_last_error_msg());
+            throw new  InvalidCast("JSON encoding error: " . json_last_error_msg()); //Using the global Exception class
         }
 
         if (Application::encodingType() && Application::encodingType() != 'UTF-8') {
-            $strJSON = iconv(Application::encodingType(), 'UTF-8', $strJSON); // JSON peab olema UTF-8 kodeeritud
+            $strJSON = iconv(Application::encodingType(), 'UTF-8', $strJSON);// JSON must be UTF-8 encoded
         }
 
         print($strJSON);
@@ -638,13 +647,14 @@ abstract class ApplicationBase extends ObjectBase
      * @param string $strFile File name to be tested
      *
      * @return string the final JS file URI
+     * @throws Caller
      */
-    public static function getJsFileUri($strFile)
+    public static function getJsFileUri(string $strFile): string
     {
-        if ((strpos($strFile, "http") === 0) || (strpos($strFile, "https") === 0)) {
+        if ((str_starts_with($strFile, "http")) || (str_starts_with($strFile, "https"))) {
             return $strFile;
         }
-        if (strpos($strFile, "/") === 0) {
+        if (str_starts_with($strFile, "/")) {
             return $strFile;
         } else {
             throw new Caller('Relative urls are no longer supported. Trying to load: ' . $strFile);
@@ -656,13 +666,14 @@ abstract class ApplicationBase extends ObjectBase
      * @param string $strFile File name to be tested
      *
      * @return string the final CSS URI
+     * @throws Caller
      */
-    public static function getCssFileUri($strFile)
+    public static function getCssFileUri(string $strFile): string
     {
-        if ((strpos($strFile, "http") === 0) || (strpos($strFile, "https") === 0)) {
+        if ((str_starts_with($strFile, "http")) || (str_starts_with($strFile, "https"))) {
             return $strFile;
         }
-        if (strpos($strFile, "/") === 0) {
+        if (str_starts_with($strFile, "/")) {
             return $strFile;
         }
         else {
@@ -675,7 +686,7 @@ abstract class ApplicationBase extends ObjectBase
      *
      * @return void
      */
-    public static function varDump()
+    public static function varDump(): void
     {
         _p('<div class="var-dump"><strong>QCubed Settings</strong><ul>', false);
         /*
@@ -715,20 +726,33 @@ abstract class ApplicationBase extends ObjectBase
         _p('</ul></div>', false);
     }
 
-    public static function isAuthorized($options = null)
+    /**
+     * Checks if the current operation is authorized.
+     *
+     * @param mixed $options Optional parameters that may influence the authorization check.
+     * @return bool Returns false by default. This method should be overridden to implement actual authorization logic.
+     * @noinspection PhpUnusedParameterInspection
+     */
+    public static function isAuthorized(mixed $options = null): bool
     {
         return false; // must be overridden!
     }
 
-    public static function checkAuthorized($options = null)
+    /**
+     * Checks if the current user or process is authorized to proceed.
+     *
+     * @param mixed|null $options An optional parameter to pass authorization options.
+     * @return void No value is returned by this method.
+     */
+    public static function checkAuthorized(mixed $options = null): void
     {
         if (static::isAuthorized($options)) {
             return;
         }
 
         // If we're here -- then we're not allowed to access.  Present the Error/Issue.
-        header($_SERVER['SERVER_PROTOCOL'] . ' 401 Access Denied');
-        header('Status: 401 Access Denied', true);
+        header($_SERVER['SERVER_PROTOCOL'] . ' Access 401 Denied');
+        header('Status: 401 Access Denied');
         self::setProcessOutput(false);
         // throw new QRemoteAdminDeniedException(); ?? Really, throw an exception??
         exit();

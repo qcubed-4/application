@@ -6,6 +6,8 @@ use QCubed\Event\EnterKey;
 use QCubed\Event\EscapeKey;
 use QCubed\Project\Control\Button;
 use QCubed\Project\Control\FormBase;
+use QCubed\Project\Control\TextBox;
+use QCubed\Control\CheckboxList;
 
 require_once('../qcubed.inc.php');
 
@@ -13,24 +15,24 @@ if (!defined('QCUBED_DESIGN_MODE')) {
     define('QCUBED_DESIGN_MODE', 1);
 } // normally, you would define this in your config file
 
-// Define the \QCubed\Project\Control\FormBase with all our Qcontrols
+// Define the \QCubed\Project\Control\FormBase with all our Controls
 class ExamplesForm extends FormBase
 {
 
-    // Local declarations of our Qcontrols
+    // Local declarations of our Controls
     //protected $lblFirstName;
-    protected $txtFirstName;
+    protected TextBox $txtFirstName;
     //protected $lblLastName;
-    protected $txtLastName;
-    protected $lstPersonTypes;
+    protected TextBox $txtLastName;
+    protected CheckboxList $lstPersonTypes;
 
-    protected $btnSave;
-    protected $btnCancel;
-    // Local instance of a Person ModelConnectors
-    protected $mctPerson;
+    protected Button $btnSave;
+    protected Button $btnCancel;
+    // A local instance of a Person ModelConnectors
+    protected PersonConnector $mctPerson;
 
     // Initialize our Controls during the Form Creation process
-    protected function formCreate()
+    protected function formCreate(): void
     {
         // For now, let's load Person of ID #1
         // Remember that $this is the Model Connector's parent, because every QControl
@@ -47,7 +49,7 @@ class ExamplesForm extends FormBase
         $this->txtLastName = $this->mctPerson->txtLastName_Create();
         $this->lstPersonTypes = $this->mctPerson->lstPersonTypes_Create();
 
-        // We can of course also define any additional controls we wish
+        // We can, of course, also define any additional controls we wish
         $this->btnSave = new Button($this);
         $this->btnSave->Text = 'Save';
         $this->btnSave->Visible = false;
@@ -75,7 +77,7 @@ class ExamplesForm extends FormBase
     }
 
     // Define the Event Handlers
-    protected function btnSave_Click($strFormId, $strControlId, $strParameter)
+    protected function btnSave_Click(string $strFormId, string $strControlId, string $strParameter): void
     {
         // Utilize Meta Control to update Person
         $this->mctPerson->savePerson();
@@ -84,7 +86,7 @@ class ExamplesForm extends FormBase
         $this->unselect();
     }
 
-    protected function unselect()
+    protected function unselect(): void
     {
         // Let's hide all the textboxes and show all the labels
         $this->txtFirstName->Visible = false;
@@ -96,49 +98,49 @@ class ExamplesForm extends FormBase
         $this->btnSave->Visible = false;
         $this->btnCancel->Visible = false;
 
-        // Finally, let's utilize the ModelConnector to refresh all the data fields (in case a data was modified and saved
+        // Finally, let's utilize the ModelConnector to refresh all the data fields (in case data was modified and saved
         // or a textbox was modified and NOT saved)
         $this->mctPerson->refresh();
     }
 
-    protected function btnCancel_Click($strFormId, $strControlId, $strParameter)
+    protected function btnCancel_Click(string $strFormId, string $strControlId,string  $strParameter): void
     {
         $this->unselect();
     }
 
-    protected function lblFirstName_Click($strFormId, $strControlId, $strParameter)
+    protected function lblFirstName_Click(string $strFormId, string $strControlId, string $strParameter): void
     {
         // In case we are currently Editing lblLastName, let's first implicitly unselect everything
         $this->unselect();
 
-        // Hide the Label and Show the Textboox
+        // Hide the Label and Show the Textbox
         $this->lblFirstName->Visible = false;
         $this->txtFirstName->Visible = true;
         $this->txtFirstName->focus();
 
-        // Finall, show the Save and Cancel Buttons
+        // Finally, show the Save and Cancel Buttons
         $this->btnSave->Visible = true;
         $this->btnCancel->Visible = true;
     }
 
-    protected function lblLastName_Click($strFormId, $strControlId, $strParameter)
+    protected function lblLastName_Click(string $strFormId, string $strControlId, string $strParameter): void
     {
         // In case we are currently Editing lblFirstName, let's first implicitly unselect everything
         $this->unselect();
 
-        // Hide the Label and Show the Textboox
+        // Hide the Label and Show the Textbox
         $this->lblLastName->Visible = false;
         $this->txtLastName->Visible = true;
         $this->txtLastName->focus();
 
-        // Finall, show the Save and Cancel Buttons
+        // Finally, show the Save and Cancel Buttons
         $this->btnSave->Visible = true;
         $this->btnCancel->Visible = true;
     }
 
-    protected function formValidate()
+    protected function formValidate(): bool
     {
-        // Blink and FOcus any errant control
+        // Blink and Focus any errant control
         foreach ($this->getErrorControls() as $objControl) {
             $objControl->focus();
             $objControl->blink();

@@ -10,6 +10,7 @@
 namespace QCubed\Watcher;
 
 use Psr\SimpleCache\CacheInterface;
+use Psr\SimpleCache\InvalidArgumentException;
 
 /**
  * Class Cache
@@ -21,22 +22,22 @@ use Psr\SimpleCache\CacheInterface;
  * not work for this.
  *
  * The PSR-16 spec says caches must support at a minimum 64 characters in the key. If your cache limits the number
- * of characters, you will need to override getKey to hash the resulting key, or somehow create a key less than the
+ * of characters, you will need to override getKey to hash the resulting key or somehow create a key less than the
  * max number of chars permitted by your caching system.
  *
  * You must subclass this and put a cache object in the $objCache variable.
  *
- * @was QWatcherCache
  */
 abstract class Cache extends WatcherBase
 {
-    /** @var  CacheInterface */
-    protected static $objCache = null;  // must be initialized by subclass at app startup time
+    /** @var CacheInterface|null */
+    protected static ?CacheInterface $objCache = null;  // must be initialized by a subclass at app startup time
 
     /**
      * Records the current state of the watched tables.
+     * @throws InvalidArgumentException
      */
-    public function makeCurrent()
+    public function makeCurrent(): void
     {
         $curTime = microtime();
 
@@ -65,8 +66,9 @@ abstract class Cache extends WatcherBase
     /**
      *
      * @return bool
+     * @throws InvalidArgumentException
      */
-    public function isCurrent()
+    public function isCurrent(): bool
     {
         foreach ($this->strWatchedKeys as $key => $time) {
             $time2 = static::$objCache->get($key);
@@ -83,8 +85,9 @@ abstract class Cache extends WatcherBase
      *
      * @param string $strDbName
      * @param string $strTableName
+     * @throws InvalidArgumentException
      */
-    public static function markTableModified($strDbName, $strTableName)
+    public static function markTableModified(string $strDbName, string $strTableName): void
     {
         parent::markTableModified($strDbName, $strTableName);
         $key = static::getKey($strDbName, $strTableName);

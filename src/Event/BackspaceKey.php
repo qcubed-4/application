@@ -11,13 +11,12 @@ namespace QCubed\Event;
 
 
 /**
- * When the Backspace key is pressed with element in focus
+ * When the Backspace key is pressed with an element in focus
  *
- * @was QBackspaceKeyEvent
  */
 class BackspaceKey extends KeyDown
 {
-    /** @var string Condition JS with keycode for escape key */
-    protected $strCondition = 'event.keyCode == 8';
+    /** @var string|null Condition JS with keycode for an escape key */
+    protected ?string $strCondition = 'event.keyCode == 8';
 }
 

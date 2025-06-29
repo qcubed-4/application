@@ -18,7 +18,7 @@ use QCubed\Project\Application;
  *
  * This class is an internal class for use by the application object. It manages the response to requests from the client,
  * storing the various responses from the framework, and ultimately returning code that is either displayable in an
- * html page (for Server requests), or that is a json response to an Ajax query that will get unpacked and executed in qcubed.js
+ * HTML page (for Server requests), or that is a JSON response to an Ajax query that will get unpacked and executed in qcubed.js
  *
  * @package QCubed
  */
@@ -26,46 +26,47 @@ class JsResponse
 {
 
     /* JS Response entries that qcubed.js will handle */
-    const WATCHER = 'watcher';
-    const CONTROLS = 'controls';
-    const COMMANDS_HIGH = 'commandsHigh';
-    const COMMANDS_MEDIUM = 'commands';
-    const COMMANDS_LOW = 'commandsLow';
-    const COMMANDS_FINAL = 'commandsFinal';    // execute after all ajax commands, and resultant ajax commands have executed
-    const REG_C = 'regc'; // register control list
-    const HTML = 'html';
-    const VALUE = 'value';
-    const ID = 'id';
-    const ATTRIBUTES = 'attributes';
-    const CSS = 'css';
-    const CLOSE = 'winclose';
-    const LOCATION = 'loc';
-    const ALERT = 'alert';
-    const STYLE_SHEETS = 'ss';
-    const JAVA_SCRIPTS = 'js';
+    public const string WATCHER = 'watcher';
+    public const string CONTROLS = 'controls';
+    public const string COMMANDS_HIGH = 'commandsHigh';
+    public const string COMMANDS_MEDIUM = 'commands';
+    public const string COMMANDS_LOW = 'commandsLow';
+    public const string COMMANDS_FINAL = 'commandsFinal';    // execute after all ajax commands, and resultant ajax commands have executed
+    public const string REG_C = 'regc'; // register control list
+    public const string HTML = 'html';
+    public const string VALUE = 'value';
+    public const string ID = 'id';
+    public const string ATTRIBUTES = 'attributes';
+    public const string CSS = 'css';
+    public const string CLOSE = 'winclose';
+    public const string LOCATION = 'loc';
+    public const string ALERT = 'alert';
+    public const string STYLE_SHEETS = 'ss';
+    public const string JAVA_SCRIPTS = 'js';
+
 
     /**
-     * If this particular item is set, we ensure that this command, and only this command will get invoked on the
+     * If this particular item is set, we ensure that this command, and only this command, will get invoked on the
      * next response. The rest of the commands will wait until the next response.
      *
      * @var null|array;
      */
-    protected $exclusiveCommand = null;
+    protected ?array $exclusiveCommand = null;
 
-    /** @var array A structured array of commands to be sent to either the ajax response, or page output.
+    /** @var array A structured array of commands to be sent to either the ajax response or page output.
      * Replaces the AlertMessageArray, JavaScriptArray, JavaScriptArrayHighPriority, and JavaScriptArrayLowPriority.
      */
-    protected $commands = array();
+    protected array $commands = array();
 
-    /** @var array JS files to be added to the list of files in front of the javascript commands. Should include jquery, etc. */
-    protected $files = array();
+    /** @var array JS files to be added to the list of files in front of the JavaScript commands. Should include jquery, etc. */
+    protected array $files = array();
 
 
     /**
-     * Causes the browser to display a JavaScript alert() box with supplied message
-     * @param string $strMessage Message to be displayed
+     * Causes the browser to display a JavaScript alert() box with a supplied message
+     * @param string|null $strMessage Message to be displayed
      */
-    public function displayAlert($strMessage)
+    public function displayAlert(?string $strMessage): void
     {
         $this->commands[self::ALERT][] = $strMessage;
     }
@@ -78,15 +79,15 @@ class JsResponse
      * of specific commands sent to the client.
      *
      * @static
-     * @deprecated Will be eventually removed. If you need to do something in javascript, add it to AjaxResponse.
-     * @param string $strJavaScript the javascript to execute
+     * @param string $strJavaScript the JavaScript to execute
      * @param string $strPriority
      * @throws Caller
+     * @deprecated Will be eventually removed. If you need to do something in JavaScript, add it to AjaxResponse.
      */
-    public function executeJavaScript($strJavaScript, $strPriority = ApplicationBase::PRIORITY_STANDARD)
+    public function executeJavaScript(string $strJavaScript, string $strPriority = ApplicationBase::PRIORITY_STANDARD): void
     {
         if (is_bool($strPriority)) {
-            //we keep this codepath for backward compatibility
+            //we keep this codepage for backward compatibility
             if ($strPriority === true) {
                 throw new Caller('Please specify a correct priority value');
             }
@@ -109,18 +110,17 @@ class JsResponse
     }
 
     /**
-     * Execute a function on a particular control. Many javascript widgets are structured this way, and this gives us
-     * a general purpose way of sending commands to widgets without an 'eval' on the client side.
+     * Execute a function on a particular control. Many JavaScript widgets are structured this way, and this gives us
+     * a general-purpose way of sending commands to widgets without an 'eval' on the client side.
      *
      * Commands will be executed in the order received, along with ExecuteJavaScript commands and ExecuteObjectCommands.
      * If you want to force a command to execute first, give it high priority, or last, give it low priority.
      *
-     * @param string $strControlId Id of control to direct the command to.
-     * @param string $strFunctionName Function name to call. For jQueryUI, this would be the widget name
+     * @param string $strControlId The ID of the control to which the command should be directed.
      * @param string $strFunctionName,... Unlimited OPTIONAL parameters to use as a parameter list to the function. List can
      *                                        end with a PRIORITY_* to prioritize the command.
      */
-    public function executeControlCommand($strControlId, $strFunctionName /*, ..., PRIORITY_* */)
+    public function executeControlCommand(string $strControlId, string $strFunctionName /*, ..., PRIORITY_* */): void
     {
         $args = func_get_args();
         $args[0] = '#' . $strControlId;
@@ -128,16 +128,15 @@ class JsResponse
     }
 
     /**
-     * Call a function on a jQuery selector. The selector can be a single string, or an array where the first
+     * Call a function on a jQuery selector. The selector can be a single string or an array where the first
      * item is a selector specifying the items within the context of the second selector.
      *
      * @param array|string $mixSelector
-     * @param string $strFunctionName
      * @param string $strFunctionName,... Unlimited OPTIONAL parameters to use as a parameter list to the function. List can
      *                                        end with a PRIORITY_* to prioritize the command.
      * @throws Caller
      */
-    public function executeSelectorFunction($mixSelector, $strFunctionName /*, ..., PRIORITY_* */)
+    public function executeSelectorFunction(array|string $mixSelector, string $strFunctionName /*, ..., PRIORITY_* */): void
     {
         if (!(is_string($mixSelector) || (is_array($mixSelector) && count($mixSelector) == 2))) {
             throw new Caller('Selector must be a string or an array of two items');
@@ -186,11 +185,10 @@ class JsResponse
     /**
      * Call the given function with the given arguments. If just a function name, then the window object is searched.
      * The function can be inside an object accessible from the global namespace by separating with periods.
-     * @param string $strFunctionName Can be namespaced, as in "qcubed.func".
      * @param string $strFunctionName,... Unlimited OPTIONAL parameters to use as a parameter list to the function. List can
      *                                        end with a PRIORITY_* to prioritize the command.
      */
-    public function executeJsFunction($strFunctionName /*, ... */)
+    public function executeJsFunction(string $strFunctionName /*, ... */): void
     {
         $args = func_get_args();
         array_shift($args);
@@ -218,7 +216,7 @@ class JsResponse
      * One time add of style sheets, to be used by QForm only for last minute style sheet injection.
      * @param string[] $strStyleSheetArray
      */
-    public function addStyleSheets(array $strStyleSheetArray)
+    public function addStyleSheets(array $strStyleSheetArray): void
     {
         if (empty($this->commands[self::STYLE_SHEETS])) {
             $this->commands[self::STYLE_SHEETS] = $strStyleSheetArray;
@@ -229,10 +227,10 @@ class JsResponse
     }
 
     /**
-     * Add an array of javascript files for one-time inclusion. Called by QForm. Do not call.
+     * Add an array of JavaScript files for one-time inclusion. Called by QForm. Do not call.
      * @param string[] $strJavaScriptFileArray
      */
-    public function addJavaScriptFiles($strJavaScriptFileArray)
+    public function addJavaScriptFiles(array $strJavaScriptFileArray): void
     {
         if (empty($this->files[self::JAVA_SCRIPTS])) {
             $this->files[self::JAVA_SCRIPTS] = $strJavaScriptFileArray;
@@ -243,15 +241,15 @@ class JsResponse
     }
 
     /**
-     * Function renders all the Javascript commands as output to the client browser. This is a mirror of what
+     * Function renders all the JavaScript commands as output to the client browser. This is a mirror of what
      * occurs in the success function in the qcubed.js ajax code.
      *
-     * @param bool $blnBeforeControls True to only render the javascripts that need to come before the controls are defined.
+     * @param bool $blnBeforeControls True to only render the JavaScripts that need to come before the controls are defined.
      *                                This is used to break the commands issued into two groups.
      * @static
      * @return string
      */
-    public function renderJavascript($blnBeforeControls = false)
+    public function renderJavascript(bool $blnBeforeControls = false): string
     {
         $strScript = '';
 
@@ -290,7 +288,7 @@ class JsResponse
             $strScript .= self::renderCommandArray($this->commands[self::COMMANDS_LOW]);
         }
 
-        // A Application::redirect
+        // An Application::redirect
         if (!empty($this->commands[self::LOCATION])) {
             $strLocation = $this->commands[self::LOCATION];
             $strScript .= sprintf('document.location = "%s";', $strLocation);
@@ -308,7 +306,7 @@ class JsResponse
      * @param array $commandArray
      * @return string
      */
-    private function renderCommandArray(array $commandArray)
+    private function renderCommandArray(array $commandArray): string
     {
         $strScript = '';
         foreach ($commandArray as $command) {
@@ -342,12 +340,12 @@ class JsResponse
     }
 
     /**
-     * Return the javascript command array, for use by form ajax response. Will erase the command array, so
+     * Return the JavaScript command array, for use by form ajax response. Will erase the command array, so
      * the form better use it.
      * @static
      * @return array
      */
-    public function getJavascriptCommandArray()
+    public function getJavascriptCommandArray(): array
     {
         if ($this->exclusiveCommand) {
             // only render this one;
@@ -356,7 +354,7 @@ class JsResponse
             return $a;
         }
 
-        // Combine the javascripts into one array item
+        // Combine the JavaScripts into one array item
         $scripts = array();
         if (!empty($this->commands[self::COMMANDS_MEDIUM])) {
             $scripts = $this->commands[self::COMMANDS_MEDIUM];
@@ -385,17 +383,18 @@ class JsResponse
     }
 
     /**
-     * Render scripts for injecting files into the html output. This is for server only, not ajax.
-     * This list will appear ahead of the javascript commands rendered below.
+     * Render scripts for injecting files into the HTML output. This is for a server only, not ajax.
+     * This list will appear ahead of the JavaScript commands rendered below.
      *
      * @static
      * @return string
+     * @throws Caller
      */
-    public function renderFiles()
+    public function renderFiles(): string
     {
         $strScript = '';
 
-        // Javascript files should get processed before the commands.
+        // JavaScript's files should get processed before the commands.
         if (!empty($this->files[self::JAVA_SCRIPTS])) {
             foreach ($this->files[self::JAVA_SCRIPTS] as $js) {
                 $strScript .= '<script type="text/javascript" src="' . Application::getJsFileUri($js) . '"></script>' . "\n";
@@ -407,10 +406,14 @@ class JsResponse
         return $strScript;
     }
 
+
     /**
-     * @param $strLocation
+     * Sets the location for a browser redirect command.
+     *
+     * @param string $strLocation The URL to redirect the browser to.
+     * @return void
      */
-    public function setLocation($strLocation)
+    public function setLocation(string $strLocation): void
     {
         $this->commands[self::LOCATION] = $strLocation;
     }
@@ -418,12 +421,13 @@ class JsResponse
     /**
      * Closes the window through a qcubed.js command
      */
-    public function closeWindow()
+    public function closeWindow(): void
     {
         $this->commands[self::CLOSE] = true;
     }
 
-    public function hasExclusiveCommand() {
+    public function hasExclusiveCommand(): bool
+    {
         return (!empty($this->exclusiveCommand));
     }
 

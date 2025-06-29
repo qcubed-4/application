@@ -42,15 +42,14 @@ class FileAssetDialog extends Dialog
 
     /**
      * FileAssetDialog constructor.
-     * @param QControl|QForm $objParentObject
-     * @param string $strFileUploadCallback
-     * @param null|string $strControlId
+     * @param object $objParentObject
+     * @param string $strControlId
      */
-    public function __construct($objParentObject, $strFileUploadCallback, $strControlId = null)
+    public function __construct(object $objParentObject, string $strControlId)
     {
         // Call parent constructor and define FileUploadCallback
         parent::__construct($objParentObject, $strControlId);
-        $this->strFileUploadCallback = $strFileUploadCallback;
+        $this->strFileUploadCallback = $strControlId;
 
         // Setup the Dialog Box, itself
         // TODO: Change this default

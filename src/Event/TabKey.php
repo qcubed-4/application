@@ -12,11 +12,10 @@ namespace QCubed\Event;
 /**
  * Class TabKey
  *
- * @was QTabKeyEvent
  * @package QCubed\Event
  */
 class TabKey extends KeyDown
 {
-    /** @var string Condition JS with keycode for tab key */
-    protected $strCondition = 'event.keyCode == 9';
+    /** @var string|null Condition JS with keycode for tab key */
+    protected ?string $strCondition = 'event.keyCode == 9';
 }

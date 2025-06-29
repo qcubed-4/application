@@ -9,8 +9,14 @@
 
 namespace QCubed\ModelConnector;
 
+use DirectoryIterator;
 use QCubed\Action\AjaxControl;
 use QCubed\Codegen\ControlCategoryType;
+use QCubed\Control\ControlBase;
+use QCubed\Control\FormBase;
+use QCubed\Exception\Caller;
+use QCubed\Exception\InvalidCast;
+use Throwable;
 use QCubed\Table\CallableColumn;
 use QCubed\Project\Application;
 use QCubed\Jqui\DialogBase as QDialog;
@@ -27,45 +33,44 @@ use QCubed\Project\Codegen\CodegenBase as QCodeGen;
 /**
  * Class EditDlg
  *
- * A dialog that lets you specify code generation options for a control. These options control how a control
- * is generated, and includes additional parameters that can be specified for a control.
+ * A dialog that lets you specify code generation options for control. These options control how a control
+ * is generated and include additional parameters that can be specified for a control.
  *
- * This dialog pops up when designer mode is turned on and the user right clicks on a control.
+ * This dialog pops up when designer mode is turned on and the user right-clicks on a control.
  *
  * The code below will set up the dialog and display options that are generic to all QControls. Individual
  * controls can add parameters to this dialog by implementing the GetModelConnectorParams function.
  *
  * Everything gets saved in the configuration/codegen_options.json file.
  *
- * @was QModelConnectorEditDlg
  * @package QCubed\ModelConnector
  */
 class EditDlg extends QDialog
 {
     /** @var  QControl */
-    protected $objCurrentControl;
+    protected QControl $objCurrentControl;
     /** @var Tabs */
-    protected $tabs;
+    protected Tabs $tabs;
 
-    protected $txtName;
-    protected $txtControlId;
-    protected $txtControlClass;
-    protected $lstFormGen;
+    protected string $txtName;
+    protected string $txtControlId;
+    protected string $txtControlClass;
+    protected string $lstFormGen;
 
-    protected $params;
-    protected $objModelConnectorOptions;
+    protected array $params;
+    protected mixed $objModelConnectorOptions;
 
     /** @var   QModelConnectorParam[] */
-    protected $generalOptions;
+    protected array $generalOptions;
     /** @var  Table */
-    protected $dtgGeneralOptions;
+    protected Table $dtgGeneralOptions;
 
     /** @var  QModelConnectorParam[][] */
-    protected $categories;
+    protected array $categories;
 
-    protected $datagrids;
+    protected mixed $datagrids;
 
-    public function __construct($objParentObject, $strControlId = null)
+    public function __construct(FormBase|ControlBase $objParentObject, ?string $strControlId = null)
     {
         parent::__construct($objParentObject, $strControlId);
 
@@ -91,7 +96,7 @@ class EditDlg extends QDialog
     /**
      * Recreate the tabs in the dialog
      */
-    protected function setupTabs()
+    protected function setupTabs(): void
     {
         $strClassNames = $this->createClassNameArray();
         $this->tabs->removeChildControls(true);
@@ -109,14 +114,14 @@ class EditDlg extends QDialog
         /**
          * The following default options are somewhat matched to the default list and edit templates. A more robust
          * implementation would get the options from the templates, or what the templates generate, so that the templates
-         * decide what to put there. If someone wants to radically change the templates, but still have them use this dialog
-         * to edit the options, then would be the time to change the code below.
+         * decide what to put there. If someone wants to radically change the templates but still have them use this dialog
+         * to edit the options, then it would be the time to change the code below.
          */
         if ($this->objCurrentControl->LinkedNode->_ParentNode) {
             // Specify general options for a database column
             $this->generalOptions = array(
                 new QModelConnectorParam(QModelConnectorParam::GENERAL_CATEGORY, 'ControlClass',
-                    'Override of the PHP type for the control. If you change this, save the dialog and reopen to reload the tabs to show the control specific options.',
+                    'Override of the PHP type for the control. If you change this, save the dialog and reopen to reload the tabs to show the control-specific options.',
                     QModelConnectorParam::SELECTION_LIST, $strClassNames),
                 new QModelConnectorParam(QModelConnectorParam::GENERAL_CATEGORY, 'FormGen',
                     'Whether or not to generate this object, just a label for the object, just the control, or both the control and label',
@@ -134,15 +139,15 @@ class EditDlg extends QDialog
             );
         } else {
             // Specify general options for a database table, meaning an object that is listing the content of a whole table.
-            // These would be options at a higher level than the control itself, and would modify how the control is used in a form.
+            // These would be options at a higher level than the control itself and would modify how the control is used in a form.
             $this->generalOptions = array(
                 new QModelConnectorParam(QModelConnectorParam::GENERAL_CATEGORY, 'ControlClass',
-                    'Override of the PHP type for the control. If you change this, save the dialog and reopen to reload the tabs to show the control specific options.',
+                    'Override of the PHP type for the control. If you change this, save the dialog and reopen to reload the tabs to show the control-specific options.',
                     QModelConnectorParam::SELECTION_LIST, $strClassNames),
                 new QModelConnectorParam(QModelConnectorParam::GENERAL_CATEGORY, 'Name',
-                    'The Control\'s Name. Generally leave this blank, or use a plural name.', Type::STRING, ["translate"=>true]),
+                    'The Control\'s Name. Generally leave this blank or use a plural name.', Type::STRING, ["translate"=>true]),
                 new QModelConnectorParam(QModelConnectorParam::GENERAL_CATEGORY, 'ItemName',
-                    'The public name of an item in the list. Its used by the title of the edit form, for example. Defaults to the name of the table in the database.',
+                    'The public name of an item in the list. It\'s used by the title of the edit form, for example. Defaults to the name of the table in the database.',
                     Type::STRING, ["translate"=>true]),
                 new QModelConnectorParam(QModelConnectorParam::GENERAL_CATEGORY, 'CreateFilter',
                     'Whether to generate a separate control to filter the data. If the data list control does its own filtering, set this to false. Default is true.',
@@ -210,12 +215,6 @@ class EditDlg extends QDialog
         }
 
         foreach ($this->categories as $tabName => $params) {
-            //$panel = new QPanel ($this->tabs);
-            //$panel->setCssStyle('overflow-y', 'scroll');
-            //$panel->setCssStyle('max-height', '200');
-            //$panel->AutoRenderChildren = true;
-            //$panel->Name = $tabName;
-
             $dtg = new Table($this->tabs);
             $dtg->ShowHeader = false;
             $dtg->Name = $tabName;
@@ -249,16 +248,16 @@ class EditDlg extends QDialog
     /**
      * Bind the general options
      */
-    public function dtgGeneralOptions_Bind()
+    public function dtgGeneralOptions_Bind(): void
     {
         $this->dtgGeneralOptions->DataSource = $this->generalOptions;
     }
 
     /**
-     * Binder for the control specific options
+     * Binder for the control-specific options
      * @param Table $dtg
      */
-    public function dtgControlBind(Table $dtg)
+    public function dtgControlBind(Table $dtg): void
     {
         $dtg->DataSource = $this->categories[$dtg->Name];
     }
@@ -269,8 +268,9 @@ class EditDlg extends QDialog
      * @param QModelConnectorParam $objControlParam
      * @param QControl $objParent
      * @return string
+     * @throws Caller
      */
-    public function dtg_ValueRender(QModelConnectorParam $objControlParam, QControl $objParent)
+    public function dtg_ValueRender(QModelConnectorParam $objControlParam, QControl $objParent): string
     {
         $objControl = $objControlParam->getControl($objParent);
         if ($objControl) {
@@ -285,7 +285,7 @@ class EditDlg extends QDialog
      *
      * @param QControl $objControl
      */
-    public function editControl(QControl $objControl)
+    public function editControl(QControl $objControl): void
     {
         $this->objCurrentControl = $objControl;
 
@@ -300,13 +300,16 @@ class EditDlg extends QDialog
     }
 
     /**
-     * Dialog button has been clicked. Save the options, or Save, codegen, and then reload.
+     * The Dialog button has been clicked. Save the options, or Save, codegen, and then reload.
      *
-     * @param $strFormId
-     * @param $strControlId
-     * @param $mixParam
+     * @param string $strFormId
+     * @param string $strControlId
+     * @param mixed $mixParam
+     * @throws Caller
+     * @throws InvalidCast
+     * @throws Throwable
      */
-    public function buttonClick($strFormId, $strControlId, $mixParam)
+    public function buttonClick(string $strFormId, string $strControlId, mixed $mixParam): void
     {
         if ($mixParam == 'save') {
             $this->updateControlInfo();
@@ -327,7 +330,7 @@ class EditDlg extends QDialog
     /**
      * Puts the values of the dialog into the params array to be saved off into the settings file.
      */
-    protected function updateControlInfo()
+    protected function updateControlInfo(): void
     {
         $objParams = $this->generalOptions;
         foreach ($objParams as $objParam) {
@@ -372,20 +375,19 @@ class EditDlg extends QDialog
     /**
      * Write the current params into the settings file.
      */
-    protected function writeParams()
+    protected function writeParams(): void
     {
         $node = $this->objCurrentControl->LinkedNode;
         if ($node) {
             if ($node->_ParentNode) {
                 $strClassName = $node->_ParentNode->_ClassName;
                 $this->objModelConnectorOptions->setOptions($strClassName, $node->_PropertyName, $this->params);
-                $this->objModelConnectorOptions->save();
             } else {
                 // Table options
                 $this->objModelConnectorOptions->setOptions($node->_ClassName,
                     QModelConnectorOptions::TABLE_OPTIONS_FIELD_NAME, $this->params);
-                $this->objModelConnectorOptions->save();
             }
+            $this->objModelConnectorOptions->save();
         }
     }
 
@@ -394,7 +396,7 @@ class EditDlg extends QDialog
      * Returns false if there were no params to be read, meaning this control is not attached to a database object.
      * @return bool
      */
-    protected function readParams()
+    protected function readParams(): bool
     {
         $node = $this->objCurrentControl->LinkedNode;
         if ($node) {
@@ -414,21 +416,21 @@ class EditDlg extends QDialog
     /**
      * Returns an array of class names that can be used to edit the current control's data type.
      *
-     * @return array
+     * @return array|null
      */
-    protected function createClassNameArray()
+    protected function createClassNameArray(): ?array
     {
         // get the control array
         $dir = realpath(QCUBED_CONFIG_DIR . '/control_registry');
         $controls = [];
 
         if ($dir !== false) {    // does the active directory exist?
-            foreach (new \DirectoryIterator($dir) as $fileInfo) {
+            foreach (new DirectoryIterator($dir) as $fileInfo) {
                 if ($fileInfo->isDot()) {
                     continue;
                 }
                 $strFileName = $fileInfo->getPathname();
-                if (substr($strFileName, -8) == '.inc.php') {
+                if (str_ends_with($strFileName, '.inc.php')) {
                     $controls2 = include($strFileName);
                     if ($controls2 && is_array($controls2)) {
                         $controls = array_merge($controls, $controls2);
@@ -440,7 +442,7 @@ class EditDlg extends QDialog
         // $controls is now an array indexed by Type, with each entry a Control type name
 
         // Figure out what type of control we are looking for
-        // For the most part, the control category types are the same as the database type
+        //  the most part; the control category types are the same as the database type
         $node = $this->objCurrentControl->LinkedNode;
         $type = $node->_Type;
         if (($node->_Type == Type::REVERSE_REFERENCE && $node->isUnique()) || $node->_Type == Type::ARRAY_TYPE) {
@@ -452,7 +454,7 @@ class EditDlg extends QDialog
                 // A foreign key to another table
                 $type = ControlCategoryType::SINGLE_SELECT;
             } else {
-                // A top level table, so a grid or list view
+                // A top-level table, so a grid or list view
                 $type = ControlCategoryType::TABLE;
             }
         }

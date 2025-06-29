@@ -10,14 +10,13 @@
 namespace QCubed\Event;
 
 /**
- * Class Click
+ * Represents a Click event in the application.
  *
- * @was QClickEvent
- * @package QCubed\Event
+ * This class inherits from EventBase and provides the constant EVENT_NAME
+ * specific to identifying a click event.
  */
 class Click extends EventBase
 {
-    /** Event Name */
     const EVENT_NAME = 'click';
 }
 

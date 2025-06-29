@@ -7,7 +7,7 @@
 	<p>With the use of <strong>Label</strong> and <strong>TextBox</strong> controls that can show, hide and change
 		<strong>CssClass</strong> names depending on what action we must execute, we use
 		<strong>QAjaxActions</strong> and various events to create
-		a list of "renameable labels", where the interaction is similar to how files
+		a list of "readable labels," where the interaction is similar to how files
 		and folders can be selected and then renamed in the Finder or in Windows Explorer.</p>
 
 	<p>To rename any of the labels below, click on it to highlight it. And then click it again to
@@ -19,7 +19,7 @@
 <?php for ($intIndex = 0; $intIndex < 10; $intIndex++) { ?>
 	<p>
 		<?php $this->lblArray[$intIndex]->render(); ?>
-		<?php $this->txtArray[$intIndex]->render('BorderWidth=1px', 'BorderColor=gray', 'BorderStyle=Solid'); ?>
+		<?php $this->txtArray[$intIndex]->render(); ?>
 	</p>
 <?php } ?>
 </div>

@@ -1,11 +1,11 @@
-Unless otherwise specified, all files in the QCubed Development Framework
+Unless otherwise specified, all files in the QCubed-4 Development Framework
 are under the following copyright and licensing policies:
 
-The QCubed Development Framework is distributed by the QCubed Project
-under the terms of the MIT License.  More information can be found at
+The QCubed-4 Development Framework is distributed by the QCubed-4 Project
+under the terms of the MIT License. More information can be found at
 http://www.opensource.org/licenses/mit-license.php
 
-Copyright (c) 2001 - 2009, Quasidea Development, LLC, QCubed Project
+Copyright (c) 2001 - 2009, Quasidea Development, LLC, QCubed Project, QCubed-4 Project
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -29,11 +29,11 @@ SOFTWARE.
 
 Third party libraries are installed by composer tool.
 
-QCubed does not control third party libraries.
+QCubed-4 does not control third party libraries.
 
 You are responsible for ensuring you are not violating anyone's rights.
 
-The HTMLPurifier Library is an external (third party) library that QCubed needs.
+The HTMLPurifier Library is an external (third party) library that QCubed-4 needs.
 HTMLPurifier is licensed under the LGPL license. Usage of HTMLPurifier
-with QCubed is thus limited by LGPL license. Please read the license file of
+with QCubed-4 is thus limited by LGPL license. Please read the license file of
 HTMLPurifier for more on licensing of HTMLPurifier library.

@@ -16,14 +16,14 @@ class CalculatorForm extends FormBase
     // A listbox of operations to choose from
     // A button to execute the calculation
     // And a label to output the result
-    protected $txtValue1;
-    protected $txtValue2;
-    protected $lstOperation;
-    protected $btnCalculate;
-    protected $lblResult;
+    protected TextBox $txtValue1;
+    protected TextBox $txtValue2;
+    protected ListBox $lstOperation;
+    protected Button $btnCalculate;
+    protected Label $lblResult;
 
-    // Define all the QContrtol objects for our Calculator
-    protected function formCreate()
+    // Define all the QControl objects for our Calculator
+    protected function formCreate(): void
     {
         $this->txtValue1 = new TextBox($this);
 
@@ -43,28 +43,25 @@ class CalculatorForm extends FormBase
         $this->lblResult->HtmlEntities = false;
     }
 
-    // Perform the necessary operations on the operands, and output the value to the lblResult
-    protected function btnCalculate_Click($strFormId, $strControlId, $strParameter)
+    // Perform the necessary operations on the operands and output the value to the lblResult
+    protected function btnCalculate_Click(string $strFormId, string $strControlId, string $strParameter): void
     {
-        switch ($this->lstOperation->SelectedValue) {
-            case 'add':
-                $mixResult = $this->txtValue1->Text + $this->txtValue2->Text;
-                break;
-            case 'subtract':
-                $mixResult = $this->txtValue1->Text - $this->txtValue2->Text;
-                break;
-            case 'multiply':
-                $mixResult = $this->txtValue1->Text * $this->txtValue2->Text;
-                break;
-            case 'divide':
-                $mixResult = $this->txtValue1->Text / $this->txtValue2->Text;
-                break;
-            default:
-                throw new Exception('Invalid Action');
-        }
+        $value1 = (float) $this->txtValue1->Text;
+        $value2 = (float) $this->txtValue2->Text;
 
-        $this->lblResult->Text = '<b>Your Result:</b> ' . $mixResult;
+        $mixResult = match ($this->lstOperation->SelectedValue) {
+            'add' => $value1 + $value2,
+            'subtract' => $value1 - $value2,
+            'multiply' => $value1 * $value2,
+            'divide' => $value2 != 0 ? $value1 / $value2 : 'Division by zero is not allowed',
+            default => throw new Exception('Invalid Action'),
+        };
+
+        if (isset($mixResult)) {
+            $this->lblResult->Text = '<b>Your Result:</b> ' . $mixResult;
+        }
     }
+
 }
 
 // And now run our defined form

@@ -4,9 +4,9 @@
 <div id="instructions">
 	<h1>Automatic Scrolling</h1>
 
-	<p>This is just a simple example to show how moveable controls and handles
-	will also automatically perform scrolling tasks on the browser window as
-	you drag a "move handle" towards the edge of the window.</p>
+    <p>This is just an example showing how the moveable controls and
+        handles automatically perform scrolling tasks in
+        a browser window when you drag the "move handle" towards the edge of the window.</p>
 
 	<p>There is nothing you need to do to enable this feature.  It will just happen
 	automatically.</p>
@@ -31,7 +31,7 @@
 ?>
 	</table>
 
-	<?php $this->pnlPanel->render('Cursor=move', 'BackColor=#f6f6f6', 'Width=130', 'Height=50', 'Padding=10', 'BorderWidth=1'); ?>
+	<?php $this->pnlPanel->render(); ?>
 </div>
 
 <?php $this->renderEnd(); ?>

@@ -1,10 +1,10 @@
 <?php
+
+use QCubed\Control\ControlBase;
+use QCubed\Control\FormBase;
 use QCubed\Exception\Caller;
-use QCubed\Project\Control\ControlBase as QControl;
-use QCubed\Project\Control\FormBase as QForm;
 use QCubed\QString;
 use QCubed\Type;
-
 
 /**
  * This is a SAMPLE of a custom Control that you could write.  Think of this as a "starting point".
@@ -14,19 +14,19 @@ use QCubed\Type;
  *
  *
  */
-class SampleControl extends QControl
+class SampleControl extends ControlBase
 {
-    protected $intExample;
-    protected $strFoo;
+    protected int $intExample;
+    protected string $strFoo;
 
     /**
-     * Constructor for this control
-     * @param QForm|QControl $objParentObject Parent QForm or QControl that is responsible for rendering this control
-     * @param string $strControlId optional control ID
-     * @param null|string $strControlId
+     * Constructor for initializing the control with the parent object and optional control ID.
+     *
+     * @param ControlBase|FormBase $objParentObject The parent object to which this control belongs.
+     * @param string|null $strControlId An optional control ID to uniquely identify the control.
      * @throws Caller
      */
-    public function __construct($objParentObject, $strControlId = null)
+    public function __construct(ControlBase|FormBase $objParentObject, ?string $strControlId = null)
     {
         try {
             parent::__construct($objParentObject, $strControlId);
@@ -35,7 +35,7 @@ class SampleControl extends QControl
             throw $objExc;
         }
 
-        // Setup Control-specific CSS and JS files to be loaded
+        // Set up Control-specific CSS and JS files to be loaded
         // Paths are relative to the __CSS_ASSETS__ and __JS_ASSETS__ directories
         // Multiple files can be specified, as well, by separating with a comma
 //			$this->strJavaScripts = 'custom.js, ../path/to/prototype.js, etc.js';
@@ -47,33 +47,39 @@ class SampleControl extends QControl
     }
 
     /**
-     * If this control needs to update itself from the $_POST data, the logic to do so
-     * will be performed in this method.
+     * Processes and parses the post-data from an HTTP request.
+     * @return void
      */
-    public function parsePostData()
+    public function parsePostData(): void
     {
     }
 
     /**
-     * If this control has validation rules, the logic to do so
-     * will be performed in this method.
-     * @return boolean
+     * Validates the current state of the object or operation.
+     *
+     * @return bool Returns true if the validation is successful, false otherwise.
      */
-    public function validate()
+    public function validate(): bool
     {
         return true;
     }
 
     /**
-     * Get the HTML for this Control.
-     * @return string
+     * Renders the control's HTML representation.
+     *
+     * @return string The HTML markup for the control.
      */
-    public function getControlHtml()
+    public function getControlHtml(): string
     {
         return $this->renderTag('span', null, null, $this->getInnerHtml());
     }
 
-    protected function getInnerHtml()
+    /**
+     * Retrieves the inner HTML content for the control with properly escaped entities.
+     *
+     * @return string The escaped inner HTML content as a string.
+     */
+    protected function getInnerHtml(): string
     {
         return QString::htmlEntities("Sample Control " . $this->intExample . ' - ' . $this->strFoo);
     }
@@ -94,7 +100,14 @@ class SampleControl extends QControl
     /////////////////////////
     // Public Properties: GET
     /////////////////////////
-    public function __get($strName)
+    /**
+     * Magic method to retrieve the value of a property by its name.
+     *
+     * @param string $strName The name of the property to retrieve.
+     * @return mixed The value of the requested property, or the result of the parent::__get() method if applicable.
+     * @throws Caller If the property does not exist and cannot be retrieved.
+     */
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             case 'Example':
@@ -115,7 +128,15 @@ class SampleControl extends QControl
     /////////////////////////
     // Public Properties: SET
     /////////////////////////
-    public function __set($strName, $mixValue)
+    /**
+     * Handles setting of property values dynamically.
+     *
+     * @param string $strName The name of the property to set.
+     * @param mixed $mixValue The value to assign to the property.
+     * @return void
+     * @throws Caller If the property name or value type is invalid.
+     */
+    public function __set(string $strName, mixed $mixValue): void
     {
         $this->blnModified = true;
 
@@ -123,22 +144,24 @@ class SampleControl extends QControl
 
             case 'Example':
                 try {
-                    return ($this->intExample = Type::cast($mixValue, Type::INTEGER));
+                    $this->intExample = Type::cast($mixValue, Type::INTEGER);
                 } catch (Caller $objExc) {
                     $objExc->incrementOffset();
                     throw $objExc;
                 }
+                break;
             case 'Foo':
                 try {
-                    return ($this->strFoo = Type::cast($mixValue, Type::STRING));
+                    $this->strFoo = Type::cast($mixValue, Type::STRING);
                 } catch (Caller $objExc) {
                     $objExc->incrementOffset();
                     throw $objExc;
                 }
+                break;
 
             default:
                 try {
-                    return (parent::__set($strName, $mixValue));
+                    parent::__set($strName, $mixValue);
                 } catch (Caller $objExc) {
                     $objExc->incrementOffset();
                     throw $objExc;

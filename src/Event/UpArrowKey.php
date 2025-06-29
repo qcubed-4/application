@@ -12,11 +12,10 @@ namespace QCubed\Event;
 /**
  * Class UpArrowKey
  *
- * @was QUpArrowKeyEvent
  * @package QCubed\Event
  */
 class UpArrowKey extends KeyDown
 {
-    /** @var string Condition JS */
-    protected $strCondition = 'event.keyCode == 38';
+    /** @var string|null Condition JS */
+    protected ?string $strCondition = 'event.keyCode == 38';
 }

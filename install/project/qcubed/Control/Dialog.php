@@ -1,6 +1,7 @@
 <?php
 namespace QCubed\Project\Control;
 
+use QCubed as Q;
 
 /**
  * Class Dialog
@@ -8,8 +9,8 @@ namespace QCubed\Project\Control;
  * Implements a Dialog.
  *
  * Dialogs are somewhat of a special control in the framework, in that the framework calls on dialogs and expects them
- * to do certain things. The dialog must impelment the dialog interface, but the actual display of the dialog might
- * be dependent on what CSS or javascript framework.
+ * to do certain things. The dialog must implement the dialog interface, but the actual display of the dialog might
+ * be dependent on what CSS or JavaScript framework.
  *
  * Here is where you choose what you want all the dialogs in your application to look like by extending this Dialog
  * class from the base class in your framework. The default uses JQuery UI's dialog, but there is a bootstrap plugin
@@ -22,13 +23,12 @@ namespace QCubed\Project\Control;
  * $dlg = new Dialog($this, 'my-dialog');
  * $dlg->Text = 'Show this on the dialog.'
  * $dlg->AddButton ('OK', 'ok');
- * $dlg->AddAction (new DialogButton(), new AjaxAction('buttonClicked));
+ * $dlg->AddAction (new DialogButton(), new Ajax('buttonClicked));
  * </code>
  *
  * @package QCubed\Project\Control
- * @was QDialog
  */
-class Dialog extends \QCubed\Jqui\DialogBase implements \QCubed\Control\DialogInterface
+class Dialog extends Q\Jqui\DialogBase implements Q\Control\DialogInterface
 {
 }
 

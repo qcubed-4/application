@@ -3,7 +3,7 @@
  * @param {string} strControlId The control's id.
  * @param {Object} objListbox The DOM element this event was bound to.
  */
-function Qcubed__DateTimePicker_Change(strControlId, objListbox) {
+function QCubed__DateTimePicker_Change(strControlId, objListbox) {
     var objMonth = document.getElementById(strControlId + "_lstMonth"),
         objDay = document.getElementById(strControlId + "_lstDay"),
         objYear = document.getElementById(strControlId + "_lstYear"),

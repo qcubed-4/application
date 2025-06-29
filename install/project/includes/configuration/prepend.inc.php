@@ -1,4 +1,11 @@
 <?php
+
+use QCubed\AutoloaderService;
+use QCubed\Database\Service;
+use QCubed\Error\Manager;
+use QCubed\Project\Application;
+use Random\RandomException;
+
 if (!defined('__PREPEND_INCLUDED__')) {
     // Ensure prepend.inc is only executed once
     define('__PREPEND_INCLUDED__', 1);
@@ -8,15 +15,15 @@ if (!defined('__PREPEND_INCLUDED__')) {
     // Define Server-specific constants
     ///////////////////////////////////
     /*
-     * This assumes that the configuration include file is in the same directory
-     * as this prepend include file.  For security reasons, you can feel free
-     * to move the configuration file anywhere you want.  But be sure to provide
-     * a relative or absolute path to the file.
-     */
+    * This assumes that the file containing the configuration is in the same directory
+    * as this prefix contains the file. For security reasons, you can feel free
+    * to move the configuration file wherever you want. But be sure to provide
+    * the relative or absolute path to the file.
+    */
+
     if (file_exists(__DIR__ . '/configuration.inc.php')) {
         require(__DIR__ . '/configuration.inc.php');
-    }
-    else {
+    } else {
         // The minimal constants set to work
         define ('QCUBED_PROJECT_DIR', dirname(__FILE__) . '/../..');
         define ('QCUBED_PROJECT_INCLUDES_DIR', dirname(__FILE__) . '/..');
@@ -28,25 +35,31 @@ if (!defined('__PREPEND_INCLUDED__')) {
 
     require_once(QCUBED_BASE_DIR . '/application/src/version.inc.php');     // Include the hard-coded QCubed version number
     require_once(QCUBED_BASE_DIR . '/common/src/Error/Manager.php');   // Include the error manager so we can process errors immediately
-    \QCubed\Error\Manager::initialize();
+
+    Manager::initialize();
 
     //////////////////////////////
     // Register the autoloader so we can find our files
     //////////////////////////////
+
     require_once(QCUBED_BASE_DIR . '/common/src/AutoloaderService.php');   // Find the autoloader
-    \QCubed\AutoloaderService::instance()
-        ->initialize(dirname(QCUBED_BASE_DIR) )   // register with the vendor directory
-        ->addPsr4('QCubed\\Project\\', QCUBED_PROJECT_DIR . '/qcubed')
-        ->addPsr4('QCubed\\Plugin\\', QCUBED_PROJECT_DIR . '/includes/plugins')
-        ->addClassmapFile(QCUBED_APP_INCLUDES_DIR . '/app_includes.inc.php')
-    ;
+
+    try {
+        AutoloaderService::instance()
+            ->initialize(dirname(QCUBED_BASE_DIR))   // register with the vendor directory
+            ->addPsr4('QCubed\\Project\\', QCUBED_PROJECT_DIR . '/qcubed')
+            ->addPsr4('QCubed\\Plugin\\', QCUBED_PROJECT_DIR . '/includes/plugins')
+            ->addClassmapFile(QCUBED_APP_INCLUDES_DIR . '/app_includes.inc.php');
+    } catch (Exception $e) {
+
+    }
 
     if (!defined('QCUBED_CODE_GENERATING')) {
         if (file_exists(QCUBED_PROJECT_MODEL_GEN_DIR . '/_class_paths.inc.php')) {
-            \QCubed\AutoloaderService::instance()->addClassmapFile(QCUBED_PROJECT_MODEL_GEN_DIR . '/_class_paths.inc.php');
+            AutoloaderService::instance()->addClassmapFile(QCUBED_PROJECT_MODEL_GEN_DIR . '/_class_paths.inc.php');
         }
         if (file_exists(QCUBED_PROJECT_MODEL_GEN_DIR . '/_type_class_paths.inc.php')) {
-            \QCubed\AutoloaderService::instance()->addClassmapFile(QCUBED_PROJECT_MODEL_GEN_DIR . '/_type_class_paths.inc.php');
+            AutoloaderService::instance()->addClassmapFile(QCUBED_PROJECT_MODEL_GEN_DIR . '/_type_class_paths.inc.php');
         }
         if (file_exists(QCUBED_PROJECT_MODEL_GEN_DIR . '/QQN.php')) {
             require_once(QCUBED_PROJECT_MODEL_GEN_DIR . '/QQN.php');
@@ -54,13 +67,14 @@ if (!defined('__PREPEND_INCLUDED__')) {
     }
 
     // Register the custom autoloader, making sure we go after the previous autoloader
-    spl_autoload_register(array('\\QCubed\\Project\\Application', 'autoload'), true, false);
+    spl_autoload_register(array('\\QCubed\\Project\\Application', 'autoload'));
 
     /*
-    if (defined('QCUBED_APP_INCLUDES_DIR')) {
+    If (defined('QCUBED_APP_INCLUDES_DIR')) {
         require_once(QCUBED_APP_INCLUDES_DIR . '/app_includes.inc.php');    // autoload local files
     }
-*/
+    */
+
     //////////////////////////
     // Custom Global Functions
     //////////////////////////
@@ -78,11 +92,20 @@ if (!defined('__PREPEND_INCLUDED__')) {
     ////////////////////////////////////////////////
     // Initialize the Application and DB Connections
     ////////////////////////////////////////////////
-    \QCubed\Database\Service::initializeDatabaseConnections();
 
-    if (!defined('QCUBED_CODE_GENERATING')) {
-        \QCubed\Project\Application::instance()->initializeServices();
+    try {
+        Service::initializeDatabaseConnections();
+    } catch (Exception $e) {
+
     }
 
-    \QCubed\Project\Application::startOutputBuffering();
+    if (!defined('QCUBED_CODE_GENERATING')) {
+        try {
+            Application::instance()->initializeServices();
+        } catch (RandomException $e) {
+
+        }
+    }
+
+    Application::startOutputBuffering();
 }

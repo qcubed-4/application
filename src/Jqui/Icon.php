@@ -2,9 +2,8 @@
 namespace QCubed\Jqui;
 
 /**
- * Generated include file for JQuery UI related classes.
- * JQuery UI icon names scraped from the themeroller website.
- * @was JqIcon
+ * Generated includes a file for JQuery UI-related classes.
+ * JQuery UI icon names are scraped from the themeroller website.
  */
 abstract class Icon
 {

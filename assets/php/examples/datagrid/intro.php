@@ -1,4 +1,7 @@
 <?php
+
+use QCubed\Exception\Caller;
+use QCubed\Exception\InvalidCast;
 use QCubed\Project\Control\FormBase;
 use QCubed\Project\Control\Table;
 
@@ -6,10 +9,14 @@ require_once('../qcubed.inc.php');
 
 class ExampleForm extends FormBase
 {
-    /** @var  Table */
-    protected $dtgPersons;
+    /** @var object */
+    protected object $dtgPersons;
 
-    protected function formCreate()
+    /**
+     * @throws InvalidCast
+     * @throws Caller
+     */
+    protected function formCreate(): void
     {
         // Define the DataGrid
         $this->dtgPersons = new Table($this);
@@ -33,31 +40,34 @@ class ExampleForm extends FormBase
         $this->dtgPersons->setDataBinder('dtgPersons_Bind');
 
         // Update the styles of all the rows, or for just specific rows
-        // (e.g. you can specify a specific style for the header row or for alternating rows)
+        // (e.g., you can specify a specific style for the header row or for alternating rows)
         // Note that styles are hierarchical and inherit from each other.  For example, the default RowStyle
         // sets the FontSize as 12px, and because that attribute is not overridden in AlternateRowStyle
         // or HeaderRowStyle, both those styles will use the 12px Font Size.
 
-        // While there are a variety of ways to style tables QCubed, the easiest and most versatile is to use css
+        // While there are various ways to style QCubed tables, the easiest and most versatile is to use CSS.
         // classes. These are defined at the top of the intro.tpl.php file in this example.
         $this->dtgPersons->HeaderRowCssClass = 'header-row';
         $this->dtgPersons->RowCssClass = 'row';
         $this->dtgPersons->AlternateRowCssClass = 'alt-row';
     }
 
-    protected function dtgPersons_Bind()
+    /**
+     * @throws Caller
+     */
+    protected function dtgPersons_Bind(): void
     {
         // We load the data source, and set it to the datagrid's DataSource parameter
         $this->dtgPersons->DataSource = Person::loadAll();
     }
 
     // Callbacks must be defined public, since the datagrid is calling them
-    public function dtgPerson_FirstName_Render(Person $objPerson)
+    public function dtgPerson_FirstName_Render(Person $objPerson): string
     {
         return "First Name is {$objPerson->FirstName}";
     }
 
-    public function dtgPerson_LastName_Render(Person $objPerson)
+    public function dtgPerson_LastName_Render(Person $objPerson): string
     {
         return "Last Name {$objPerson->LastName}";
     }

@@ -15,26 +15,35 @@ use QCubed\Codegen\ManyToManyReference;
 use QCubed\Codegen\ReverseReference;
 use QCubed\Codegen\SqlColumn;
 use QCubed\Codegen\SqlTable;
+use Exception;
+use QCubed\Exception\Caller as Caller;
 
 /**
  * Class Label
  *
  * @package QCubed\Codegen\Generator
- * @was QLabel_CodeGenerator
  */
 class Label extends Control
 {
-    private static $instance = null;
+    private static ?Label $instance = null;
 
-    public function __construct($strControlClassName = 'QCubed\\Control\\Label')
+    /**
+     * Constructor method for initializing the class.
+     *
+     * @param string $strControlClassName The name of the control class to initialize. Default is 'QCubed\\Control\\Label'.
+     * @return void
+     */
+    public function __construct(string $strControlClassName = 'QCubed\\Control\\Label')
     {
         parent::__construct($strControlClassName);
     }
 
     /**
-     * @return Label
+     * Retrieves the singleton instance of the Label class. If the instance does not exist, it initializes one.
+     *
+     * @return \QCubed\Codegen\Generator\Label|null The singleton instance of the Label class.
      */
-    public static function instance()
+    public static function instance(): ?Label
     {
         if (!self::$instance) {
             self::$instance = new Label();
@@ -46,7 +55,7 @@ class Label extends Control
      * @param string $strPropName
      * @return string
      */
-    public function varName($strPropName)
+    public function varName(string $strPropName): string
     {
         return 'lbl' . $strPropName;
     }
@@ -59,10 +68,10 @@ class Label extends Control
      * @param DatabaseCodeGen $objCodeGen
      * @param SqlTable $objTable
      * @param ColumnInterface $objColumn
-     * @throws \Exception
      * @return string
+     *@throws Exception
      */
-    public function connectorCreate(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn)
+    public function connectorCreate(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn): string
     {
         $strLabelName = addslashes(DatabaseCodeGen::modelConnectorControlName($objColumn));
         $strControlType = $this->strControlClassName;
@@ -77,14 +86,21 @@ class Label extends Control
             $strDateTimeParamExtra = "\n\t\t * @param string \$strDateTimeFormat";
         }
 
+        $displayType = $strControlType;
+        if ($displayType === 'QCubed\Control\Label') {
+            $displayType = 'Label';
+        }
+        // add more else-ifs if necessary!
+
         $strRet = <<<TMPL
     /**
-     * Create and setup $strControlType $strControlVarName
+     * Create and setup $displayType $strControlVarName
      *
-     * @param string \$strControlId optional ControlId to use{$strDateTimeParamExtra}
-     * @return $strControlType
+     * @param string|null \$strControlId optional ControlId to use {$strDateTimeParamExtra}
+     * @return $displayType|null
+     * @throws Caller
      */
-    public function {$strControlVarName}_Create(\$strControlId = null{$strDateTimeExtra}) 
+    public function {$strControlVarName}_Create(?string \$strControlId = null{$strDateTimeExtra}): ?$displayType
     {
 
 TMPL;
@@ -99,7 +115,7 @@ TMPL;
 TMPL;
         }
         $strRet .= <<<TMPL
-        \$this->{$strControlVarName} = new \\{$strControlType}(\$this->objParentObject, \$strControlId);
+        \$this->{$strControlVarName} = new {$displayType }(\$this->objParentObject, \$strControlId);
         \$this->{$strControlVarName}->Name = t('{$strLabelName}');
 
 TMPL;
@@ -124,8 +140,6 @@ TMPL;
         $strRet .= <<<TMPL
         return \$this->{$strControlVarName};
     }
-
-
 TMPL;
         return $strRet;
     }
@@ -133,20 +147,20 @@ TMPL;
     /**
      * @param DatabaseCodeGen $objCodeGen
      * @param ColumnInterface $objColumn
-     * @throws \Exception
      * @return string
+     *@throws Exception
      */
-    public function connectorVariableDeclaration(DatabaseCodeGen $objCodeGen, ColumnInterface $objColumn)
+    public function connectorVariableDeclaration(DatabaseCodeGen $objCodeGen, ColumnInterface $objColumn): string
     {
         $strPropName = $objCodeGen->modelConnectorPropertyName($objColumn);
         $strControlVarName = $this->varName($strPropName);
 
         $strRet = <<<TMPL
     /**
-     * @var Label
+     * @var Label|null
      * @access protected
      */
-    protected \${$strControlVarName};
+    protected ?Label \${$strControlVarName} = null;
 
 
 TMPL;
@@ -157,7 +171,7 @@ TMPL;
     * @var string
     * @access protected
     */
-    protected \$str{$strPropName}DateTimeFormat;
+    protected string \$str{$strPropName}DateTimeFormat;
 
 TMPL;
         }
@@ -171,22 +185,22 @@ TMPL;
      * @param SqlTable $objTable
      * @param ColumnInterface $objColumn
      * @param bool $blnInit
-     * @throws \Exception
      * @return string
+     * @throws Exception
      */
-    public function connectorRefresh(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn, $blnInit = false)
+    public function connectorRefresh(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn, ?bool $blnInit = false): string
     {
         $strObjectName = $objCodeGen->modelVariableName($objTable->Name);
         $strPropName = DatabaseCodeGen::modelConnectorPropertyName($objColumn);
         $strControlVarName = $this->varName($strPropName);
 
-        // Preamble with an if test if not initializing
+        // Preamble with an if test is not initializing
         $strRet = '';
         if ($objColumn instanceof SqlColumn) {
             if ($objColumn->Identity ||
                 $objColumn->Timestamp
             ) {
-                $strRet = "\$this->{$strControlVarName}->Text =  \$this->blnEditMode ? \$this->{$strObjectName}->{$strPropName} : t('N\\A');";
+                $strRet = "\$this->{$strControlVarName}->Text = \$this->blnEditMode ? \$this->{$strObjectName}->{$strPropName} : t('N\\A');" . "\n";
             } else {
                 if ($objColumn->Reference) {
                     if ($objColumn->Reference->IsType) {
@@ -195,18 +209,11 @@ TMPL;
                         $strRet = "\$this->{$strControlVarName}->Text = \$this->{$strObjectName}->{$strPropName} ? \$this->{$strObjectName}->{$strPropName}->__toString() : null;";
                     }
                 } else {
-                    switch ($objColumn->VariableType) {
-                        case "boolean":
-                            $strRet = "\$this->{$strControlVarName}->Text = \$this->{$strObjectName}->{$strPropName} ? t('Yes') : t('No');";
-                            break;
-
-                        case "QDateTime":
-                            $strRet = "\$this->{$strControlVarName}->Text = \$this->{$strObjectName}->{$strPropName} ? \$this->{$strObjectName}->{$strPropName}->qFormat(\$this->str{$strPropName}DateTimeFormat) : null;";
-                            break;
-
-                        default:
-                            $strRet = "\$this->{$strControlVarName}->Text = \$this->{$strObjectName}->{$strPropName};";
-                    }
+                    $strRet = match ($objColumn->VariableType) {
+                        "boolean" => "\$this->{$strControlVarName}->Text = \$this->{$strObjectName}->{$strPropName} ? t('Yes') : t('No');",
+                        "QDateTime" => "\$this->{$strControlVarName}->Text = \$this->{$strObjectName}->{$strPropName} ? \$this->{$strObjectName}->{$strPropName}->qFormat(\$this->str{$strPropName}DateTimeFormat) : null;",
+                        default => "\$this->{$strControlVarName}->Text = \$this->{$strObjectName}->{$strPropName};",
+                    };
                 }
             }
         } elseif ($objColumn instanceof ReverseReference) {
@@ -216,25 +223,25 @@ TMPL;
         } elseif ($objColumn instanceof ManyToManyReference) {
             $strRet = "\$this->{$strControlVarName}->Text = implode(\$this->str{$objColumn->ObjectDescription}Glue, \$this->{$strObjectName}->Get{$objColumn->ObjectDescription}Array());";
         } else {
-            throw new \Exception('Unknown column type.');
+            throw new Exception('Unknown column type.');
         }
 
         if (!$blnInit) {
-            $strRet = "\t\t\tif (\$this->{$strControlVarName}) " . $strRet;
+            $strRet = "        if (\$this->{$strControlVarName}) " . $strRet;
         } else {
-            $strRet = "\t\t\t" . $strRet;
+            $strRet = "        " . $strRet . "\n";
         }
 
-        return $strRet . "\n";
+        return $strRet; // . "\n";
     }
 
     /**
      * @param DatabaseCodeGen $objCodeGen
      * @param SqlTable $objTable
-     * @param SqlColumn|ReverseReference $objColumn
+     * @param \QCubed\Codegen\ColumnInterface $objColumn
      * @return string
      */
-    public function connectorUpdate(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn)
+    public function connectorUpdate(DatabaseCodeGen $objCodeGen, SqlTable $objTable, ColumnInterface $objColumn): string
     {
         return '';
     }

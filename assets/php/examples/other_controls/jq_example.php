@@ -4,6 +4,7 @@ use QCubed\Action\JavaScript;
 use QCubed\Action\Server;
 use QCubed\Action\ShowDialog;
 use QCubed\Control\CheckboxList;
+use QCubed\Control\LinkButton;
 use QCubed\Control\ListItem;
 use QCubed\Control\Panel;
 use QCubed\Control\RadioButtonList;
@@ -12,6 +13,9 @@ use QCubed\Event\Change;
 use QCubed\Event\Click;
 use QCubed\Event\DialogButton;
 use QCubed\Event\KeyPress;
+use QCubed\Exception\Caller;
+use QCubed\Exception\InvalidCast;
+use QCubed\Jqui\AutocompleteBase;
 use QCubed\Jqui\Event\AutocompleteChange;
 use QCubed\Jqui\Event\DatepickerSelect2;
 use QCubed\Jqui\Event\DraggableStop;
@@ -33,79 +37,77 @@ use QCubed\Project\Jqui\Checkbox;
 use QCubed\Project\Jqui\Datepicker;
 use QCubed\Project\Jqui\DatepickerBox;
 use QCubed\Project\Jqui\Dialog;
-use QCubed\Project\Jqui\Draggable;
-use QCubed\Project\Jqui\Droppable;
 use QCubed\Project\Jqui\Progressbar;
 use QCubed\Project\Jqui\RadioButton;
-use QCubed\Project\Jqui\Resizable;
 use QCubed\Project\Jqui\Selectable;
 use QCubed\Project\Jqui\SelectMenu;
 use QCubed\Project\Jqui\Slider;
 use QCubed\Project\Jqui\Sortable;
 use QCubed\Project\Jqui\Tabs;
+use QCubed\Query\QQ;
 
 require_once('../qcubed.inc.php');
 
 class ExampleForm extends FormBase
 {
-    /** @var Draggable */
-    protected $Draggable;
-    /** @var Droppable */
-    protected $Droppable;
-    /** @var Resizable */
-    protected $Resizable;
+    /** @var Panel */
+    protected Panel $Draggable;
+    /** @var Panel */
+    protected Panel $Droppable;
+    /** @var Panel */
+    protected Panel $Resizable;
     /** @var Selectable */
-    protected $Selectable;
+    protected Selectable $Selectable;
     /** @var Sortable */
-    protected $Sortable;
+    protected Sortable $Sortable;
 
     /** @var Accordion */
-    protected $Accordion;
+    protected Accordion $Accordion;
     /** @var Autocomplete */
-    protected $Autocomplete;
+    protected Autocomplete $Autocomplete;
     /** @var Autocomplete */
-    protected $AjaxAutocomplete;
+    protected Autocomplete $AjaxAutocomplete;
     /** @var Button */
-    protected $Button;
+    protected Button $Button;
     /** @var Checkbox */
-    protected $CheckBox;
+    protected Checkbox $CheckBox;
     /** @var RadioButton */
-    protected $RadioButton;
+    protected RadioButton $RadioButton;
     /** @var Button */
-    protected $IconButton;
+    protected Button $IconButton;
     /** @var CheckboxList */
-    protected $CheckList1;
+    protected CheckboxList $CheckList1;
     /** @var CheckboxList */
-    protected $CheckList2;
+    protected CheckboxList $CheckList2;
     /** @var RadioButtonList */
-    protected $RadioList1;
+    protected RadioButtonList $RadioList1;
     /** @var RadioButtonList */
-    protected $RadioList2;
+    protected RadioButtonList $RadioList2;
     /** @var SelectMenu */
-    protected $SelectMenu;
+    protected SelectMenu $SelectMenu;
 
     /** @var Datepicker */
-    protected $Datepicker;
+    protected Datepicker $Datepicker;
     /** @var DatepickerBox */
-    protected $DatepickerBox;
+    protected DatepickerBox $DatepickerBox;
     /** @var Dialog */
-    protected $Dialog;
+    protected Dialog $Dialog;
     /** @var Progressbar */
-    protected $Progressbar;
+    protected Progressbar $Progressbar;
     /** @var Slider */
-    protected $Slider;
-    protected $Slider2;
+    protected Slider $Slider;
+    protected Slider $Slider2;
     /** @var Tabs */
-    protected $Tabs;
+    protected Tabs $Tabs;
     /** @var  Button */
-    protected $btnShowDialog;
+    protected Button $btnShowDialog;
     /** @var  TextBox */
-    protected $txtDlgTitle;
+    protected TextBox $txtDlgTitle;
     /** @var  TextBox */
-    protected $txtDlgText;
+    protected TextBox $txtDlgText;
 
     // Array we'll use to demonstrate the autocomplete functionality
-    static private $LANGUAGES = array(
+    static private array $LANGUAGES = array(
         "c++",
         "java",
         "php",
@@ -115,7 +117,11 @@ class ExampleForm extends FormBase
         "ruby"
     );
 
-    protected function formCreate()
+    /**
+     * @throws InvalidCast
+     * @throws Caller
+     */
+    protected function formCreate(): void
     {
         $this->Draggable = new Panel($this);
         $this->Draggable->Text = 'Drag me';
@@ -123,7 +129,7 @@ class ExampleForm extends FormBase
         $this->Draggable->Moveable = true;
         $this->Draggable->addAction(new DraggableStop(), new Ajax("drag_stop"));
 
-        // Dropable
+        // Droppable
         $this->Droppable = new Panel($this);
         $this->Droppable->Text = "Drop here";
         $this->Droppable->addAction(new DroppableDrop(), new Ajax("droppable_drop"));
@@ -164,15 +170,15 @@ class ExampleForm extends FormBase
 
         // Accordion
         $this->Accordion = new Accordion($this, 'accordionCtl');
-        $lbl = new \QCubed\Control\LinkButton($this->Accordion);
+        $lbl = new LinkButton($this->Accordion);
         $lbl->Text = 'Header 1';
         $pnl = new Panel($this->Accordion);
         $pnl->Text = 'Section 1';
-        $lbl = new \QCubed\Control\LinkButton($this->Accordion);
+        $lbl = new LinkButton($this->Accordion);
         $lbl->Text = 'Header 2';
         $pnl = new Panel($this->Accordion);
         $pnl->Text = 'Section 2';
-        $lbl = new \QCubed\Control\LinkButton($this->Accordion);
+        $lbl = new LinkButton($this->Accordion);
         $lbl->Text = 'Header 3';
         $pnl = new Panel($this->Accordion);
         $pnl->Text = 'Section 3';
@@ -182,10 +188,10 @@ class ExampleForm extends FormBase
         // Autocomplete
 
         // Both autocomplete controls below will use the mode
-        // "match only on the beginning of the word"
-        Autocomplete::useFilter(Autocomplete::FILTER_STARTS_WITH);
+        // "match only at the beginning of the word"
+        Autocomplete::useFilter(AutocompleteBase::FILTER_STARTS_WITH);
 
-        // Client-side only autocomplete
+        // Client-side-only autocomplete
         $this->Autocomplete = new Autocomplete($this);
         $this->Autocomplete->Source = self::$LANGUAGES;
         $this->Autocomplete->Name = "Standard Autocomplete";
@@ -231,7 +237,7 @@ class ExampleForm extends FormBase
             $this->CheckList2->addItem($strLang);
         }
         $this->CheckList2->ButtonMode = CheckboxList::BUTTON_MODE_JQ;
-        $this->CheckList2->RepeatColumns = 4;
+        $this->CheckList2->RepeatColumns = 8;
 
         $this->RadioList1 = new RadioButtonList($this);
         $this->RadioList1->Name = "RadioButtonList with buttonset";
@@ -254,7 +260,6 @@ class ExampleForm extends FormBase
         foreach (self::$LANGUAGES as $strLang) {
             $this->SelectMenu->addItem($strLang);
         }
-
 
         // Datepicker
         $this->Datepicker = new Datepicker($this);
@@ -308,7 +313,7 @@ class ExampleForm extends FormBase
         // Tabs
         $this->Tabs = new Tabs($this);
         $tab1 = new Panel($this->Tabs);
-        $tab1->Text = 'First tab is active by default';
+        $tab1->Text = 'The First tab is active by default';
         $tab2 = new Panel($this->Tabs);
         $tab2->Text = 'Tab 2';
         $tab3 = new Panel($this->Tabs);
@@ -317,17 +322,26 @@ class ExampleForm extends FormBase
         $this->Tabs->addAction(new TabsActivate(), new Ajax('tabs_change'));
     }
 
-    protected function update_autocompleteList($strFormId, $strControlId, $strParameter)
+    /**
+     * Updates the autocomplete list for a control based on a lookup string and specified form and control IDs.
+     *
+     * @param string $strFormId The ID of the form containing the control to be updated.
+     * @param string $strControlId The ID of the control whose autocomplete list is being updated.
+     * @param string $strParameter The lookup string used to query and filter the data source.
+     * @return void
+     * @throws Caller
+     */
+    protected function update_autocompleteList(string $strFormId, string $strControlId, string $strParameter): void
     {
         $strLookup = $strParameter;
         $objControl = $this->getControl($strControlId);
 
-        $cond = \QCubed\Query\QQ::orCondition(
-            \QCubed\Query\QQ::like(QQN::person()->FirstName, '%' . $strLookup . '%'),
-            \QCubed\Query\QQ::like(QQN::person()->LastName, '%' . $strLookup . '%')
+        $cond = QQ::orCondition(
+            QQ::like(QQN::person()->FirstName, '%' . $strLookup . '%'),
+            QQ::like(QQN::person()->LastName, '%' . $strLookup . '%')
         );
 
-        $clauses[] = \QCubed\Query\QQ::orderBy(QQN::person()->LastName, QQN::person()->FirstName);
+        $clauses[] = QQ::orderBy(QQN::person()->LastName, QQN::person()->FirstName);
 
         $lst = Person::queryArray($cond, $clauses);
 
@@ -336,7 +350,7 @@ class ExampleForm extends FormBase
          * could just pass the $lst to the DataSource. If you want to add a 'label' item
          * to the display, you can override toJsObject in the People.class.php file.
          *
-         * For puposes of this example, we will build a custom list using list items below.
+         * For the purpose of this example, we will build a custom list using the list items below.
          *
          */
 
@@ -349,12 +363,12 @@ class ExampleForm extends FormBase
         $objControl->DataSource = $a;
     }
 
-    protected function ajaxautocomplete_change()
+    protected function ajaxautocomplete_change(): void
     {
         Application::displayAlert('Selected item ID: ' . $this->AjaxAutocomplete->SelectedId);
     }
 
-    protected function button_click()
+    protected function button_click(): void
     {
         $dtt = $this->DatepickerBox->DateTime;
         if ($dtt) {
@@ -362,73 +376,73 @@ class ExampleForm extends FormBase
         }
     }
 
-    protected function slider_change()
+    protected function slider_change(): void
     {
         Application::displayAlert($this->Progressbar->Value . ', ' . $this->Slider->Value);
     }
 
-    protected function slider2_change()
+    protected function slider2_change(): void
     {
         $a = $this->Slider2->Values;
         Application::displayAlert($a[0] . ', ' . $a[1]);
     }
 
-    public function dialog_press($strFormId, $strControlId, $strParameter)
+    public function dialog_press(string $strFormId, string $strControlId, string $strParameter): void
     {
         $id = $this->Dialog->ClickedButton;
         Application::displayAlert($id . ' was pressed');
     }
 
-    public function droppable_drop($strFormId, $strControlId, $strParameter)
+    public function droppable_drop(string $strFormId, string $strControlId, string $strParameter): void
     {
         $id = $this->Droppable->DropObj->DroppedId;
-        Application::displayAlert($id . ' was dropped.');
+        Application::displayAlert($id . ' it was dropped.');
     }
 
-    public function resizable_stop($strFormId, $strControlId, $strParameter)
+    public function resizable_stop(string $strFormId, string $strControlId, string $strParameter): void
     {
-        Application::displayAlert('Width change = ' . $this->Resizable->ResizeObj->DeltaX . ', height change = ' . $this->Resizable->ResizeObj->DeltaY);
+        Application::displayAlert('Width change = ' . $this->Resizable->ResizeObj->DeltaX . ',  height change = ' . $this->Resizable->ResizeObj->DeltaY);
     }
 
-    public function drag_stop($strFormId, $strControlId, $strParameter)
+    public function drag_stop(string $strFormId, string $strControlId, string $strParameter): void
     {
         $x = $this->Draggable->DragObj->DeltaX;
         $y = $this->Draggable->DragObj->DeltaY;
         Application::displayAlert('Left change = ' . $x . ', top change = ' . $y);
     }
 
-    public function selectable_stop($strFormId, $strControlId, $strParameter)
+    public function selectable_stop(string $strFormId, string $strControlId, string $strParameter): void
     {
         $a = $this->Selectable->SelectedItems;
         $strItems = join(",", $a);
         Application::displayAlert($strItems);
     }
 
-    public function sortable_stop($strFormId, $strControlId, $strParameter)
+    public function sortable_stop(string $strFormId, string $strControlId, string $strParameter): void
     {
         $a = $this->Sortable->ItemArray;
         $strItems = join(",", $a);
         Application::displayAlert($strItems);
     }
 
-    protected function accordion_change()
+    protected function accordion_change(): void
     {
         Application::displayAlert($this->Accordion->Active . ' selected.');
     }
 
-    protected function dlgTitle_Change($strFormId, $strControlId, $strParameter)
+    protected function dlgTitle_Change(string $strFormId, string $strControlId, string $strParameter): void
     {
         $strNewTitle = $this->txtDlgTitle->Text;
         $this->Dialog->Title = $strNewTitle;
     }
 
-    protected function dlgText_Change($strFormId, $strControlId, $strParameter)
+    protected function dlgText_Change(string $strFormId, string $strControlId, string $strParameter): void
     {
         $strNewText = $this->txtDlgText->Text;
         $this->Dialog->Text = $strNewText;
     }
 
-    protected function setDate($strFormId, $strControlId, $strParameter)
+    protected function setDate(string $strFormId, string $strControlId, string $strParameter): void
     {
         if ($strParameter == 'Datepicker') {
             $this->DatepickerBox->DateTime = $this->Datepicker->DateTime;
@@ -437,7 +451,7 @@ class ExampleForm extends FormBase
         }
     }
 
-    protected function tabs_change($strFormId, $strControlId, $strParameter)
+    protected function tabs_change(string $strFormId, string $strControlId, string $strParameter): void
     {
         $index = $this->Tabs->Active;
         $id = $this->Tabs->SelectedId;

@@ -3,30 +3,30 @@ use QCubed\Action\Ajax;
 use QCubed\Control\Calendar;
 use QCubed\Control\DateTimePicker;
 use QCubed\Control\DateTimeTextBox;
+use QCubed\Control\Label;
 use QCubed\Event\Click;
-use QCubed\Project\Application;
 use QCubed\Project\Control\Button;
-use QCubed\QDateTime;
+use QCubed\Project\Control\FormBase;
 
 require_once('../qcubed.inc.php');
 
-class ExampleForm extends \QCubed\Project\Control\FormBase
+class ExampleForm extends FormBase
 {
-    protected $dtxDateTimeTextBox;
-    protected $btnDateTimeTextBox;
+    protected DateTimeTextBox $dtxDateTimeTextBox;
+    protected Button $btnDateTimeTextBox;
 
-    protected $calQJQCalendar;
-    protected $btnQJQCalendar;
+    protected Calendar $calQJQCalendar;
+    protected Button $btnQJQCalendar;
 
-    protected $dtpDatePicker;
-    protected $btnDatePicker;
+    protected DateTimePicker $dtpDatePicker;
+    protected Button $btnDatePicker;
 
-    protected $dtpDateTimePicker;
-    protected $btnDateTimePicker;
+    protected DateTimePicker $dtpDateTimePicker;
+    protected Button $btnDateTimePicker;
 
-    protected $lblResult;
+    protected Label $lblResult;
 
-    protected function formCreate()
+    protected function formCreate(): void
     {
 
         $this->calQJQCalendar = new Calendar($this);
@@ -41,8 +41,9 @@ class ExampleForm extends \QCubed\Project\Control\FormBase
         $this->dtpDateTimePicker->DateTimePickerType = DateTimePicker::SHOW_DATE_TIME;
 
         // To View the "Results"
-        $this->lblResult = new \QCubed\Control\Label($this);
+        $this->lblResult = new Label($this);
         $this->lblResult->Text = 'Results...';
+        $this->lblResult->HtmlEntities = false;
 
         // Various Buttons
         $this->btnQJQCalendar = new Button($this);
@@ -66,7 +67,7 @@ class ExampleForm extends \QCubed\Project\Control\FormBase
         $this->btnDateTimePicker->ActionParameter = $this->dtpDateTimePicker->ControlId;
     }
 
-    protected function btnUpdate_Click($strFormId, $strControlId, $strParameter)
+    protected function btnUpdate_Click(string $strFormId, string $strControlId, string $strParameter): void
     {
         $objControlToLookup = $this->getControl($strParameter);
         $dttDateTime = $objControlToLookup->DateTime;

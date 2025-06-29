@@ -10,6 +10,8 @@
 namespace QCubed\Action;
 
 use QCubed\Control\ControlBase;
+use QCubed\Project\Jqui\Dialog;
+use QCubed\Control\DialogInterface;
 
 /**
  * Class HideDialog
@@ -18,21 +20,20 @@ use QCubed\Control\ControlBase;
  *
  * @was QHideDialog
  * @package QCubed\Action
- * @deprecated Dialogs in general should be created on the fly. Also this implementation is very JQuery UI specific.
+ * @deprecated Dialogs in general should be created on the fly. Also, this implementation is very JQuery UI-specific.
  */
 class HideDialog extends ActionBase
 {
     /** @var null|string JS to be executed on the client side for closing the dialog */
-    protected $strJavaScript = null;
+    protected ?string $strJavaScript = null;
 
     /**
      * Constructor
      *
-     * @param QDialog $objControl
+     * @param Dialog $objControl
      *
-     * @throws \QCubed\Exception\Caller
      */
-    public function __construct(\QCubed\Control\DialogInterface $objControl)
+    public function __construct(DialogInterface $objControl)
     {
         $strControlId = $objControl->getJqControlId();
         $this->strJavaScript = sprintf('jQuery("#%s").dialog("close");', $strControlId);
@@ -43,9 +44,9 @@ class HideDialog extends ActionBase
      *
      * @param ControlBase $objControl
      *
-     * @return null|string JavaScript to be executed on the client side
+     * @return string|null JavaScript to be executed on the client side
      */
-    public function renderScript(ControlBase $objControl)
+    public function renderScript(ControlBase $objControl): ?string
     {
         return $this->strJavaScript;
     }

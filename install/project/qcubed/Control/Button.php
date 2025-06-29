@@ -2,6 +2,8 @@
 
 namespace QCubed\Project\Control;
 
+use QCubed\Control\ButtonBase;
+
 /**
  * Class Button
  *
@@ -9,14 +11,13 @@ namespace QCubed\Project\Control;
  * Button throughout the framework.
  *
  * @package QCubed\Project\Control
- * @was QButton
  */
-class Button extends \QCubed\Control\ButtonBase
+class Button extends ButtonBase
 {
     ///////////////////////////
     // Button Preferences
     ///////////////////////////
 
     // Feel free to specify global display preferences/defaults for all QButton controls
-    protected $strCssClass = 'button';
+    protected string $strCssClass = 'button';
 }

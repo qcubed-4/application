@@ -11,7 +11,13 @@ $imports = [
     ['class'=>'QCubed\\Exception\\Caller', 'as'=>'Caller'],
     ['class'=>'QCubed\\Project\\Control\\FormBase'],
     ['class'=>'QCubed\\Project\\Control\\ControlBase'],
+    ['class'=>'QCubed\\ObjectBase'],
+    ['class'=>'QCubed\ApplicationBase', 'as'=>'Application'],
     ['class'=>'QCubed\\Query\\QQ'],
+    ['class'=>'QCubed\\Type'],
+    ['class'=>'QCubed\\Exception\\UndefinedProperty'],
+    ['class'=>'QCubed\Exception\InvalidCast'],
+    ['class'=>'QCubed\Database\Exception\UndefinedPrimaryKey'],
 
 ];
 foreach ($objTable->ColumnArray as $objColumn) {
@@ -27,7 +33,6 @@ foreach ($objTable->ColumnArray as $objColumn) {
         $imports = array_merge($imports, $controlImports);
     }
 }
-
 
 foreach ($objTable->ReverseReferenceArray as $objReverseReference) {
     if (!$objReverseReference->Unique) continue;

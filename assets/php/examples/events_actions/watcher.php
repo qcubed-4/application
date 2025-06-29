@@ -9,7 +9,7 @@ use QCubed\Project\Control\FormBase;
 use QCubed\Project\Control\JsTimer;
 use QCubed\Project\Control\TextBox;
 
-define('__IN_EXAMPLE__', true);
+const __IN_EXAMPLE__ = true;
 require_once('../qcubed.inc.php');
 
 
@@ -22,15 +22,15 @@ class ExampleForm extends FormBase
 {
 
     // Declare the DataGrid
-    protected $dtgPersons;
-    protected $txtFirstName;
-    protected $txtLastName;
-    protected $btnNew;
-    protected $timer;
+    protected DataGrid $dtgPersons;
+    protected TextBox $txtFirstName;
+    protected TextBox $txtLastName;
+    protected Button $btnNew;
+    protected JsTimer $timer;
     /** @var  Proxy */
-    protected $pxyDelete;
+    protected Proxy $pxyDelete;
 
-    protected function formCreate()
+    protected function formCreate(): void
     {
         // Define the DataGrid
         $this->dtgPersons = new DataGrid($this);
@@ -42,7 +42,7 @@ class ExampleForm extends FormBase
         // Specify the local Method which will actually bind the data source to the datagrid.
         $this->dtgPersons->setDataBinder('dtgPersons_Bind');
 
-        // By default, the examples database uses the qc_watchers table to record when a something in the database has changed.
+        // By default, the example database uses the qc watchers table to record when something in the database has changed.
         // To configure this, including changing the table name, or even using a shared caching mechanism like
         // APC or Memcached, modify the Watcher class in project/qcubed/Watcher
 
@@ -55,28 +55,32 @@ class ExampleForm extends FormBase
         //$this->timer->addAction(new TimerExpired(), new Ajax());
 
         $this->txtFirstName = new TextBox($this);
+        $this->txtFirstName->Required = true;
         $this->txtLastName = new TextBox($this);
+        $this->txtLastName->Required = true;
         $this->btnNew = new Button($this);
         $this->btnNew->Text = 'Add';
         $this->btnNew->addAction(new Click(), new Ajax('btnNew_Click'));
 
-        // Create a proxy control to handle clicking for a delete
+        // Create a proxy control to handle clicking for a deleted
         $this->pxyDelete = new Proxy($this);
         //$this->pxyDelete->addAction(new Click(), new Ajax ('delete_Click'));
     }
 
-    protected function dtgPersons_Bind()
+    protected function dtgPersons_Bind(): void
     {
-        // We load the data source, and set it to the datagrid's DataSource parameter
+        // We load the data source and set it to the datagrid's DataSource parameter
         $this->dtgPersons->DataSource = Person::loadAll();
     }
 
-    protected function btnNew_Click($strFormId, $strControlId, $strParameter)
+    protected function btnNew_Click(string $strFormId, string $strControlId, string $strParameter): void
     {
-        $objPerson = new Person();
-        $objPerson->FirstName = $this->txtFirstName->Text;
-        $objPerson->LastName = $this->txtLastName->Text;
-        $objPerson->save();
+        if (!$this->txtFirstName->Text || !$this->txtLastName->Text) {
+            $objPerson = new Person();
+            $objPerson->FirstName = $this->txtFirstName->Text;
+            $objPerson->LastName = $this->txtLastName->Text;
+            $objPerson->save();
+        }
     }
 }
 

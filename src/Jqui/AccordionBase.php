@@ -9,6 +9,8 @@
 
 namespace QCubed\Jqui;
 
+use QCubed\ApplicationBase;
+use QCubed\Exception\Caller;
 use QCubed\Exception\InvalidCast;
 use QCubed\Html;
 use QCubed\Project\Application;
@@ -18,7 +20,7 @@ use QCubed\Type;
  * Class AccordionBase
  *
  * The QAccordionBase class defined here provides an interface between the generated
- * QAccordianGen class, and QCubed. This file is part of the core and will be overwritten
+ * AccordionGen class and QCubed. This file is part of the core and will be overwritten
  * when you update QCubed. To override, make your changes to the QAccordion.class.php file instead.
  *
  * An accordion is a series of panels, only one of which is shown at a time. Each panel has a trigger, and
@@ -26,10 +28,10 @@ use QCubed\Type;
  *
  * The Accordion descends from QPanel. There are a number of ways to create an Accordion,
  * but the basics are that you put a series of block level items inside the Accordion (like divs, or h1, QPanels, etc.)
- * and it will automatically pick the first item as the header and the second item as the content that will be collapsed
+ * And it will automatically pick the first item as the header and the second item as the content that will be collapsed
  * or expanded, and will repeat that until the end of the Accordion block.
  *
- * If you want more control, you can assign a jQuery selector to the Header item and that selector
+ * If you want more control, you can assign a jQuery selector to the Header item, and that selector
  * will be used to find the headers within the Accordion. In this case, the next block level sibling to
  * the header will be used as the content for that header. For example, to use all the items with class ItemHeader
  * inside the Accordion panel as the headers for the accordion, do this:
@@ -43,22 +45,21 @@ use QCubed\Type;
  * See the jQuery UI documentation for additional events, methods and options that may be useful.
  *
  * @link http://jqueryui.com/accordion/
- * @was QAccordionBase
  * @package QCubed\Control
  */
 
 class AccordionBase extends AccordionGen
 {
     /** @var bool Should the children be rendered automatically? */
-    protected $blnAutoRenderChildren = true;
+    protected ?bool $blnAutoRenderChildren = true;
 
     /**
      * Rendered the children of this control
-     * @param bool $blnDisplayOutput Send the output to client?
+     * @param bool $blnDisplayOutput Send the output to a client?
      *
      * @return null|string
      */
-    protected function renderChildren($blnDisplayOutput = true)
+    protected function renderChildren(bool $blnDisplayOutput = true): ?string
     {
         $strToReturn = "";
 
@@ -78,20 +79,20 @@ class AccordionBase extends AccordionGen
     }
 
     /**
-     * Returns the Javascript needed as the part of control's behavior
+     * Returns the JavaScript needed as the part of control's behavior
      */
-    protected function makeJqWidget()
+    protected function makeJqWidget(): void
     {
         parent::makeJqWidget();
 
-        Application::executeJsFunction('qcubed.accordion', $this->getJqControlId(), Application::PRIORITY_HIGH);
+        Application::executeJsFunction('qcubed.accordion', $this->getJqControlId(), ApplicationBase::PRIORITY_HIGH);
     }
 
     /**
      * Returns the state data to restore later.
-     * @return mixed
+     * @return array|null
      */
-    protected function getState()
+    protected function getState(): ?array
     {
         return ['active' => $this->Active];
     }
@@ -100,13 +101,12 @@ class AccordionBase extends AccordionGen
      * Restore the state of the control.
      * @param mixed $state
      */
-    protected function putState($state)
+    protected function putState(mixed $state): void
     {
         if (isset($state['active'])) {
             $this->Active = $state['active'];
         }
     }
-
 
     /**
      * PHP __set magic method implementation
@@ -114,10 +114,10 @@ class AccordionBase extends AccordionGen
      * @param string $strName Name of the property
      * @param string $mixValue Value of the property
      *
-     * @return mixed|void
-     * @throws InvalidCast
+     * @return void
+     * @throws InvalidCast|Caller
      */
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             case '_SelectedIndex': // Internal Only. Used by JS above. Do Not Call.

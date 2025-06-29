@@ -6,14 +6,14 @@ require_once('../qcubed.inc.php'); ?>
 <div id="instructions">
 	<h1>Using Type Tables</h1>
 
-	<p>Use <strong>Type Tables</strong> to create enumerated constant types for QCubed.
-        While only some database vendors (e.g. MySQL) offer support for ENUM or SET column types,
-	QCubed provides support for these enumerated column types for <em>all</em>
+	<p>Use <strong>Type Tables</strong> to create enumerated constant types for QCubed-4.
+        While only some database vendors (e.g., MySQL) offer support for ENUM or SET column types,
+	QCubed-4 provides support for these enumerated column types for <em>all</em>
 	database vendors through <strong>Type Tables</strong>.</p>
 
-	<p>To tell QCubed that it should treat a particular SQL table as a <strong>Type Tables</strong>, add
+	<p>To tell QCubed-4 that it should treat a particular SQL table as a <strong>Type Tables</strong>, add
         a "_type" suffix to the end of the name of the table. <strong>Type Tables</strong> must
-	have at least 2 columns: a primary key ID named "id", and a unique VARCHAR column "name".
+	have at least 2 columns: a primary key ID named "id," and a unique VARCHAR column "name."
         Before running the code generator, add data
         to your type table to define the constants you want generated. </p>
 
@@ -28,14 +28,14 @@ require_once('../qcubed.inc.php'); ?>
 	class has a relationship with <strong>ProjectStatusType</strong>, and how we can display a <strong>Project</strong>
 	object's status using the static methods of <strong>ProjectStatusType</strong>.</p>
 
-	<p>You can, if you want, have more than two columns in a type table; QCubed will generate additional methods
+	<p>You can, if you want, have more than two columns in a type table; QCubed-4 will generate additional methods
 	based on the names of the additional columns you define. In the example here, the Project Status Types table
-	has the following columns: "id", "name" (unique), "description", and "guidelines". The QCubed code
+	has the following columns: "id," "name" (unique), "description," and "guidelines." The QCubed-4 code
 	generator will create methods such as <strong>ProjectStatusType::toDescription()</strong> and <strong>ProjectStatusType::toGuidelines()</strong>
-	for you.</p>		
+	for you.</p>
 
 	<p>You can also use an association table with a type table to create a many-to-many relationship with a type.
-	This is similar to the SET type in MySQL, but is database independent.</p>
+	This is similar to the SET type in MySQL but is database-independent.</p>
 
     <p>If you do want to use a "_type" suffix for some reason, you can specify a different suffix in the
         codegen_settings.xml file in the configuration directory.</p>
@@ -75,7 +75,7 @@ require_once('../qcubed.inc.php'); ?>
     
     foreach ($objPeople as $objPerson) {
         _p($objPerson->FirstName . ' ' . $objPerson->LastName . ': ');
-        $intTypeArray = $objPerson->_PersonTypeArray;   // The underscore prefix here indicates you cannot late bind this. You must use a expand clause to get this data.
+        $intTypeArray = $objPerson->_PersonTypeArray;   // The underscore prefix here indicates you cannot late bind this. You must use an expanded clause to get this data.
         $strTypeArray = array();
         foreach ($intTypeArray as $intType) {
             $strTypeArray[] = PersonType::toString($intType);

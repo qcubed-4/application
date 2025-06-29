@@ -1,7 +1,7 @@
 <?php
 	/**
-	 * @var QSqlTable $objTable
-	 * @var QCodeGenBase $objCodeGen
+	 * @var SqlTable $objTable
+	 * @var CodeGenBase $objCodeGen
 	 */
 
 use QCubed\ModelConnector\Options;

@@ -1,6 +1,7 @@
 <?php
 use QCubed\Action\Ajax;
 use QCubed\Control\Label;
+use QCubed\Control\TextBoxBase;
 use QCubed\Event\Click;
 use QCubed\Project\Control\Button;
 use QCubed\Project\Control\FormBase;
@@ -12,58 +13,58 @@ class ExamplesForm extends FormBase
 {
 
     /** @var TextBox */
-    protected $txtTextbox1;
+    protected TextBox $txtTextbox1;
 
     /** @var Label */
-    protected $lblLabel1;
+    protected Label $lblLabel1;
 
     /** @var Button */
-    protected $btnButton1;
+    protected Button $btnButton1;
 
     /** @var TextBox */
-    protected $txtTextbox2;
+    protected TextBox $txtTextbox2;
 
     /** @var Label */
-    protected $lblLabel2;
+    protected Label $lblLabel2;
 
     /** @var Button */
-    protected $btnButton2;
+    protected Button $btnButton2;
 
     /** @var TextBox */
-    protected $txtTextbox3;
+    protected TextBox $txtTextbox3;
 
     /** @var Label */
-    protected $lblLabel3;
+    protected Label $lblLabel3;
 
     /** @var Button */
-    protected $btnButton3;
+    protected Button $btnButton3;
 
     /** @var TextBox */
-    protected $txtTextbox4;
+    protected TextBox $txtTextbox4;
 
     /** @var Label */
-    protected $lblLabel4;
+    protected Label $lblLabel4;
 
     /** @var Button */
-    protected $btnButton4;
+    protected Button $btnButton4;
 
     /** @var TextBox */
-    protected $txtTextbox5;
+    protected TextBox $txtTextbox5;
 
     /** @var Label */
-    protected $lblLabel5;
+    protected Label $lblLabel5;
 
     /** @var Button */
-    protected $btnButton5;
+    protected Button $btnButton5;
 
     // Initialize our Controls during the Form Creation process
-    protected function formCreate()
+    protected function formCreate(): void
     {
-        // default protection, will use built-in PHP String sanitizer
+        // default protection will use built-in PHP String sanitizer
         $this->txtTextbox1 = new TextBox($this);
         $this->txtTextbox1->Text = 'Hello!';
         $this->txtTextbox1->Width = 500;
-        $this->txtTextbox1->CrossScripting = TextBox::XSS_PHP_SANITIZE;
+        $this->txtTextbox1->CrossScripting = TextBoxBase::XSS_PHP_SANITIZE;
 
         $this->lblLabel1 = new Label($this);
         $this->lblLabel1->HtmlEntities = false;
@@ -75,7 +76,7 @@ class ExamplesForm extends FormBase
 
         // htmlentities mode
         $this->txtTextbox2 = new TextBox($this);
-        $this->txtTextbox2->CrossScripting = TextBox::XSS_HTML_ENTITIES;
+        $this->txtTextbox2->CrossScripting = TextBoxBase::XSS_HTML_ENTITIES;
         $this->txtTextbox2->Text = 'Hello!';
         $this->txtTextbox2->Width = 500;
 
@@ -89,7 +90,7 @@ class ExamplesForm extends FormBase
 
         // full protection with the HTMLPurifier defaults
         $this->txtTextbox3 = new TextBox($this);
-        $this->txtTextbox3->CrossScripting = TextBox::XSS_HTML_PURIFIER;
+        $this->txtTextbox3->CrossScripting = TextBoxBase::XSS_HTML_PURIFIER;
         $this->txtTextbox3->Text = 'Hello!';
         $this->txtTextbox3->Width = 500;
 
@@ -103,7 +104,7 @@ class ExamplesForm extends FormBase
 
         // full protection with an allowed list of tags
         $this->txtTextbox4 = new TextBox($this);
-        $this->txtTextbox4->CrossScripting = TextBox::XSS_HTML_PURIFIER;
+        $this->txtTextbox4->CrossScripting = TextBoxBase::XSS_HTML_PURIFIER;
         $this->txtTextbox4->setPurifierConfig("HTML.Allowed", "b,strong,i,em,img[src]");
         $this->txtTextbox4->Text = 'Hello!';
         $this->txtTextbox4->Width = 500;
@@ -118,7 +119,7 @@ class ExamplesForm extends FormBase
 
         // the textbox won't have the XSS protection!
         $this->txtTextbox5 = new TextBox($this);
-        $this->txtTextbox5->CrossScripting = TextBox::XSS_ALLOW;
+        $this->txtTextbox5->CrossScripting = TextBoxBase::XSS_ALLOW;
         $this->txtTextbox5->Text = 'Hello!';
         $this->txtTextbox5->Width = 500;
 
@@ -131,27 +132,27 @@ class ExamplesForm extends FormBase
         $this->btnButton5->addAction(new Click(), new Ajax('btnButton5_Click'));
     }
 
-    protected function btnButton1_Click($strFormId, $strControlId, $strParameter)
+    protected function btnButton1_Click(string $strFormId, string $strControlId, string $strParameter): void
     {
         $this->lblLabel1->Text = $this->txtTextbox1->Text;
     }
 
-    protected function btnButton2_Click($strFormId, $strControlId, $strParameter)
+    protected function btnButton2_Click(string $strFormId, string $strControlId, string $strParameter): void
     {
         $this->lblLabel2->Text = $this->txtTextbox2->Text;
     }
 
-    protected function btnButton3_Click($strFormId, $strControlId, $strParameter)
+    protected function btnButton3_Click(string $strFormId, string $strControlId, string $strParameter): void
     {
         $this->lblLabel3->Text = $this->txtTextbox3->Text;
     }
 
-    protected function btnButton4_Click($strFormId, $strControlId, $strParameter)
+    protected function btnButton4_Click(string $strFormId, string $strControlId, string $strParameter): void
     {
         $this->lblLabel4->Text = $this->txtTextbox4->Text;
     }
 
-    protected function btnButton5_Click($strFormId, $strControlId, $strParameter)
+    protected function btnButton5_Click(string $strFormId, string $strControlId, string $strParameter): void
     {
         $this->lblLabel5->Text = $this->txtTextbox5->Text;
     }

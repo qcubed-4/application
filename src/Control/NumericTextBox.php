@@ -9,11 +9,11 @@
 
 namespace QCubed\Control;
 
-require_once(dirname(dirname(__DIR__)) . '/i18n/i18n-lib.inc.php');
-use QCubed\Application\t;
+require_once(dirname(__DIR__, 2) . '/i18n/i18n-lib.inc.php');
 
 use QCubed\Exception\Caller;
 use QCubed\Exception\InvalidCast;
+use Throwable;
 use QCubed\Project\Control\TextBox;
 use QCubed\Type;
 use QCubed as Q;
@@ -27,32 +27,31 @@ use QCubed as Q;
  *
  * @property mixed $Maximum         (optional) is the maximum value the integer/float can be
  * @property mixed $Minimum         (optional) is the minimum value the integer/float can be
- * @property mixed $Step            (optional) is the step interval for allowed values ( beginning from $Minimum if set)
+ * @property mixed $Step            (optional) is the step interval for allowed values (beginning from $Minimum if a set)
  * @property string $LabelForGreater Text to show when the input is greater than the allowed value
  * @property string $LabelForLess    Text to show when the input is lesser than the minimum allowed value
  * @property string $LabelForNotStepAligned
  *                          set this property to show an error message if the entered value is not step-aligned
- *                          if not set the value is changed to the next step-aligned value (no error)
- * @was QNumericTextBox
+ *                          if not set, the value is changed to the next step-aligned value (no error)
  * @package QCubed\Control
  */
 abstract class NumericTextBox extends TextBox
 {
-    /** @var string Data type of the input (float|integer) */
-    protected $strDataType = null;
+    /** @var string|null Data type of the input (float|integer) */
+    protected ?string $strDataType = null;
     /** @var mixed Maximum allowed Value */
-    protected $mixMaximum = null;
+    protected mixed $mixMaximum = null;
     /** @var mixed Minimum allowed value */
-    protected $mixMinimum = null;
+    protected mixed $mixMinimum = null;
     /** @var mixed Float or Integer value, the multiple of which the input must be */
-    protected $mixStep = null;
+    protected mixed $mixStep = null;
 
-    /** @var string Text to show when the input value is less than minimum allowed value */
-    protected $strLabelForLess;
-    /** @var string Text to show when the input value is greater than the maximum allowed value */
-    protected $strLabelForGreater;
-    /** @var string Text to show when the input value is not step aligned */
-    protected $strLabelForNotStepAligned = null;
+    /** @var string|null Text to show when the input value is less than the minimum allowed value */
+    protected ?string $strLabelForLess = null;
+    /** @var string|null Text to show when the input value is greater than the maximum allowed value */
+    protected ?string $strLabelForGreater = null;
+    /** @var string|null Text to show when the input value is not step aligned */
+    protected ?string $strLabelForNotStepAligned = null;
 
     //////////
     // Methods
@@ -62,8 +61,9 @@ abstract class NumericTextBox extends TextBox
      *
      * @param ControlBase|FormBase $objParentObject
      * @param null|string $strControlId
+     * @throws Caller
      */
-    public function __construct($objParentObject, $strControlId = null)
+    public function __construct(ControlBase|FormBase $objParentObject, ?string $strControlId = null)
     {
         parent::__construct($objParentObject, $strControlId);
 
@@ -74,14 +74,16 @@ abstract class NumericTextBox extends TextBox
 
     /**
      * @return bool whether or not the input passed all the values
+     * @throws Caller
+     * @throws InvalidCast
      */
-    public function validate()
+    public function validate(): bool
     {
         if (parent::validate()) {
             if ($this->strText != "") {
                 try {
                     $this->strText = Type::cast($this->strText, $this->strDataType);
-                } catch (InvalidCast $objExc) {
+                } catch (InvalidCast) {
                     $this->ValidationError = $this->strLabelForInvalid;
                     $this->markAsModified();
                     return false;
@@ -137,7 +139,7 @@ abstract class NumericTextBox extends TextBox
      * @return mixed
      * @throws Caller
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             // MISC
@@ -173,8 +175,9 @@ abstract class NumericTextBox extends TextBox
      * @param mixed $mixValue
      * @throws InvalidCast
      * @throws Caller
+     * @throws Throwable Exception
      */
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         $this->blnModified = true;
 
@@ -244,24 +247,25 @@ abstract class NumericTextBox extends TextBox
     }
 
     /**
-     * Returns an description of the options available to modify by the designer for the code generator.
+     * Returns a description of the options available to modify by the designer for the code generator.
      *
      * @return array
+     * @throws Caller
      */
-    public static function getModelConnectorParams()
+    public static function getModelConnectorParams(): array
     {
         return array_merge(parent::getModelConnectorParams(), array(
-            new Q\ModelConnector\Param(get_called_class(), 'Maximum', 'Meximum value allowed', Type::STRING),
+            new Q\ModelConnector\Param(get_called_class(), 'Maximum', 'Maximum value allowed', Type::STRING),
             // float or integer
-            new Q\ModelConnector\Param(get_called_class(), 'Minimum', 'Meximum value allowed', Type::STRING),
-            new Q\ModelConnector\Param(get_called_class(), 'Step', 'If value must be aligned on a step, the step amount',
+            new Q\ModelConnector\Param(get_called_class(), 'Minimum', 'Maximum value allowed', Type::STRING),
+            new Q\ModelConnector\Param(get_called_class(), 'Step', 'If a value must be aligned on a step, the step amount',
                 Type::STRING),
             new Q\ModelConnector\Param(get_called_class(), 'LabelForLess',
-                'If value is too small, override the default error message', Type::STRING),
+                'If the value is too small, override the default error message', Type::STRING),
             new Q\ModelConnector\Param(get_called_class(), 'LabelForGreater',
-                'If value is too big, override the default error message', Type::STRING),
+                'If the value is too big, override the default error message', Type::STRING),
             new Q\ModelConnector\Param(get_called_class(), 'LabelForNotStepAligned',
-                'If value is not step aligned, override the default error message', Type::STRING)
+                'If the value is not step aligned, override the default error message', Type::STRING)
         ));
     }
 }

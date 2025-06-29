@@ -1,4 +1,7 @@
 <?php
+
+use QCubed\Exception\Caller;
+use QCubed\Exception\InvalidCast;
 use QCubed\Project\Control\FormBase;
 use QCubed\Project\Control\Table;
 use QCubed\Query\QQ;
@@ -9,14 +12,18 @@ class ExampleForm extends FormBase
 {
 
     /** @var Table */
-    protected $tblProjects;
+    protected Table $tblProjects;
 
-    protected function formCreate()
+    /**
+     * @throws InvalidCast
+     * @throws Caller
+     */
+    protected function formCreate(): void
     {
         // Define the DataGrid
         $this->tblProjects = new Table($this);
 
-        // This css class is used to style alternate rows and the header, all in css
+        // This CSS class is used to style alternate rows and the header, all in CSS
         $this->tblProjects->CssClass = 'simple_table';
 
         // Define Columns
@@ -43,16 +50,16 @@ class ExampleForm extends FormBase
     }
 
     /**
-     * Bind the Projects table to the html table.
+     * Bind the Projects table to the HTML table.
      *
-     * @throws \QCubed\Exception\Caller
+     * @throws Caller
      */
-    protected function tblProjects_Bind()
+    protected function tblProjects_Bind(): void
     {
         // Expand the PersonAsTeamMember node as an array so that it will be included in each item sent to the columns.
         $clauses = QQ::expandAsArray(QQN::project()->PersonAsTeamMember);
 
-        // We load the data source, and set it to the datagrid's DataSource parameter
+        // We load the data source and set it to the datagrid's DataSource parameter
         $this->tblProjects->DataSource = Project::loadAll($clauses);
     }
 
@@ -62,7 +69,7 @@ class ExampleForm extends FormBase
      * @param array $a
      * @return string
      */
-    public static function renderTeamMemberArray($a)
+    public static function renderTeamMemberArray(?array $a): string
     {
         if ($a) {
             return implode(', ',
@@ -80,7 +87,7 @@ class ExampleForm extends FormBase
      * @param $item
      * @return string
      */
-    public function dtgPerson_BalanceRender($item)
+    public function dtgPerson_BalanceRender($item): string
     {
         $val = $item->Budget - $item->Spent;
         if ($val < 0) {
@@ -91,13 +98,12 @@ class ExampleForm extends FormBase
     }
 
     /**
-     * Style the number in the column. All number columns will use the amount class. If the number is negative, make
-     * the cell red.
+     * Calculates and applies style attributes related to the balance of a person's budget and expenses.
      *
-     * @param $item
-     * @return mixed
+     * @param object $item An object representing a person with `Budget` and `Spent` properties.
+     * @return array An associative array containing the CSS class and optional style attributes based on the balance.
      */
-    public function dtgPerson_BalanceAttributes($item)
+    public function dtgPerson_BalanceAttributes(object $item): array
     {
         $ret['class'] = 'amount';
         $val = $item->Budget - $item->Spent;

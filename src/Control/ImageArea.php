@@ -9,6 +9,8 @@
 
 namespace QCubed\Control;
 
+use Exception;
+use QCubed\Project\Control\ControlBase;
 use QCubed\Exception\Caller;
 use QCubed\Exception\InvalidCast;
 use QCubed\Type;
@@ -16,7 +18,7 @@ use QCubed\Type;
 /**
  * Class ImageArea
  *
- * An AREA tag that is to be used specfically as a child control of an Image control. Creates an image map for
+ * An AREA tag that is to be used specifically as a child control of an Image control. Creates an image map for
  * the parent image to detect specific areas of an image. You can attach actions and events to this control like any
  * other QCubed Control.
  *
@@ -24,38 +26,37 @@ use QCubed\Type;
  * @property int[] $Coordinates is the url of the image to be used
  * @package QCubed\Control
  */
-class ImageArea extends \QCubed\Project\Control\ControlBase
+class ImageArea extends ControlBase
 {
     const SHAPE_RECT = "rect";
     const SHAPE_CIRCLE = "circle";
     const SHAPE_POLY = "poly";
 
     /** @var  string */
-    protected $strShape;
+    protected string $strShape;
     /** @var  int[] */
-    protected $coordinates;
+    protected array $coordinates;
 
-    protected function getControlHtml()
+    protected function getControlHtml(): string
     {
         $this->blnUseWrapper = false;   // make sure we do not use a wrapper to draw!
         if (!$this->strShape) {
-            throw new \Exception("Shape is required for ImageArea controls.");
+            throw new Exception("Shape is required for ImageArea controls.");
         }
         if (!$this->coordinates) {
-            throw new \Exception("Coordinates are required for ImageArea controls.");
+            throw new Exception("Coordinates are required for ImageArea controls.");
         }
 
         $attributes = ["shape" => $this->strShape, "coords" => implode(",", $this->coordinates)];
-        $strToReturn = $this->renderTag('area', $attributes, null, null, true);
-        return $strToReturn;
+        return $this->renderTag('area', $attributes, null, null, true);
     }
 
-    public function validate()
+    public function validate(): bool
     {
         return true;
     }
 
-    public function parsePostData()
+    public function parsePostData(): void
     {
     }
 
@@ -64,7 +65,7 @@ class ImageArea extends \QCubed\Project\Control\ControlBase
      * @return mixed|null
      * @throws Caller
      */
-    public function __get($strName)
+    public function __get(string $strName): mixed
     {
         switch ($strName) {
             // APPEARANCE
@@ -84,13 +85,13 @@ class ImageArea extends \QCubed\Project\Control\ControlBase
     }
 
     /**
-     * @param $strName
-     * @param $mixValue
-     * @throws Caller
-     * @throws InvalidCast
+     * @param string $strName
+     * @param mixed $mixValue
      * @return void
+     *@throws InvalidCast
+     * @throws Caller
      */
-    public function __set($strName, $mixValue)
+    public function __set(string $strName, mixed $mixValue): void
     {
         switch ($strName) {
             // APPEARANCE

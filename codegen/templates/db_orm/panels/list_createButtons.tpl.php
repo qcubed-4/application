@@ -1,15 +1,26 @@
-	/**
-	 *
-	 **/
-	protected function createButtonPanel() {
-		$this->pnlButtons = new \QCubed\Control\Panel ($this);
-		$this->pnlButtons->AutoRenderChildren = true;
+    /**
+    * Create a panel containing button controls.
+    *
+    * @return void
+    * @throws Caller
+    */
+    protected function createButtonPanel(): void
+    {
+        $this->pnlButtons = new Panel ($this);
+        $this->pnlButtons->AutoRenderChildren = true;
 
-		$this->btnNew = new <?= \QCubed\Project\Codegen\CodegenBase::$DefaultButtonClass ?> ($this->pnlButtons);
-		$this->btnNew->Text = t('New');
-		$this->btnNew->addAction(new Q\Event\Click(), new Q\Action\AjaxControl ($this, 'btnNew_Click'));
-	}
+        $this->btnNew = new Button($this->pnlButtons);
+        $this->btnNew->Text = t('New');
+        $this->btnNew->addAction(new Click(), new AjaxControl ($this, 'btnNew_Click'));
+    }
 
-	protected function btnNew_Click() {
-		$this->editItem();
-	}
+    /**
+    * Handles the click event of the "New" button and initiates the editing process for a new item.
+    *
+    * @return void
+    * @throws Throwable
+    */
+    protected function btnNew_Click(): void
+    {
+        $this->editItem();
+    }

@@ -9,7 +9,6 @@
 
 namespace QCubed\Action;
 
-use QCubed\Exception\Caller;
 use QCubed\Control\ControlBase;
 use QCubed\Project\Control\TextBox as QTextBox;
 
@@ -24,20 +23,16 @@ use QCubed\Project\Control\TextBox as QTextBox;
 class SelectControl extends ActionBase
 {
     /** @var null|string Control ID of the QTextBox which is to be selected */
-    protected $strControlId = null;
+    protected ?string $strControlId = null;
 
     /**
      * Constructor
      *
      * @param QTextBox $objControl
      *
-     * @throws Caller
      */
-    public function __construct($objControl)
+    public function __construct(QTextBox $objControl)
     {
-        if (!($objControl instanceof QTextBox)) {
-            throw new Caller('First parameter of constructor is expecting an object of type TextBox');
-        }
 
         $this->strControlId = $objControl->ControlId;
     }
@@ -49,7 +44,7 @@ class SelectControl extends ActionBase
      *
      * @return string JavaScript to be executed on the client side
      */
-    public function renderScript(ControlBase $objControl)
+    public function renderScript(ControlBase $objControl): string
     {
         return sprintf("qc.getW('%s').select();", $this->strControlId);
     }

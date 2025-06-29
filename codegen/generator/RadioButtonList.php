@@ -18,11 +18,10 @@ use QCubed\Codegen\SqlTable;
  * Class RadioButtonList
  *
  * @package QCubed\Codegen\Generator
- * @was QRadioButtonListBase_CodeGenerator
  */
 class RadioButtonList extends ListControl
 {
-    public function __construct($strControlClassName = 'QCubed\\Control\\RadioButtonList')
+    public function __construct(string $strControlClassName = 'QCubed\\Control\\RadioButtonList')
     {
         parent::__construct($strControlClassName);
     }
@@ -36,11 +35,12 @@ class RadioButtonList extends ListControl
      * @return string
      */
     public function connectorCreateOptions(
-        DatabaseCodeGen $objCodeGen,
-        SqlTable $objTable,
-        $objColumn,
-        $strControlVarName
-    ) {
+        DatabaseCodeGen  $objCodeGen,
+        SqlTable         $objTable,
+        ?ColumnInterface $objColumn,
+        string $strControlVarName
+    ): string
+    {
         $strRet = parent::connectorCreateOptions($objCodeGen, $objTable, $objColumn, $strControlVarName);
 
         if ($objColumn instanceof ManyToManyReference) {

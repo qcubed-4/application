@@ -8,9 +8,9 @@ require_once('SampleControl.php');
 
 class ExampleForm extends FormBase
 {
-    protected $ctlCustom;
+    protected SampleControl $ctlCustom;
 
-    protected function formCreate()
+    protected function formCreate(): void
     {
         // Get the Custom Control
         $this->ctlCustom = new SampleControl($this);

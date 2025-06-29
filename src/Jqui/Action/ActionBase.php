@@ -10,6 +10,7 @@
 namespace QCubed\Jqui\Action;
 
 use QCubed\Control\ControlBase;
+use QCubed\Exception\Caller;
 use QCubed\Type;
 
 /**
@@ -18,21 +19,22 @@ use QCubed\Type;
  * Base class for all jQuery-based effects.
  *
  * @package QCubed\Jqui\Action
- * @was QJQAction
  */
 abstract class ActionBase extends \QCubed\Action\ActionBase
 {
-    /** @var null|string  */
-    protected $strControlId = null;
-    /** @var string|null  */
-    protected $strMethod = null;
+    /** @var string|null */
+    protected ?string $strControlId = '';
+    /** @var string|null */
+    protected ?string $strMethod = '';
 
     /**
-     * ActionBase constructor.
-     * @param ControlBase $objControl
-     * @param $strMethod
+     * Constructor for initializing the object with control and method.
+     *
+     * @param ControlBase $objControl The control base instance.
+     * @param string $strMethod The method name to be associated with the object.
+     * @throws Caller
      */
-    protected function __construct(ControlBase $objControl, $strMethod)
+    protected function __construct(ControlBase $objControl, string $strMethod)
     {
         $this->strControlId = $objControl->ControlId;
         $this->strMethod = Type::cast($strMethod, Type::STRING);
@@ -41,8 +43,9 @@ abstract class ActionBase extends \QCubed\Action\ActionBase
 
     /**
      * @param ControlBase $objControl
+     * @throws Caller
      */
-    private function setJavaScripts(ControlBase $objControl)
+    private function setJavaScripts(ControlBase $objControl): void
     {
         $objControl->addJavascriptFile(QCUBED_JQUI_JS);
     }

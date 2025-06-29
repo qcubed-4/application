@@ -8,15 +8,15 @@
  *
  * NOTE: Cryptography uses only symmetric algorithms
  *
- * AES 256-bit is strong enough for most usecases and is recommended by US Government for secret documents.
+ * AES 256-bit is strong enough for most use cases and is recommended by the US government for classified documents.
  *
  * CBC or Cipher Block Chaining is considered considerably safer than ECB (Electronic CodeBook) methods.
  * For more background: https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation
  */
-define('QCUBED_CRYPTOGRAPHY_DEFAULT_CIPHER', 'AES-256-CBC');
+const QCUBED_CRYPTOGRAPHY_DEFAULT_CIPHER = 'AES-256-CBC';
 
 /**
  * Default KEY (used as a password) for AES-256-CBC
  */
-define('QCUBED_CRYPTOGRAPHY_DEFAULT_KEY', 'qc0Do!d3F@lT.k3Y');
+const QCUBED_CRYPTOGRAPHY_DEFAULT_KEY = 'qc0Do!d3F@lT.k3Y';
 

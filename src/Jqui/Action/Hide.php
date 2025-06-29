@@ -10,14 +10,14 @@
 namespace QCubed\Jqui\Action;
 
 use QCubed\Control\ControlBase;
+use QCubed\Exception\Caller;
 
 /**
  * Class Hide
  *
- * Hide a control (if it's showing)
+ * Hide control (if it's showing)
  *
  * @package QCubed\Jqui\Action
- * @was QJQHideAction
  */
 class Hide extends ActionBase
 {
@@ -25,8 +25,9 @@ class Hide extends ActionBase
      * Hide constructor.
      * @param ControlBase $objControl
      * @param string $strMethod
+     * @throws Caller
      */
-    public function __construct(ControlBase $objControl, $strMethod = "slow")
+    public function __construct(ControlBase $objControl, string $strMethod = "slow")
     {
         parent::__construct($objControl, $strMethod);
     }
@@ -35,7 +36,7 @@ class Hide extends ActionBase
      * @param ControlBase $objControl
      * @return string
      */
-    public function renderScript(ControlBase $objControl)
+    public function renderScript(ControlBase $objControl): string
     {
         return sprintf('$j("#%s").hide("%s");', $this->strControlId, $this->strMethod);
     }
