@@ -9,11 +9,11 @@ require_once('../qcubed.inc.php');
  */
 
 if (!defined('QCUBED_URL_PREFIX')) {
-    echo "<span class='error' style='color: darkred; font-weight: 500;'>Cannot find the configuration file. Make sure your qcubed.inc.php file is installed correctly.</span>";
+    echo "<p><span class='error' style='color: darkred; font-weight: 500;'>Cannot find the configuration file. Make sure your qcubed.inc.php file is installed correctly.</span></p>";
     exit;
 }
 
-$composerFile = dirname(__DIR__) . '/composer.json';
+$composerFile = __DIR__ . '/composer.json';
 $composer = is_file($composerFile) ? json_decode(file_get_contents($composerFile), true) : [];
 $vendorDir = sprintf('/%s/', $composer['config']['vendor-dir'] ?? 'vendor');
 $prefixPos = strpos($_SERVER['PHP_SELF'], $vendorDir);
