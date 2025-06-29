@@ -47,11 +47,19 @@ switch (SERVER_INSTANCE) {
 
         /** The following are paths relative to DOC ROOT that are inserted in front of file names so the browser can get to them. **/
 
-        // Before QCubed can function, it needs to know the development base URL to use.
+        // Before QCubed-4 can function, it needs to know the development base URL to use.
         // This URL typically points to the root of the project during local development.
-        // Define the segment after "http://", up to but excluding "/vendor" or "/project",
+        // Define the segment after "http://" and up to—but not including—"/vendor" or "/project",
         // as this helps in resolving dynamic assets and endpoints during execution.
-        define ('QCUBED_URL_PREFIX', '{ url_prefix }');
+
+        // NOTE: If the following code block is not suitable for any reason—technical or otherwise—
+        // you may delete or hide it. In that case, open the line above and manually define the appropriate base URL:
+        // define('QCUBED_URL_PREFIX', '{ url_prefix }');
+
+        $composerFile = QCUBED_PROJECT_DIR . '/../composer.json';
+        $composer   = is_file($composerFile) ? json_decode(file_get_contents($composerFile), true) : [];
+        $vendorDir = sprintf('/%s/', $composer['config']['vendor-dir'] ?? 'vendor');
+        define('QCUBED_URL_PREFIX', substr($_SERVER['PHP_SELF'], 0, strpos($_SERVER['PHP_SELF'], $vendorDir)));
 
         // The files need to be in DOC_ROOT, or somehow (perhaps a rewrite rule), be browser-accessible.
         // Default values point inside of the project and QCubed base directories. A production environment should

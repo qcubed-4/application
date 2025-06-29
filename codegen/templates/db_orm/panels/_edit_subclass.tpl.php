@@ -29,14 +29,14 @@ require(QCUBED_PROJECT_PANEL_GEN_DIR . '/<?= $strPropertyName ?>EditPanelGen.php
  */
 class <?= $strPropertyName ?>EditPanel extends <?= $strPropertyName ?>EditPanelGen
 {
-	public function __construct($objParent, $strControlId = null) {
-		parent::__construct($objParent, $strControlId);
+    public function __construct($objParent, $strControlId = null) {
+        parent::__construct($objParent, $strControlId);
 
-		// Set AutoRenderChildren in order to use the PreferredRenderMethod attribute in each control
-		// to render the controls. If you want more control, you can use the generated template
-		// instead in your superclass and modify the template.
-		$this->AutoRenderChildren = true;
+        // Set AutoRenderChildren in order to use the PreferredRenderMethod attribute in each control
+        // to render the controls. If you want more control, you can use the generated template
+        // instead in your superclass and modify the template.
+        $this->AutoRenderChildren = true;
 
-		//$this->Template = QCUBED_PROJECT_PANEL_GEN_DIR . '/<?php echo $strPropertyName  ?>EditPanel.tpl.php';
-	}
+        //$this->Template = QCUBED_PROJECT_PANEL_GEN_DIR . '/<?php echo $strPropertyName  ?>EditPanel.tpl.php';
+    }
 }

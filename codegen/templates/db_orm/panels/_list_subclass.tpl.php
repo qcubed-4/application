@@ -30,16 +30,17 @@ require(QCUBED_PROJECT_MODELCONNECTOR_DIR . '/<?= $strPropertyName ?>List.php');
  */
 class <?= $strPropertyName ?>ListPanel extends <?= $strPropertyName ?>ListPanelGen
 {
-	public function __construct($objParent, $strControlId = null) {
-		parent::__construct($objParent, $strControlId);
+    public function __construct($objParent, $strControlId = null)
+    {
+        parent::__construct($objParent, $strControlId);
 
-		/**
-		 * Default is just to render everything generic. Comment out the AutoRenderChildren line, and uncomment the
-		 * template line to use a template for greater customization of how the panel draws its contents.
-		 **/
-		$this->AutoRenderChildren = true;
-		//$this->Template =  QCUBED_PROJECT_PANEL_GEN_DIR . '/<?= $strPropertyName ?>ListPanel.tpl.php';
-	}
+        /**
+        * The default is just to render everything generic. Comment out the AutoRenderChildren line and uncomment the
+        * template line to use a template for greater customization of how the panel draws its contents.
+        */
+        $this->AutoRenderChildren = true;
+        //$this->Template = QCUBED_PROJECT_PANEL_GEN_DIR. '/PersonListPanel.tpl.php';
+    }
 
 <?= $listCodegenerator->dataListSubclassOverrides($objCodeGen, $objTable); ?>
 
