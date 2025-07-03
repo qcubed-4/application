@@ -289,7 +289,7 @@ class ExampleForm extends FormBase
     // contents of the Firstname and LastName textboxes.
     protected function btnNew_Click(string $strFormId, string $strControlId, string $strParameter): void
     {
-        //Application::displayAlert("In the real application, the person's data can be updated or a new person can be added");
+        Application::displayAlert("In the real application, the person's data can be updated or a new person can be added");
 
         $this->intEditPersonId = -1;
         $this->txtFirstName->Text = '';
