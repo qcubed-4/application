@@ -86,7 +86,7 @@ class DialogBase extends DialogGen implements Q\Control\DialogInterface
     protected ?string $strClickedButtonId = null;
     /** @var bool Should we draw a close button on the top? */
     protected bool $blnHasCloseButton = true;
-    /** @var bool records whether the dialog is open */
+    /** @var bool|null records whether the dialog is open */
     protected ?bool $blnIsOpen = false;
     /** @var array whether a button causes validation */
     protected array $blnValidationArray = array();
@@ -96,8 +96,8 @@ class DialogBase extends DialogGen implements Q\Control\DialogInterface
     protected ?string $strDialogState = null;
     /** @var bool */
     protected bool $blnAutoRender = true;
-    /** @var bool Whether to show the dialog as a modal dialog. Most dialogs are modal, so this defaults to true. */
-    protected bool $blnModal = false;
+    /** @var bool|null Whether to show the dialog as a modal dialog. Most dialogs are modal, so this defaults to true. */
+    protected ?bool $blnModal = false;
 
     /**
      * Constructor for the dialog object.
@@ -448,7 +448,6 @@ class DialogBase extends DialogGen implements Q\Control\DialogInterface
 
     /**
      * Show the dialog.
-     * @deprecated
      */
     public function showDialogBox(): void
     {
