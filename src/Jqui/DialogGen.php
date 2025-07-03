@@ -208,7 +208,7 @@ class DialogGen extends Panel
     /** @var integer|null */
     protected ?int $intMinWidth = null;
     /** @var boolean */
-    protected bool $blnModal = true;
+    protected ?bool $blnModal = null;
     /** @var mixed */
     protected mixed $mixPosition = null;
     /** @var boolean */
@@ -227,7 +227,7 @@ class DialogGen extends Panel
      */
     protected function makeJqOptions(): array
     {
-        $jqOptions = parent::MakeJqOptions();
+        $jqOptions = parent::makeJqOptions();
         if (!is_null($val = $this->AppendTo)) {$jqOptions['appendTo'] = $val;}
         if (!is_null($val = $this->AutoOpen)) {$jqOptions['autoOpen'] = $val;}
         if (!is_null($val = $this->Buttons)) {$jqOptions['buttons'] = $val;}
