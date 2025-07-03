@@ -262,7 +262,7 @@ abstract class TextBoxBase extends Q\Project\Control\ControlBase
      *
      * @return string
      */
-    public function renderHtmlAttributes($attributeOverrides = null, $styleOverrides = null): string
+    public function renderHtmlAttributes(?array $attributeOverrides = null, ?array $styleOverrides = null): string
     {
         if ($this->intMaxLength) {
             $attributeOverrides['maxlength'] = $this->intMaxLength;

@@ -263,7 +263,7 @@ abstract class ControlBase extends Q\Project\HtmlAttributeManager
      * True to wrap the checkbox with the label (the Bootstrap way). False to put the label next to the
      * checkbox (the jQueryUI way).
      */
-    protected ?bool $blnWrapLabel = false;
+    protected bool $blnWrapLabel = false;
 
     /** @var bool true to remember the state of this control to restore if the user comes back to it. */
     protected ?bool $blnSaveState = false;

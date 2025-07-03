@@ -273,7 +273,6 @@ abstract class Html {
         }
     }
 
-
     /**
      * Adds new CSS class names to an existing class list, ensuring no duplicates.
      *
@@ -285,7 +284,7 @@ abstract class Html {
      * @param string $strNewClasses A space-separated string of new class names to be added.
      * @return bool Returns true if at least one new class was added, otherwise false.
      */
-    public static function addClass(string &$strClassList, string $strNewClasses): bool
+    public static function addClass(?string &$strClassList, string $strNewClasses): bool
     {
         $strNewClasses = trim($strNewClasses);
         if (empty($strNewClasses)) return false;

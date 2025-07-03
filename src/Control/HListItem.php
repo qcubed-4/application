@@ -73,7 +73,11 @@ class HListItem extends ListItemBase
      */
     public function addItem(string|HListItem $mixListItemOrName, ?string $strValue = null, ?string $strAnchor = null): void
     {
-        $objListItem = gettype($mixListItemOrName) == "NULL" ? Type::cast($mixListItemOrName, "\QCubed\Control\HListItem") : new HListItem($mixListItemOrName, $strValue, $strAnchor);
+        if (gettype($mixListItemOrName) == Type::OBJECT) {
+            $objListItem = Type::cast($mixListItemOrName, "\QCubed\Control\HListItem");
+        } else {
+            $objListItem = new HListItem($mixListItemOrName, $strValue, $strAnchor);
+        }
 
         $this->addListItem($objListItem);
     }
