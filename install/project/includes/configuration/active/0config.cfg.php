@@ -111,3 +111,4 @@ if ((function_exists('date_default_timezone_set')) && (!ini_get('date.timezone')
 const QCUBED_PROJECT_GEN_DIR = QCUBED_PROJECT_DIR . '/generated';
 // Directory where editable generated files go
 const QCUBED_PROJECT_INCLUDES_DIR = QCUBED_PROJECT_DIR . '/includes';
+
