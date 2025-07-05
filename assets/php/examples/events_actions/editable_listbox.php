@@ -74,7 +74,7 @@ class ExampleForm extends FormBase
     protected function addListItem(): void
     {
         // First off, let's make sure that data was typed in
-        if (!strlen(trim($this->txtItem->Text))) {
+        if (!$this->txtItem->Text) {
             $this->txtItem->Warning = 'Nothing was entered';
         } else {
             // Add the new item

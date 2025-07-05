@@ -86,7 +86,7 @@ class ExampleForm extends FormBase
         // First off, let's make sure that data was typed in
         // Note that even though we are doing javascript-based validation, we still want to do it on
         // the server as well, just in case
-        if (!strlen(trim($this->txtItem->Text))) {
+        if (!$this->txtItem->Text) {
             $this->txtItem->Warning = 'Nothing was entered';
         } else {
             // Add the new item
