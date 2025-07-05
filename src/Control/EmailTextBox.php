@@ -11,8 +11,6 @@ namespace QCubed\Control;
 
 require_once(dirname(__DIR__, 2) . '/i18n/i18n-lib.inc.php');
 
-//use QCubed\Application\t;
-
 use QCubed\Exception\Caller;
 use QCubed\Exception\InvalidCast;
 use QCubed\Project\Control\TextBox;
@@ -20,8 +18,6 @@ use QCubed\Type;
 
 /**
  * A subclass of TextBox that validates and sanitizes emails.
- *
- * @property boolean $AllowMultipleEmails Default is false. If true, then the text will be split by a comma, semicolon, and newline.
  *
  * @package QCubed\Control
  */
@@ -31,9 +27,6 @@ class EmailTextBox extends TextBox
     protected ?int $intSanitizeFilter = FILTER_SANITIZE_EMAIL;
     /** @var int|null */
     protected ?int $intValidateFilter = FILTER_VALIDATE_EMAIL;
-    /** @var bool */
-    protected ?bool $blnAllowMultipleEmails = false;
-
 
     /**
      * Constructor for initializing the object with a parent control or form and an optional control ID.
@@ -63,91 +56,14 @@ class EmailTextBox extends TextBox
     {
         $blnValid = parent::validate();
 
-        if (!$this->blnAllowMultipleEmails) {
-            if ($blnValid && $this->intValidateFilter && $this->strText !== '') {
-                $validateOptions = $this->mixValidateFilterOptions ?? 0;
-                if (!filter_var($this->strText, $this->intValidateFilter, $validateOptions)) {
-                    $this->ValidationError = $this->strLabelForInvalid ?? t('Invalid Email Address');
-                    $blnValid = false;
-                }
+        if ($blnValid && $this->intValidateFilter && $this->strText !== '') {
+            $validateOptions = $this->mixValidateFilterOptions ?? 0;
+            if (!filter_var($this->strText, $this->intValidateFilter, $validateOptions)) {
+                $this->ValidationError = $this->strLabelForInvalid ?? t('Invalid Email Address');
+                $blnValid = false;
             }
         }
+
         return $blnValid;
-    }
-    
-    /**
-     * Parses and groups email addresses based on their validity.
-     *
-     * This method processes a string input to extract email addresses and
-     * validates each one. Valid email addresses are categorized as 'valid',
-     * while invalid ones are categorized as 'invalid'.
-     *
-     * If multiple email addresses are allowed, the input string is split into
-     * individual email addresses using a delimiter pattern that includes commas,
-     * semicolons, spaces, line breaks, or combinations thereof.
-     *
-     * @return array An associative array with two keys:
-     *               - 'valid': An array of validated email addresses.
-     *               - 'invalid': An array of invalid email addresses.
-     */
-    public function getGroupedEmails(): array
-    {
-        $result = ['valid' => [], 'invalid' => []];
-
-        $input = trim($this->strText ?? '');
-        if ($input === '') {
-            return $result;
-        }
-
-        $emails = [$input];
-        if ($this->blnAllowMultipleEmails) {
-            // Accepts commas, semicolons, spaces, line breaks (with or without extra spaces)
-            $emails = preg_split('/[\s,;\r\n]+/', $input, -1, PREG_SPLIT_NO_EMPTY);
-        }
-
-        foreach ($emails as $email) {
-            $email = trim($email);
-            if ($email === '') {
-                continue;
-            }
-            if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                $result['valid'][] = $email;
-            } else {
-                $result['invalid'][] = $email;
-            }
-        }
-
-        return $result;
-    }
-
-    public function __get(string $strName): mixed
-    {
-        return match ($strName) {
-            "AllowMultipleEmails" => $this->blnAllowMultipleEmails,
-            default => parent::__get($strName),
-        };
-    }
-
-    public function __set(string $strName, mixed $mixValue): void
-    {
-        switch ($strName) {
-            case "AllowMultipleEmails":
-                try {
-                    $this->blnAllowMultipleEmails = Type::cast($mixValue, Type::BOOLEAN);
-                    break;
-                } catch (InvalidCast $objExc) {
-                    $objExc->incrementOffset();
-                    throw $objExc;
-                }
-
-            default:
-                try {
-                    parent::__set($strName, $mixValue);
-                } catch (Caller $objExc) {
-                    $objExc->incrementOffset();
-                    throw $objExc;
-                }
-                break;
-        }
     }
 }

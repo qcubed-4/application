@@ -120,8 +120,6 @@ abstract class TextBoxBase extends Q\Project\Control\ControlBase
     protected ?bool $blnAutoTrim = false;
     /** @var int|null */
     protected ?int $intSanitizeFilter = null;
-    /** @var bool */
-    protected ?bool $blnAllowMultipleEmails = false;
 
     /** @var mixed */
     protected mixed $mixSanitizeFilterOptions = null;
@@ -217,7 +215,7 @@ abstract class TextBoxBase extends Q\Project\Control\ControlBase
             $this->strText = trim($this->strText);
         }
 
-        if ($this->intSanitizeFilter && !$this->blnAllowMultipleEmails) {
+        if ($this->intSanitizeFilter) {
             $sanitizeOptions = $this->mixSanitizeFilterOptions ?? 0;
             $this->strText = filter_var($this->strText, $this->intSanitizeFilter, $sanitizeOptions);
         }
