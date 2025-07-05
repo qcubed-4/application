@@ -5,6 +5,7 @@ use QCubed\Action\Ajax;
 use QCubed\Action\Server;
 use QCubed\Control\CsvTextBox;
 use QCubed\Control\EmailTextBox;
+use QCubed\Control\MultipleEmailTextBox;
 use QCubed\Control\FloatTextBox;
 use QCubed\Control\IntegerTextBox;
 use QCubed\Control\UrlTextBox;
@@ -29,10 +30,11 @@ class ExamplesForm extends FormBase
     protected UrlTextBox $txtUrl;
     protected TextBox $txtCustom;
     protected Button $btnValidate;
-    protected EmailTextBox $txtMultipleEmails;
+    protected MultipleEmailTextBox $txtMultipleEmails;
     protected Button $btnEmailValidate;
 
     // Initialize our Controls during the Form Creation process
+
     protected function formCreate(): void
     {
         // Define our Label
@@ -66,8 +68,8 @@ class ExamplesForm extends FormBase
         $this->btnValidate->addAction(new Click(), new Server()); // just validates
         $this->btnValidate->CausesValidation = true;
 
-        $this->txtMultipleEmails = new EmailTextBox($this);
-        $this->txtMultipleEmails->AllowMultipleEmails = true;
+        $this->txtMultipleEmails = new MultipleEmailTextBox($this);
+        //$this->txtMultipleEmails->AllowedTlds = ['com', 'ee', 'org'];
 
         $this->btnEmailValidate = new Button ($this);
         $this->btnEmailValidate->Text = "Validate multiple emails";
@@ -76,7 +78,16 @@ class ExamplesForm extends FormBase
 
     protected function btnClick_Validate(ActionParams $params): void
     {
-        Application::displayAlert(print_r($this->txtMultipleEmails->getGroupedEmails(), true));
+        If ($this->txtMultipleEmails->Text) {
+            $emails = $this->txtMultipleEmails->getGroupedEmails();
+            if (!empty($emails['invalid'])) {
+                Application::displayAlert('Invalid or unsupported email address(es): ' . implode(', ', $emails['invalid']));
+            } else {
+                Application::displayAlert('Everything is fine!');
+            }
+        } else {
+            Application::displayAlert('Enter email address(es)');
+        }
     }
 }
 
