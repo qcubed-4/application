@@ -1123,7 +1123,7 @@ abstract class FormBase extends ObjectBase
             }
 
             // Evaluate the new template
-            ob_start('\\QCubed\\Control\\FormBase::EvaluateTemplate_ObHandler');
+            ob_start('\\QCubed\\Control\\FormBase');
             require($strTemplate);
             $strTemplateEvaluated = ob_get_contents();
             ob_end_clean();
@@ -1906,7 +1906,8 @@ abstract class FormBase extends ObjectBase
         $strEndScript .= /*';' .*/ Application::renderJavascript(false);
 
         // Create Final EndScript Script
-        $strEndScript = sprintf('<script type="text/javascript">jQuery(document).ready(function($j) { %s; });</script>', $strEndScript);
+        $strEndScript = sprintf('<script type="text/javascript">jQuery(document).ready(function($j) { %s; });
+</script>', $strEndScript);
 
         /**** Render the HTML itself, appending the JavaScript we generated above ****/
 

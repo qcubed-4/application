@@ -11,9 +11,10 @@ namespace QCubed\Control;
 
 require_once(dirname(__DIR__, 2) . '/i18n/i18n-lib.inc.php');
 
-use QCubed\Exception\Caller;
-use QCubed\Type;
 use QCubed as Q;
+use QCubed\Exception\Caller;
+use QCubed\Exception\InvalidCast;
+
 
 /**
  * Class FileControl
@@ -26,7 +27,6 @@ use QCubed as Q;
  * @property-read string $Type is the MIME type of the file?
  * @property-read integer $Size is the size in bytes of the file?
  * @property-read string $File is the temporary full file path on the server where the file physically resides
- * @was QFileControl
  * @package QCubed\Control
  */
 class FileControl extends Q\Project\Control\ControlBase
@@ -47,6 +47,13 @@ class FileControl extends Q\Project\Control\ControlBase
     //////////
     // Methods
     //////////
+    /**
+     * Parses data sent via a POST request and updates control properties with the uploaded file details.
+     *
+     * @return void
+     * @throws Caller
+     * @throws InvalidCast
+     */
     public function parsePostData(): void
     {
         // Check to see if this Control's Value was passed in via the POST data
@@ -67,10 +74,10 @@ class FileControl extends Q\Project\Control\ControlBase
     protected function getControlHtml(): string
     {
         // Reset Internal Values
-        $this->strFileName = null;
-        $this->strType = null;
-        $this->intSize = null;
-        $this->strFile = null;
+        //$this->strFileName = null;
+        //$this->strType = null;
+        //$this->intSize = null;
+        //$this->strFile = null;
 
         $strStyle = $this->getStyleAttributes();
         if ($strStyle) {
@@ -107,11 +114,12 @@ class FileControl extends Q\Project\Control\ControlBase
     // Public Properties: GET
     /////////////////////////
     /**
-     * PHP magic method
-     * @param string $strName
+     * Magic method to retrieve the value of a property dynamically.
      *
-     * @return mixed
-     * @throws Caller
+     * @param string $strName The name of the property to retrieve.
+     *
+     * @return mixed Returns the value of the requested property if it exists.
+     * @throws Caller Throws an exception if the property is not defined or inaccessible.
      */
     public function __get(string $strName): mixed
     {

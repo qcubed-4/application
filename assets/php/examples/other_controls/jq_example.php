@@ -244,14 +244,14 @@ class ExampleForm extends FormBase
         foreach (self::$LANGUAGES as $strLang) {
             $this->RadioList1->addItem($strLang);
         }
-        $this->RadioList1->ButtonMode = CheckboxList::BUTTON_MODE_SET;
+        $this->RadioList1->ButtonMode = RadioButtonList::BUTTON_MODE_SET;
 
         $this->RadioList2 = new RadioButtonList($this);
         $this->RadioList2->Name = "RadioButtonList with button style";
         foreach (self::$LANGUAGES as $strLang) {
             $this->RadioList2->addItem($strLang);
         }
-        $this->RadioList2->ButtonMode = CheckboxList::BUTTON_MODE_JQ;
+        $this->RadioList2->ButtonMode = RadioButtonList::BUTTON_MODE_JQ;
         $this->RadioList2->RepeatColumns = 4;
 
         $this->SelectMenu = new SelectMenu($this);
