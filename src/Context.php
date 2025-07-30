@@ -38,10 +38,10 @@ class Context
     /** We don't know this gentleman...err...gentle browser */
     public const int UNSUPPORTED = 0x8000000;
 
-    public const string REQUEST_MODE_QCUBED_SERVER = 'Server'; // calling back in to currently showing page using a standard form post
+    public const string REQUEST_MODE_QCUBED_SERVER = 'Server'; // calling back in to the currently showing page using a standard form post
     public const string REQUEST_MODE_HTTP = 'Http';   // new page request
-    public const string REQUEST_MODE_QCUBED_AJAX = 'Ajax';  // calling back in to use currently showing page using an ajax request
-    public const string REQUEST_MODE_AJAX = 'AjaxNonQ';   // calling an entry point from ajax, but not through qcubed.js. REST API perhaps?
+    public const string REQUEST_MODE_QCUBED_AJAX = 'Ajax';  // calling back in to use the currently showing page using an ajax request
+    public const string REQUEST_MODE_AJAX = 'AjaxNonQ';   // Calling an entry point from ajax, but not through qcubed.js. REST API perhaps?
     public const string REQUEST_MODE_CLI = 'Cli'; // command line call
 
     /** @var  bool Are we running in command line mode? */
