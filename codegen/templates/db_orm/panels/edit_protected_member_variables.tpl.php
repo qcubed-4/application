@@ -55,7 +55,6 @@ use QCubed as Q;
 <?php } ?>
 <?php foreach ($objTable->ReverseReferenceArray as $objReverseReference) { ?>
 <?php
-
 $displayType = $objCodeGen->ModelConnectorControlClass($objReverseReference);
 
 if ($objCodeGen->ModelConnectorControlClass($objReverseReference) === '\QCubed\Project\Control\ListBox') {
@@ -77,6 +76,16 @@ if ($objCodeGen->ModelConnectorControlClass($objReverseReference) === '\QCubed\C
     // Controls to edit many-to-many relationships
 <?php } ?>
 <?php foreach ($objTable->ManyToManyReferenceArray as $objManyToManyReference) { ?>
+<?php
+$displayType = $objCodeGen->ModelConnectorControlClass($objManyToManyReference);
+
+if ($objCodeGen->ModelConnectorControlClass($objManyToManyReference) === '\QCubed\Project\Control\ListBox') {
+    $displayType = 'ListBox';
+}
+if ($objCodeGen->ModelConnectorControlClass($objManyToManyReference) === '\QCubed\Control\CheckboxList') {
+    $displayType = 'CheckboxList';
+}
+?>
 <?php if (isset ($objManyToManyReference->Options['FormGen']) && ($objManyToManyReference->Options['FormGen'] == 'none' || $objManyToManyReference->Options['FormGen'] == 'meta')) continue; ?>
 
     /** @var <?= $displayType ?? $objCodeGen->ModelConnectorControlClass($objManyToManyReference) ?>  */
