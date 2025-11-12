@@ -1,136 +1,136 @@
 <?php
-/**
- *
- * Part of the QCubed PHP framework.
- *
- * @license MIT
- *
- */
+    /**
+     *
+     * Part of the QCubed PHP framework.
+     *
+     * @license MIT
+     *
+     */
 
-namespace QCubed\Control;
-
-/**
- * Interface DialogInterface
- *
- * Defines the publicly consumable api that the QCubed framework uses to interact with a dialog.
- *
- * More and more CSS and JavaScript frameworks are coming out with their own forms of dialog, which are usually a
- * combination of HTML tag(s), CSS and JavaScript widget. QCubed has many ways of potentially interacting with
- * dialogs, but to be able to inject a dialog into the framework, we need a consistent interface for all to use.
- *
- * This particular interface has been implemented in both JQuery UI dialogs and Bootstrap dialogs. As more needs arise,
- * we can modify the interface to accommodate as many frameworks as possible.
- *
- * Dialogs should descend from the Panel control. Dialogs should be able to be a member of a form or control object
- * and appear with an Open call, but they should also be able to be instantiated on the fly. The framework has hooks for
- * both, and if you are creating a dialog implementation, see the current JQuery UI and Bootstrap implementations for more
- * direction.
- *
- * Feel free to implement more than just the function listed. These are the minimal set to allow your dialog to be used
- * by the default QCubed framework.
- *
- * @package QCubed\Control
- */
-interface DialogInterface
-{
+    namespace QCubed\Control;
 
     /**
-     * DialogInterface constructor. Some past dialog implementations have added a callback to this. If you want a callback,
-     * implement that as a separate function call or __set parameter.
+     * Interface DialogInterface
      *
-     * @param FormBase|ControlBase $objParentObject Parent object to which this control belongs.
-     * @param string|null $strControlId Optional control ID. If null, an ID is auto-generated.
+     * Defines the publicly consumable api that the QCubed framework uses to interact with a dialog.
+     *
+     * More and more CSS and JavaScript frameworks are coming out with their own forms of dialog, which are usually a
+     * combination of HTML tag(s), CSS and JavaScript widget. QCubed has many ways of potentially interacting with
+     * dialogs, but to be able to inject a dialog into the framework, we need a consistent interface for all to use.
+     *
+     * This particular interface has been implemented in both JQuery UI dialogs and Bootstrap dialogs. As more needs arise,
+     * we can modify the interface to accommodate as many frameworks as possible.
+     *
+     * Dialogs should descend from the Panel control. Dialogs should be able to be a member of a form or control object
+     * and appear with an Open call, but they should also be able to be instantiated on the fly. The framework has hooks for
+     * both, and if you are creating a dialog implementation, see the current JQuery UI and Bootstrap implementations for more
+     * direction.
+     *
+     * Feel free to implement more than just the function listed. These are the minimal set to allow your dialog to be used
+     * by the default QCubed framework.
+     *
+     * @package QCubed\Control
      */
-    public function __construct(FormBase|ControlBase $objParentObject, ?string $strControlId = null);
+    interface DialogInterface
+    {
 
-    /**
-     * Adds a button to the dialog. Use this to add buttons BEFORE bringing up the dialog. The buttons added here should
-     * generate DialogButton events when they are clicked on.
-     *
-     * @param string $strButtonName Title of button
-     * @param string|null $strButtonId Id associated with the button for detecting clicks. Note that this is not the id on the form.
-     *                                    Different dialogs can have the same button id.
-     *                                    To specify a control id for the button (for styling purposes, for example), set the id in options.
-     * @param bool $blnCausesValidation If the button causes the dialog to be validated before the action is executed
-     * @param bool $blnIsPrimary Whether this button will be automatically clicked if a user presses an enter key.
-     * @param string|null $strConfirmation If set, will confirm with the given string before the click is sent. Useful for
-     *                                  Delete buttons, as in "Are you sure you want to do this?"
-     * @param mixed|null $options Additional attributes to add to the button. This is a place to do things that are specific to
-     *                          your dialog implementation.
-     * @return void
-     */
-    public function addButton(
-        string  $strButtonName,
-        ?string $strButtonId = null,
-        ?bool   $blnCausesValidation = false,
-        ?bool   $blnIsPrimary = false,
-        ?string  $strConfirmation = null,
-        mixed $options = null
-    ): void;
+        /**
+         * DialogInterface constructor. Some past dialog implementations have added a callback to this. If you want a callback,
+         * implement that as a separate function call or __set parameter.
+         *
+         * @param FormBase|ControlBase $objParentObject Parent object to which this control belongs.
+         * @param string|null $strControlId Optional control ID. If null, an ID is auto-generated.
+         */
+        public function __construct(FormBase|ControlBase $objParentObject, ?string $strControlId = null);
 
-    /**
-     * @param string $strButtonId Id of button to remove.
-     * @return void
-     */
-    public function removeButton(string $strButtonId): void;
+        /**
+         * Adds a button to the dialog. Use this to add buttons BEFORE bringing up the dialog. The buttons added here should
+         * generate DialogButton events when they are clicked on.
+         *
+         * @param string $strButtonName Title of button
+         * @param string|null $strButtonId Id associated with the button for detecting clicks. Note that this is not the id on the form.
+         *                                    Different dialogs can have the same button id.
+         *                                    To specify a control id for the button (for styling purposes, for example), set the id in options.
+         * @param bool $blnCausesValidation If the button causes the dialog to be validated before the action is executed
+         * @param bool $blnIsPrimary Whether this button will be automatically clicked if a user presses an enter key.
+         * @param string|null $strConfirmation If set, will confirm with the given string before the click is sent. Useful for
+         *                                  Delete buttons, as in "Are you sure you want to do this?"
+         * @param mixed|null $options Additional attributes to add to the button. This is a place to do things that are specific to
+         *                          your dialog implementation.
+         * @return void
+         */
+        public function addButton(
+            string  $strButtonName,
+            ?string $strButtonId = null,
+            ?bool   $blnCausesValidation = false,
+            ?bool   $blnIsPrimary = false,
+            ?string  $strConfirmation = null,
+            mixed $options = null
+        ): void;
 
-    /**
-     * Remove all the buttons from the dialog.
-     * @return void
-     */
-    public function removeAllButtons(): void;
+        /**
+         * @param string $strButtonId Id of button to remove.
+         * @return void
+         */
+        public function removeButton(string $strButtonId): void;
 
-    /**
-     * Show or hide the given button. Changes the display attribute, so the buttons will reflow.
-     *
-     * @param string $strButtonId
-     * @param bool $blnVisible
-     * @return void
-     */
-    public function showHideButton(string $strButtonId, bool $blnVisible): void;
+        /**
+         * Remove all the buttons from the dialog.
+         * @return void
+         */
+        public function removeAllButtons(): void;
 
-    /**
-     * Special implementation of AddButton that simply adds a button that will close the dialog. The button will not
-     * generate any button events, but the dialog closing might be detectable using other events depending on your
-     * implementation.
-     *
-     * @param string $strButtonName
-     * @return void
-     */
-    public function addCloseButton(string $strButtonName): void;
+        /**
+         * Show or hide the given button. Changes the display attribute, so the buttons will reflow.
+         *
+         * @param string $strButtonId
+         * @param bool $blnVisible
+         * @return void
+         */
+        public function showHideButton(string $strButtonId, bool $blnVisible): void;
 
-    /**
-     * Create a message dialog. Automatically adds an OK button that closes the dialog. To detect the close,
-     * use events generated by your implementation. To change the message, use the return value and set ->Text.
-     * To detect a button click, add a DialogButton event.
-     *
-     * If you specify no buttons, a close box in the corner will be created that will just close the dialog. If you
-     * specify just a string in $strButtons, or just one string in the button array, one button will be shown that will just close the message.
-     *
-     * If you specify more than one button, the first button will be the default button (the one pressed if the user presses the return key). In
-     * this case, you will need to detect the button by adding a DialogButton event to the returned dialog. You will also be responsible for calling "Close()" on
-     * the dialog after detecting a button.
-     *
-     * It will use the global $_FORM object as the parent object of the resulting dialog.
-     *
-     * @param string $strMessage The message
-     * @param string|string[]|null $strButtons
-     * @param string|null $strControlId The CSS id to put on the resulting HTML object
-     * @return DialogInterface  Returns the created dialog object for further processing.
-     */
-    public static function alert(string $strMessage, ?array $strButtons = null, ?string $strControlId = null): DialogInterface;
+        /**
+         * Special implementation of AddButton that simply adds a button that will close the dialog. The button will not
+         * generate any button events, but the dialog closing might be detectable using other events depending on your
+         * implementation.
+         *
+         * @param string $strButtonName
+         * @return void
+         */
+        public function addCloseButton(string $strButtonName): void;
 
-    /**
-     * Open a closed dialog.
-     *
-     * @return void
-     */
-    public function open(): void;
+        /**
+         * Create a message dialog. Automatically adds an OK button that closes the dialog. To detect the close,
+         * use events generated by your implementation. To change the message, use the return value and set ->Text.
+         * To detect a button click, add a DialogButton event.
+         *
+         * If you specify no buttons, a close box in the corner will be created that will just close the dialog. If you
+         * specify just a string in $strButtons, or just one string in the button array, one button will be shown that will just close the message.
+         *
+         * If you specify more than one button, the first button will be the default button (the one pressed if the user presses the return key). In
+         * this case, you will need to detect the button by adding a DialogButton event to the returned dialog. You will also be responsible for calling "Close()" on
+         * the dialog after detecting a button.
+         *
+         * It will use the global $_FORM object as the parent object of the resulting dialog.
+         *
+         * @param string $strMessage The message
+         * @param string|string[]|null $strButtons
+         * @param string|null $strControlId The CSS id to put on the resulting HTML object
+         * @return DialogInterface  Returns the created dialog object for further processing.
+         */
+        public static function alert(string $strMessage, ?array $strButtons = null, ?string $strControlId = null): DialogInterface;
 
-    /**
-     * Closes the dialog.
-     *
-     * @return void
-     */
-    public function close(): void;
-}
+        /**
+         * Open a closed dialog.
+         *
+         * @return void
+         */
+        public function open(): void;
+
+        /**
+         * Closes the dialog.
+         *
+         * @return void
+         */
+        public function close(): void;
+    }

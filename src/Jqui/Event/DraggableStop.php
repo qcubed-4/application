@@ -1,41 +1,41 @@
 <?php
-/**
-*
-* Part of the QCubed PHP framework.
-*
-* @license MIT
-*
-*/
+    /**
+     *
+     * Part of the QCubed PHP framework.
+     *
+     * @license MIT
+     *
+     */
 
-namespace QCubed\Jqui\Event;
+    namespace QCubed\Jqui\Event;
 
-/**
- * Class DraggableStop
- *
- * The abstract DraggableStop class defined here is
- * code-generated. The code to generate this file is
- * in the /tools/jquery_ui_gen/jq_control_gen.php file,
- * and you can regenerate the files if you need to.
- *
- * The comments in this file are taken from the api reference site, so they do
- * not always make sense with regard to QCubed. They are simply provided
- * as reference.
- * Triggered when dragging stops.
- * 
- * 	* event Type: Event 
- * 
- * 	* ui Type: Object 
- * 
- * 	* helper Type: jQuery The jQuery object representing the helper that's
- * being dragged.
- * 	* position Type: Object Current CSS position of the helper as a { top,
- * a left } object.
- * 	* offset Type: Object Current offset position of the helper as {
- * a top, left } object.
- * 
- *
- */
-class DraggableStop extends EventBase
-{
-    const EVENT_NAME = 'dragstop';
-}
+    /**
+     * Class DraggableStop
+     *
+     * The abstract DraggableStop class defined here is
+     * code-generated. The code to generate this file is
+     * in the /tools/jquery_ui_gen/jq_control_gen.php file,
+     * and you can regenerate the files if you need to.
+     *
+     * The comments in this file are taken from the api reference site, so they do
+     * not always make sense with regard to QCubed. They are simply provided
+     * as reference.
+     * Triggered when dragging stops.
+     *
+     * 	* event Type: Event
+     *
+     * 	* ui Type: Object
+     *
+     * 	* helper Type: jQuery The jQuery object representing the helper that's
+     * being dragged.
+     * 	* position Type: Object Current CSS position of the helper as a { top,
+     * a left } object.
+     * 	* offset Type: Object Current offset position of the helper as {
+     * a top, left } object.
+     *
+     *
+     */
+    class DraggableStop extends EventBase
+    {
+        const string EVENT_NAME = 'dragstop';
+    }

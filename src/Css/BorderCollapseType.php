@@ -1,26 +1,26 @@
 <?php
-/**
- *
- * Part of the QCubed PHP framework.
- *
- * @license MIT
- *
- */
+    /**
+     *
+     * Part of the QCubed PHP framework.
+     *
+     * @license MIT
+     *
+     */
 
-namespace QCubed\Css;
+    namespace QCubed\Css;
 
-/**
- * Class BorderCollapse
- *
- * @package QCubed\Css
- * @was QBorderCollapse
- */
-abstract class BorderCollapseType
-{
-    /** Not set */
-    const NOT_SET = 'NotSet';
-    /** Borders are not collapsed */
-    const SEPARATE = 'Separate';
-    /** Collapse the borders */
-    const COLLAPSE = 'Collapse';
-}
+    /**
+     * Class BorderCollapse
+     *
+     * @package QCubed\Css
+     * @was QBorderCollapse
+     */
+    abstract class BorderCollapseType
+    {
+        /** Not set */
+        const string NOT_SET = 'NotSet';
+        /** Borders are not collapsed */
+        const string SEPARATE = 'Separate';
+        /** Collapse the borders */
+        const string COLLAPSE = 'Collapse';
+    }

@@ -1,28 +1,29 @@
 <?php
-namespace QCubed\Project\Jqui;
+    namespace QCubed\Project\Jqui;
 
-use QCubed as Q;
+    use QCubed as Q;
+    use QCubed\Jqui\AutocompleteBase;
 
-/**
- * Class Autocomplete
- *
- * This is the Autocomplete class that was automatically generated
- * by scraping the JQuery UI documentation website. It overrides the AutocompleteBase
- *  class and provides you with a way of inserting custom functionality into the control. Feel free
- * to make changes to this file.
- *
- * @see AutocompleteBase
- */
-class Autocomplete extends Q\Jqui\AutocompleteBase
-{
     /**
-     * Returns the generator corresponding to this control.
+     * Class Autocomplete
      *
-     * @return Q\Codegen\Generator\Autocomplete
+     * This is the Autocomplete class that was automatically generated
+     * by scraping the JQuery UI documentation website. It overrides the AutocompleteBase
+     *  class and provides you with a way of inserting custom functionality into the control. Feel free
+     * to make changes to this file.
+     *
+     * @see AutocompleteBase
      */
-    public static function getCodeGenerator(): Q\Codegen\Generator\Autocomplete
+    class Autocomplete extends AutocompleteBase
     {
-        return new Q\Codegen\Generator\Autocomplete(__CLASS__);
-    }
+        /**
+         * Returns the generator corresponding to this control.
+         *
+         * @return Q\Codegen\Generator\Autocomplete
+         */
+        public static function getCodeGenerator(): Q\Codegen\Generator\Autocomplete
+        {
+            return new Q\Codegen\Generator\Autocomplete(__CLASS__);
+        }
 
-}
+    }

@@ -1,30 +1,57 @@
 <?php require('../includes/header.inc.php'); ?>
 <?php $this->renderBegin(); ?>
 
-<div id="instructions">
-	<h1>Spinners!</h1>
+    <div id="instructions">
+        <h1>Spinners (WaitIcon Update)</h1>
+        <p>
+            The <strong>WaitIcon</strong> class (also known as a "Spinner" or "Throbber") has been updated and now supports
+            multiple modern types and configuration options.<br>
+            <br>
+            <strong>Available spinner types:</strong>
+        </p>
+        <ul>
+            <li>
+                <strong>default</strong> &ndash; A subtle, pastel-colored bar spinner with 12 lines, optimized for all backgrounds.<br>
+                <em>This is the default.</em>
+            </li>
+            <li>
+                <strong>classic</strong> &ndash; The well-known spinning ring (arc/loop) loader.
+            </li>
+            <li>
+                <strong>ripple</strong> &ndash; Material Design-style double-ripple spinner (expanding circles).
+            </li>
+        </ul>
+        <p>
+            <strong>How to select spinner type and size:</strong>
+        </p>
+        <pre><code>
+$waitIcon = new WaitIcon($this);
+$waitIcon->SpinnerType = 'ripple';   // or 'classic', 'default'
+$waitIcon->Width = '2em';            // or '24px', '3rem', etc.
+$waitIcon->Height = '2em';           // defaults to '1.5em'
+    </code></pre>
+        <p>
+            You can set a <strong>DefaultWaitIcon</strong> for your form; all Ajax actions will use it by default.<br>
+            You can also set <code>null</code> if you want to hide the spinner for a specific Ajax action,
+            or pass a different WaitIcon instance as needed.
+        </p>
+        <p>
+            Make sure you also render your WaitIcon on the page.<br>
+            <em>Note: Some examples use an artificial delay (e.g. <code>sleep()</code>) to make the spinner visible during the Ajax request.</em>
+        </p>
+        <p>
+            <strong>Important:</strong> Don’t forget to include <code>waiticon-spinner.css</code> in your HTML header for proper display.
+        </p>
+        <p>
+            <strong>Summary:</strong> The WaitIcon is now modern and flexible, with multiple display types and property-based sizing.
+        </p>
+    </div>
 
-	<p>In this Hello World example, we add a <strong>WaitIcon</strong>, sometimes also known as "Spinners," or "Throbbers,"
-	which will be displayed during the entire Ajax call.</p>
-
-	<p>To add the <strong>WaitIcon</strong>, you can define a <strong>DefaultWaitIcon</strong> in your form,
-	passing in a <strong>WaitIcon</strong> object. From this point forward, every <strong>Ajax</strong>
-	will, by default, use the defined wait icon to be displayed during your Ajax call.</p>
-
-	<p>This display can be overridden by either passing in <strong>null</strong> for the wait icon to your
-	ajax action call, or alternatively you can pass in <i>another</i> <strong>WaitIcon</strong> object
-	defined in your form.</p>
-
-	<p>Be sure to remember to render your wait icon on your page!  (Note: artificial sleep/wait time
-	has been added to the <strong>btnButton_Click</strong> method in order to illustrate the spinner in
-	action)</p>
-</div>
-
-<div id="demoZone">
-	<p><?php $this->lblMessage->render(); ?></p>
-	<p><?php $this->btnButton->render(); ?> <?php $this->btnButton2->render(); ?></p>
-	<p><?php $this->objDefaultWaitIcon->render('Position=absolute', 'Top=10px', 'Left=200px'); ?></p>
-</div>
+    <div id="demoZone">
+        <p><?= _r($this->lblMessage); ?></p>
+        <p><?= _r($this->btnButton); ?> <?= _r($this->btnButton2); ?></p>
+        <p><?= _r($this->DefaultWaitIcon); ?></p>
+    </div>
 
 <?php $this->renderEnd(); ?>
 <?php require('../includes/footer.inc.php'); ?>

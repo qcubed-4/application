@@ -1,8 +1,8 @@
 <?php
 
-use QCubed\Project\Application;
+    use QCubed\Project\Application;
 
-require_once('../qcubed.inc.php');
+    require_once('../qcubed.inc.php');
 
     Application::checkAuthorized();
 
@@ -17,7 +17,7 @@ require_once('../qcubed.inc.php');
             // strip the suffix (if applicable)
             foreach ($strSuffixes as $strSuffix) {
                 if ((!$blnFound) &&
-                    (str_ends_with($strFilename, $strSuffix))) {
+                        (str_ends_with($strFilename, $strSuffix))) {
                     $strFilename = substr($strFilename, 0, strlen($strFilename) - strlen($strSuffix));
                     $blnFound = true;
                 }
@@ -34,15 +34,15 @@ require_once('../qcubed.inc.php');
 
     $strPageTitle = 'List of Forms';
     require(__DIR__ . '/header.inc.php');
-    ?>
+?>
     <div id="draftList">
 
-<?php
-foreach ($strObjectArray as $strObject=>$blnValue) {
-    printf('<h1>%s</h1><p class="create"><a href="%s/%s_list.php">%s</a> &nbsp;|&nbsp; <a href="%s/%s_edit.php">%s</a></p>',
-        $strObject, QCUBED_FORMS_URL, $strObject, t('View List'),
-        QCUBED_FORMS_URL, $strObject, t('Create New'));
-}
-?></div>
+        <?php
+            foreach ($strObjectArray as $strObject=>$blnValue) {
+                printf('<h1>%s</h1><p class="create"><a href="%s/%s_list.php">%s</a> &nbsp;|&nbsp; <a href="%s/%s_edit.php">%s</a></p>',
+                        $strObject, QCUBED_FORMS_URL, $strObject, t('View List'),
+                        QCUBED_FORMS_URL, $strObject, t('Create New'));
+            }
+        ?></div>
 
 <?php require (__DIR__ . '/footer.inc.php'); ?>

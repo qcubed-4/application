@@ -1,14 +1,17 @@
 <?php
-/**
- *
- * Part of the QCubed PHP framework.
- *
- * @license MIT
- *
- */
+    /**
+     *
+     * Part of the QCubed PHP framework.
+     *
+     * @license MIT
+     *
+     */
 
-namespace QCubed\Jqui;
+    namespace QCubed\Jqui;
 
-class SelectMenuBase extends SelectMenuGen
-{
-}
+    /**
+     *
+     */
+    class SelectMenuBase extends SelectMenuGen
+    {
+    }

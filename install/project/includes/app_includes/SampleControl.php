@@ -1,18 +1,20 @@
 <?php
-use QCubed\Exception\Caller;
-use QCubed\Project\Control\ControlBase as QControl;
-use QCubed\Project\Control\FormBase as QForm;
-use QCubed\QString;
-use QCubed\Type;
 
-/**
- * This is a SAMPLE of a custom Control that you could write.  Think of this as a "starting point".
- * Remember: EVERYTHING here is meant to be customized!  To use, simply make a copy of this file,
- * rename the file, and edit the renamed file.  Remember to specify a control Class name which matches the
- * name of your file.  And then implement your own logic for getControlHtml().
- *
- *
- */
+    use QCubed\Exception\Caller;
+    use QCubed\Exception\InvalidCast;
+    use QCubed\Project\Control\ControlBase as QControl;
+    use QCubed\Project\Control\FormBase as QForm;
+    use QCubed\QString;
+    use QCubed\Type;
+
+    /**
+     * This is a SAMPLE of a custom Control that you could write.  Think of this as a "starting point".
+     * Remember: EVERYTHING here is meant to be customized!  To use, simply make a copy of this file,
+     * rename the file, and edit the renamed file.  Remember to specify a control Class name which matches the
+     * name of your file.  And then implement your own logic for getControlHtml().
+     *
+     *
+     */
     class SampleControl extends QControl
     {
         protected int $intExample;
@@ -71,6 +73,9 @@ use QCubed\Type;
             return $this->renderTag('span', null, null, $this->getInnerHtml());
         }
 
+        /**
+         * @return string
+         */
         protected function getInnerHtml(): string
         {
             return QString::htmlEntities("Sample Control " . $this->intExample . ' - ' . $this->strFoo);
@@ -92,6 +97,16 @@ use QCubed\Type;
         /////////////////////////
         // Public Properties: GET
         /////////////////////////
+
+        /**
+         * PHP __get magic method implementation
+         *
+         * @param string $strName Property Name
+         *
+         * @return mixed
+         * @throws Caller
+         * *@throws \Exception
+         */
         public function __get(string $strName): mixed
         {
             switch ($strName) {
@@ -111,6 +126,18 @@ use QCubed\Type;
         /////////////////////////
         // Public Properties: SET
         /////////////////////////
+
+        /**
+         * PHP __set magic method implementation
+         *
+         * @param string $strName Property Name
+         * @param string $mixValue Property Value
+         *
+         * @return void
+         * @throws Caller
+         * @throws InvalidCast
+         * @throws \Exception
+         */
         public function __set(string $strName, mixed $mixValue): void
         {
             $this->blnModified = true;

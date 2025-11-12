@@ -5,7 +5,8 @@ use QCubed\Action\Server;
 use QCubed\Control\FileControl;
 use QCubed\Control\Image;
 use QCubed\Folder;
-use QCubed\Project\Control\Button;
+    use QCubed\Project\Application;
+    use QCubed\Project\Control\Button;
 use QCubed\Project\Control\FormBase;
 use QCubed\QString;
 

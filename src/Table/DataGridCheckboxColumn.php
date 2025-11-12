@@ -220,7 +220,7 @@ class DataGridCheckboxColumn extends CheckboxColumn
      * Checks or unchecks all the items. This will check or uncheck each individual item. Override to use a mechanism
      * to check them all at once.
      *
-     * @param $blnChecked True to check all, false to uncheck all
+     * @param True $blnChecked to check all, false to uncheck all
      * @throws InvalidCast
      */
     protected function checkAll(bool $blnChecked): void

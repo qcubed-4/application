@@ -1,32 +1,33 @@
 <?php
-/**
- *
- * Part of the QCubed PHP framework.
- *
- * @license MIT
- *
- */
-
-namespace QCubed\Exception;
-
-/**
- * Class CrossScripting
- *
- * Called when the textbox fails CrossScripting checks
- *
- * @was QCrossScriptingException
- * @package QCubed\Action
- */
-class CrossScripting extends Caller
-{
     /**
-     * Constructor
-     * @param string $strControlId Control ID of the control for which it being called
+     *
+     * Part of the QCubed PHP framework.
+     *
+     * @license MIT
+     *
      */
-    public function __construct($strControlId)
+
+    namespace QCubed\Exception;
+
+    /**
+     * Class CrossScripting
+     *
+     * Called when the textbox fails CrossScripting checks
+     *
+     * @was QCrossScriptingException
+     * @package QCubed\Action
+     */
+    class CrossScripting extends Caller
     {
-        parent::__construct("Cross Scripting Violation: Potential cross script injection in Control \"" .
-            $strControlId . "\"\r\nTo allow any input on this TextBox control, set CrossScripting to QCrossScripting::Allow. Also consider QCrossScripting::HTMLPurifier.",
-            2);
+        /**
+         * Constructor
+         *
+         * @param string $strControlId Control ID of the control for which it being called
+         */
+        public function __construct(string $strControlId)
+        {
+            parent::__construct("Cross Scripting Violation: Potential cross-script injection in Control \"" .
+                $strControlId . "\"\r\nTo allow any input on this TextBox control, set CrossScripting to CrossScripting::Allow. Also consider CrossScripting::HTMLPurifier.",
+                2);
+        }
     }
-}

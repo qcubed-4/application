@@ -276,6 +276,7 @@ class CalculatorWidget extends Dialog
      * Magic getter method to retrieve the value of a property.
      *
      * @param string $strName The name of the property to retrieve.
+     *
      * @return mixed The value of the requested property.
      * @throws Caller If the property does not exist or is inaccessible.
      */
@@ -299,6 +300,7 @@ class CalculatorWidget extends Dialog
      *
      * @param string $strName The name of the property being set.
      * @param mixed $mixValue The value to assign to the property.
+     *
      * @return void
      * @throws Caller Thrown if the property name is invalid or cannot be handled by the parent::__set method.
      */

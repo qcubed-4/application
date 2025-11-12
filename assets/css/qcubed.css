@@ -47,12 +47,13 @@ h1 {
 h2, h3, h4, h5, h6 {
   font-weight: 500;
 }
-form { margin:0;
-  padding: 0;
-  position: relative;
+form {
+    margin:0;
+    padding: 0;
+    position: relative;
 }
 .disabled {
-  color: #dedede
+  /*color: #dedede*/
 }
 section {
   padding: 10px;
@@ -264,3 +265,8 @@ form {
   z-index: 10000;
   padding: 20px;
 }
+
+#instructions { background: #f6f6f6; border: 1px solid #dedede; border-radius: 3px; margin:10px auto; padding: 1%; }
+#instructions.full { float: none; width: auto; }
+#demoZone { border: 1px solid #f6f6f6; border-radius: 3px; min-height: 400px; overflow: auto; position: relative; padding: 10px; }
+#demoZone.full { float: none; width: auto; min-height: 0px; }

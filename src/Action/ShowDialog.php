@@ -1,54 +1,54 @@
 <?php
-/**
- *
- * Part of the QCubed PHP framework.
- *
- * @license MIT
- *
- */
+    /**
+     *
+     * Part of the QCubed PHP framework.
+     *
+     * @license MIT
+     *
+     */
 
-namespace QCubed\Action;
+    namespace QCubed\Action;
 
-use QCubed\Control\DialogInterface;
-use QCubed\Exception\Caller;
-use QCubed\Control\ControlBase;
-
-/**
- * Class ShowDialog
- *
- * Shows a Dialog
- * This is the JQuery UI alternative to show dialog
- *
- * @deprecated Create dialogs on the fly
- * @package QCubed\Action
- */
-class ShowDialog extends ActionBase
-{
-    /** @var null|string The JS to show the dialog */
-    protected ?string $strJavaScript = null;
+    use QCubed\Control\DialogInterface;
+    use QCubed\Exception\Caller;
+    use QCubed\Control\ControlBase;
 
     /**
-     * Constructor
+     * Class ShowDialog
      *
-     * @param DialogInterface $objControl
+     * Shows a Dialog
+     * This is the JQuery UI alternative to show dialog
      *
-     * @throws Caller
+     * @deprecated Create dialogs on the fly
+     * @package QCubed\Action
      */
-    public function __construct(DialogInterface $objControl)
+    class ShowDialog extends ActionBase
     {
-        $strControlId = $objControl->getJqControlId();
-        $this->strJavaScript = sprintf('jQuery("#%s").dialog("open");', $strControlId);
-    }
+        /** @var null|string The JS to show the dialog */
+        protected ?string $strJavaScript = null;
 
-    /**
-     * Returns the JavaScript to be executed on the client side for opening/showing the dialog
-     *
-     * @param ControlBase $objControl
-     *
-     * @return string JS that will be run on the client side
-     */
-    public function renderScript(ControlBase $objControl): string
-    {
-        return $this->strJavaScript;
+        /**
+         * Constructor
+         *
+         * @param DialogInterface $objControl
+         *
+         * @throws Caller
+         */
+        public function __construct(DialogInterface $objControl)
+        {
+            $strControlId = $objControl->getJqControlId();
+            $this->strJavaScript = sprintf('jQuery("#%s").dialog("open");', $strControlId);
+        }
+
+        /**
+         * Returns the JavaScript to be executed on the client side for opening/showing the dialog
+         *
+         * @param ControlBase $objControl
+         *
+         * @return string JS that will be run on the client side
+         */
+        public function renderScript(ControlBase $objControl): string
+        {
+            return $this->strJavaScript;
+        }
     }
-}

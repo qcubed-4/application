@@ -1,5 +1,5 @@
 <?php
-/**
+/*/**
  *
  * Part of the QCubed PHP framework.
  *
@@ -43,4 +43,3 @@ class SetValue extends ActionBase {
         return sprintf("jQuery('#%s').val('%s');", $this->strControlId, $this->strValue);
     }
 }
-

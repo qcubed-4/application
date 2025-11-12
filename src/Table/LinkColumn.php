@@ -99,7 +99,7 @@ class LinkColumn extends DataColumn
     protected bool $blnAsButton = false;
 
     /**
-     * QHtmlTableLinkColumn constructor.
+     * LinkColumn constructor.
      *
      * @param string $strName Column name to be displayed in the table header.
      * @param array|string|NodeBase|null $mixText The text to display as the label of the anchor, a callable callback to get the text,
@@ -347,6 +347,7 @@ class LinkColumn extends DataColumn
      * @return void
      * @throws Caller
      * @throws InvalidCast
+     * @throws Exception
      */
     public function __set(string $strName, mixed $mixValue): void
     {

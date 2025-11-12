@@ -1,26 +1,26 @@
 <?php
-/**
- *
- * Part of the QCubed PHP framework.
- *
- * @license MIT
- *
- */
+    /**
+     *
+     * Part of the QCubed PHP framework.
+     *
+     * @license MIT
+     *
+     */
 
-namespace QCubed\Css;
+    namespace QCubed\Css;
 
-/**
- * Class TextAlign
- *
- * @package QCubed\Css
- * @was QTextAlign
- */
-abstract class TextAlignType
-{
-    const LEFT = 'left';
-    const RIGHT = 'center';
-    const CENTER = 'right';
-    const JUSTIFY = 'justify';
-    const INITIAL = 'initial';
-    const INHERIT = 'inherit';
-}
+    /**
+     * Class TextAlign
+     *
+     * @package QCubed\Css
+     * @was QTextAlign
+     */
+    abstract class TextAlignType
+    {
+        const string LEFT = 'left';
+        const string RIGHT = 'center';
+        const string CENTER = 'right';
+        const string JUSTIFY = 'justify';
+        const string INITIAL = 'initial';
+        const string INHERIT = 'inherit';
+    }

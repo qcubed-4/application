@@ -42,25 +42,25 @@
      *       which will not be big enough for moderately complex forms and will result in data errors.
      */
 
-const FORM_STATE_HANDLER = '\\QCubed\\FormState\\SessionHandler';
-//const FORM_STATE_HANDLER = '\\QCubed\\FormState\\DefaultHandler';
-//const FORM_STATE_HANDLER = '\QCubed\FormState\FileHandler';
+    const FORM_STATE_HANDLER = '\\QCubed\\FormState\\SessionHandler';
+    //const FORM_STATE_HANDLER = '\\QCubed\\FormState\\DefaultHandler';
+    //const FORM_STATE_HANDLER = '\QCubed\FormState\FileHandler';
 
 
-// If using the FileHandler, specify the path where QCubed will save the session state files (has to be writeable!)
-const FILE_FORM_STATE_HANDLER_PATH = QCUBED_PROJECT_DIR . '/tmp/cache/qc_formstate';
+    // If using the FileHandler, specify the path where QCubed will save the session state files (has to be writeable!)
+    const FILE_FORM_STATE_HANDLER_PATH = QCUBED_PROJECT_DIR . '/tmp/cache/qc_formstate';
 
-// If using the SessionHandler, define the DB index where the table to store the formstates is present
-const DB_BACKED_FORM_STATE_HANDLER_DB_INDEX = 1;
-// If using SessionHandler, specify the table name which would hold the formstates (must meet the requirements laid out above)
-const DB_BACKED_FORM_STATE_HANDLER_TABLE_NAME = 'qc_formstate';
+    // If using the SessionHandler, define the DB index where the table to store the formstates is present
+    const DB_BACKED_FORM_STATE_HANDLER_DB_INDEX = 1;
+    // If using SessionHandler, specify the table name which would hold the formstates (must meet the requirements laid out above)
+    const DB_BACKED_FORM_STATE_HANDLER_TABLE_NAME = 'qc_formstate';
 
-// If using the RedisHandler, set the constants to the correct data
-// Note! Please correct the RedisHandler according to the Redis user guide!
+    // If using the RedisHandler, set the constants to the correct data
+    // Note! Please correct the RedisHandler according to the Redis user guide!
 
-const REDIS_BACKED_FORM_STATE_HANDLER_CONFIG = null;
-const REDIS_BACKED_FORM_STATE_HANDLER_ENCRYPTION_KEY = null;
-const REDIS_BACKED_FORM_STATE_HANDLER_IV_HASH_KEY = null;
+    const REDIS_BACKED_FORM_STATE_HANDLER_CONFIG = null;
+    const REDIS_BACKED_FORM_STATE_HANDLER_ENCRYPTION_KEY = null;
+    const REDIS_BACKED_FORM_STATE_HANDLER_IV_HASH_KEY = null;
 
 
 

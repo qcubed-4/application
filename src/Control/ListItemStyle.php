@@ -1,24 +1,24 @@
 <?php
-/**
- *
- * Part of the QCubed PHP framework.
- *
- * @license MIT
- *
- */
+    /**
+     *
+     * Part of the QCubed PHP framework.
+     *
+     * @license MIT
+     *
+     */
 
-namespace QCubed\Control;
+    namespace QCubed\Control;
 
-use QCubed\TagStyler;
+    use QCubed\TagStyler;
 
-/**
- * Class ListItemStyle
- *
- * This defines the style for an Item for a ListControl, which is the base for many different list types.
- *
- * @package QCubed\Control
- */
-class ListItemStyle extends TagStyler
-{
+    /**
+     * Class ListItemStyle
+     *
+     * This defines the style for an Item for a ListControl, which is the base for many different list types.
+     *
+     * @package QCubed\Control
+     */
+    class ListItemStyle extends TagStyler
+    {
 
-}
+    }

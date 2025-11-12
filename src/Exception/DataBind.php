@@ -1,65 +1,65 @@
 <?php
-/**
- *
- * Part of the QCubed PHP framework.
- *
- * @license MIT
- *
- */
+    /**
+     *
+     * Part of the QCubed PHP framework.
+     *
+     * @license MIT
+     *
+     */
 
-namespace QCubed\Exception;
+    namespace QCubed\Exception;
 
-use QCubed as Q;
-
-/**
- * Class DataBind
- *
- * @property-read integer $Offset
- * @property-read mixed $BackTrace
- * @property-read string $Query
- * @was QDataBindException
- * @package QCubed\Exception
- */
-class DataBind extends Caller
-{
-    private $intOffset;
-    private $strTraceArray;
-    private $strQuery;
+    use QCubed as Q;
 
     /**
-     * DataBind constructor.
-     * @param Caller $objExc
+     * Class DataBind
+     *
+     * @property-read integer $Offset
+     * @property-read mixed $BackTrace
+     * @property-read string $Query
+     * @was QDataBindException
+     * @package QCubed\Exception
      */
-    public function __construct(Caller $objExc)
+    class DataBind extends Caller
     {
-        parent::__construct($objExc->getMessage(), $objExc->getCode());
-        $this->intOffset = $objExc->Offset;
-        $this->strTraceArray = $objExc->TraceArray;
+        private int $intOffset;
+        private mixed $strTraceArray;
+        private string $strQuery;
 
-        if ($objExc instanceof Q\Database\Exception\ExceptionBase) {
-            $this->strQuery = $objExc->Query;
+        /**
+         * DataBind constructor.
+         * @param Caller $objExc
+         */
+        public function __construct(Caller $objExc)
+        {
+            parent::__construct($objExc->getMessage(), $objExc->getCode());
+            $this->intOffset = $objExc->Offset;
+            $this->strTraceArray = $objExc->TraceArray;
+
+            if ($objExc instanceof Q\Database\Exception\ExceptionBase) {
+                $this->strQuery = $objExc->Query;
+            }
+
         }
 
-    }
+        /**
+         * @param string $strName
+         * @return mixed
+         */
+        public function __get(string $strName)
+        {
+            switch ($strName) {
+                case "Offset":
+                    return $this->intOffset;
 
-    /**
-     * @param string $strName
-     * @return mixed
-     */
-    public function __get(string $strName)
-    {
-        switch ($strName) {
-            case "Offset":
-                return $this->intOffset;
+                case "BackTrace":
+                    $objTraceArray = debug_backtrace();
+                    return (var_export($objTraceArray, true));
 
-            case "BackTrace":
-                $objTraceArray = debug_backtrace();
-                return (var_export($objTraceArray, true));
+                case "Query":
+                    return $this->strQuery;
+            }
 
-            case "Query":
-                return $this->strQuery;
+            return null;
         }
-
-        return null;
     }
-}

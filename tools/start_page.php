@@ -1,36 +1,36 @@
 <?php
 
-use QCubed\Project\Application;
+    use QCubed\Project\Application;
 
-require_once('../qcubed.inc.php');
+    require_once('../qcubed.inc.php');
 
-/**
- * Make sure the user has at least set up the url pointer.
- */
+    /**
+     * Make sure the user has at least set up the url pointer.
+     */
 
-if (!defined('QCUBED_URL_PREFIX')) {
-    echo "<h2 class='error' style='color: darkred; font-weight: 500;'>Cannot find the configuration file. Make sure your qcubed.inc.php file is installed correctly.</h2>";
-    exit;
-}
+    if (!defined('QCUBED_URL_PREFIX')) {
+        echo "<h2 class='error' style='color: darkred; font-weight: 500;'>Cannot find the configuration file. Make sure your qcubed.inc.php file is installed correctly.</h2>";
+        exit;
+    }
 
-$composerFile = dirname(__DIR__, 4) . '/composer.json';
-$composer = is_file($composerFile) ? json_decode(file_get_contents($composerFile), true) : [];
-$vendorDir = sprintf('/%s/', $composer['config']['vendor-dir'] ?? 'vendor');
-$prefixPos = strpos($_SERVER['PHP_SELF'], $vendorDir);
-$suggestedPrefix = ($prefixPos !== false) ? substr($_SERVER['PHP_SELF'], 0, $prefixPos) : '';
+    $composerFile = dirname(__DIR__, 4) . '/composer.json';
+    $composer = is_file($composerFile) ? json_decode(file_get_contents($composerFile), true) : [];
+    $vendorDir = sprintf('/%s/', $composer['config']['vendor-dir'] ?? 'vendor');
+    $prefixPos = strpos($_SERVER['PHP_SELF'], $vendorDir);
+    $suggestedPrefix = ($prefixPos !== false) ? substr($_SERVER['PHP_SELF'], 0, $prefixPos) : '';
 
     print_r($suggestedPrefix);
-if (QCUBED_URL_PREFIX == '{ url_prefix }') {
-    echo '<h2 class="error" style="color: darkred; font-weight: 500;">Your config file is not set up correctly.
+    if (QCUBED_URL_PREFIX == '{ url_prefix }') {
+        echo '<h2 class="error" style="color: darkred; font-weight: 500;">Your config file is not set up correctly.
         Please edit <code>project/includes/configuration/active/0config.cfg.php</code> 
         and replace <code>{ url_prefix }</code> with <strong>' . htmlspecialchars($suggestedPrefix) . '"</strong>".</h2>';
-    exit;
-} else if($suggestedPrefix !== QCUBED_URL_PREFIX){
-    echo "<h2 class='error' style='color: darkred; font-weight: 500'>Potential QCUBED_URL_PREFIX misconfiguration detected (suggested prefix is: \"$suggestedPrefix\", current value is: \"".QCUBED_URL_PREFIX."\"). If logo images are displayed correctly then this message can most likely be ignored.</h2>";
-}
+        exit;
+    } else if($suggestedPrefix !== QCUBED_URL_PREFIX){
+        echo "<h2 class='error' style='color: darkred; font-weight: 500'>Potential QCUBED_URL_PREFIX misconfiguration detected (suggested prefix is: \"$suggestedPrefix\", current value is: \"".QCUBED_URL_PREFIX."\"). If logo images are displayed correctly then this message can most likely be ignored.</h2>";
+    }
 
-$strPageTitle = 'QCubed-4 Development Framework - Start Page';
-require(QCUBED_CONFIG_DIR . '/header.inc.php');
+    $strPageTitle = 'QCubed-4 Development Framework - Start Page';
+    require(QCUBED_CONFIG_DIR . '/header.inc.php');
 ?>
 <h1 class="page-title">
     <img id="qcubed-4_logo" src="<?= (QCUBED_IMAGE_URL . '/qcubed-4_logo.png'); ?>" alt="QCubed-4 Framework" />Welcome to QCubed-4!</h1>

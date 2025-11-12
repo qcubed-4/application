@@ -83,6 +83,9 @@ class ListControl extends Control
         if ($displayType === 'QCubed\Control\CheckboxList') {
             $displayType = 'CheckboxList';
         }
+        if ($displayType === 'QCubed\Control\Checkbox') {
+            $displayType = 'Checkbox';
+        }
         // add more else-ifs if necessary!
 
         // Create a control designed just for selecting from a type table

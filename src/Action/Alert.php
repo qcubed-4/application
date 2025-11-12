@@ -1,75 +1,75 @@
 <?php
-/**
- *
- * Part of the QCubed PHP framework.
- *
- * @license MIT
- *
- */
+    /**
+     *
+     * Part of the QCubed PHP framework.
+     *
+     * @license MIT
+     *
+     */
 
-namespace QCubed\Action;
+    namespace QCubed\Action;
 
-use QCubed\Exception\Caller;
-use QCubed\Js;
-use QCubed\Control\ControlBase;
+    use QCubed\Exception\Caller;
+    use QCubed\Js;
+    use QCubed\Control\ControlBase;
 
-
-/**
- * Class Alert
- *
- * Displays an alert to the user
- *
- * @package QCubed\Action
- */
-class Alert extends ActionBase
-{
-    /** @var string Message to be shown as the alert */
-    protected string $strMessage;
 
     /**
-     * Constructor
+     * Class Alert
      *
-     * @param string $strMessage Message to be shown as the alert
+     * Displays an alert to the user
+     *
+     * @package QCubed\Action
      */
-    public function __construct(string $strMessage)
+    class Alert extends ActionBase
     {
-        $this->strMessage = $strMessage;
-    }
+        /** @var string Message to be shown as the alert */
+        protected string $strMessage;
 
-    /**
-     * PHP Magic function to get the property values of an object of the class
-     *
-     * @param string $strName Name of the property
-     *
-     * @return mixed|null|string
-     * @throws Caller
-     */
-    public function __get(string $strName): mixed
-    {
-        switch ($strName) {
-            case 'Message':
-                return $this->strMessage;
-            default:
-                try {
-                    return parent::__get($strName);
-                } catch (Caller $objExc) {
-                    $objExc->incrementOffset();
-                    throw $objExc;
-                }
+        /**
+         * Constructor
+         *
+         * @param string $strMessage Message to be shown as the alert
+         */
+        public function __construct(string $strMessage)
+        {
+            $this->strMessage = $strMessage;
+        }
+
+        /**
+         * PHP Magic function to get the property values of an object of the class
+         *
+         * @param string $strName Name of the property
+         *
+         * @return mixed|null|string
+         * @throws Caller
+         */
+        public function __get(string $strName): mixed
+        {
+            switch ($strName) {
+                case 'Message':
+                    return $this->strMessage;
+                default:
+                    try {
+                        return parent::__get($strName);
+                    } catch (Caller $objExc) {
+                        $objExc->incrementOffset();
+                        throw $objExc;
+                    }
+            }
+        }
+
+        /**
+         * Returns the JavaScript to be executed on the client side
+         *
+         * @param ControlBase $objControl
+         *
+         * @return string
+         */
+        public function renderScript(ControlBase $objControl): string
+        {
+            $strMessage = Js\Helper::toJsObject($this->strMessage);
+
+            return sprintf("alert(%s);", $strMessage);
         }
     }
-
-    /**
-     * Returns the JavaScript to be executed on the client side
-     *
-     * @param ControlBase $objControl
-     *
-     * @return string
-     */
-    public function renderScript(ControlBase $objControl): string
-    {
-        $strMessage = Js\Helper::toJsObject($this->strMessage);
-
-        return sprintf("alert(%s);", $strMessage);
-    }
-}

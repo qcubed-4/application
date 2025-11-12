@@ -111,7 +111,7 @@ abstract class EventBase extends ObjectBase
         }
 
         $strJs = '';
-        $strJqUiProperty = null;
+        // $strJqUiProperty = null;
 
         if ($objControl->ActionsMustTerminate) {
             $strJs .= 'event.preventDefault();' . _nl();

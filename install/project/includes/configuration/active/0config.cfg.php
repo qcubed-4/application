@@ -1,4 +1,5 @@
 <?php
+
     /**
      * config.inc.php
      *
@@ -15,14 +16,14 @@
      * you should run some kind of detection logic to change it depending on your installation.
      *
      * For example, this code changes the setting based on an environment variable:
-    if (!defined('SERVER_INSTANCE')) {
-    if (isset($_ENV['APP_ENV'])) {
-    define('SERVER_INSTANCE', $_ENV['APP_ENV']);
-    } elseif (php_sapi_name() === 'cli') {
-    define('SERVER_INSTANCE', 'dev');
-    } else {
-    define('SERVER_INSTANCE', 'prod');
-    }
+        if (!defined('SERVER_INSTANCE')) {
+        if (isset($_ENV['APP_ENV'])) {
+        define('SERVER_INSTANCE', $_ENV['APP_ENV']);
+        } elseif (php_sapi_name() === 'cli') {
+        define('SERVER_INSTANCE', 'dev');
+        } else {
+        define('SERVER_INSTANCE', 'prod');
+        }
      */
 
     const SERVER_INSTANCE = 'dev';
@@ -89,7 +90,7 @@
         case 'prod':
     }
 
-    /**
+    /*
      * If you are using Apache-based mod_rewrite to perform URL rewrites, please specify "apache" here.
      * Otherwise, specify as "none"
      */
@@ -100,25 +101,14 @@
      * used for internal variables, for web pages, and what will get stored in the database. This also affects
      * how code generation is done, so if you change this, be sure to code generate again.
      */
+
     const QCUBED_ENCODING = 'UTF-8';
 
-    /**
-     * Sets the default timezone in PHP if it has not already been set in php.ini or other configuration.
-     * By default, the timezone is set to UTC.
-     *
-     * If you want to use a specific timezone (e.g., 'Europe/Tallinn'),
-     * remove or comment out this code block and set the desired timezone manually
-     * using, for example, date_default_timezone_set('Europe/Tallinn');
-     *
-     * More info: https://www.php.net/manual/en/function.date-default-timezone-set.php
-     */
-    if ((function_exists('date_default_timezone_set')) && (!ini_get('date.timezone'))) {
-        date_default_timezone_set('UTC');
-    }
-
-    // date_default_timezone_set('Europe/Tallinn');
+    if ((function_exists('date_default_timezone_set')) && (!ini_get('date.timezone')))
+        date_default_timezone_set('America/Los_Angeles');
 
     // Directory where non-editable generated files go
     const QCUBED_PROJECT_GEN_DIR = QCUBED_PROJECT_DIR . '/generated';
     // Directory where editable generated files go
     const QCUBED_PROJECT_INCLUDES_DIR = QCUBED_PROJECT_DIR . '/includes';
+

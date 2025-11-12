@@ -1,18 +1,18 @@
 <?php
-/**
- *
- * Part of the QCubed PHP framework.
- *
- * @license MIT
- *
- */
+    /**
+     *
+     * Part of the QCubed PHP framework.
+     *
+     * @license MIT
+     *
+     */
 
-namespace QCubed\Jqui;
+    namespace QCubed\Jqui;
 
-/**
- * Class ControlgroupBase
- * @package QCubed\Jqui
- */
-class ControlgroupBase extends ControlgroupGen
-{
-}
+    /**
+     * Class ControlgroupBase
+     * @package QCubed\Jqui
+     */
+    class ControlgroupBase extends ControlgroupGen
+    {
+    }
