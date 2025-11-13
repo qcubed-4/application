@@ -158,59 +158,32 @@
      *
      * @return null|string
      */
-
-    function _r(ControlBase $obj, ?string $strRenderFunc = null /*, $overrides */): ?string
+    function _r(mixed $obj, ?string $strRenderFunc = null /*, $overrides */): ?string
     {
         $aParams = func_get_args();
         array_shift($aParams);
         array_shift($aParams);
-
-        if (!$strRenderFunc) {
-            if ($obj->PreferredRenderMethod) {
-                $strRenderFunc = $obj->PreferredRenderMethod;
+        if ($obj) {
+            if (!$strRenderFunc) {
+                if ($obj->PreferredRenderMethod) {
+                    $strRenderFunc = $obj->PreferredRenderMethod;
+                }
+                else {
+                    $strRenderFunc = 'Render';
+                }
+            }
+            if (count($aParams) == 1 && is_array($aParams[0])) {
+                return $obj->$strRenderFunc(false, $aParams[0]); // single array of params which is a key->value array
+            }
+            elseif ($aParams) {
+                return call_user_func_array([$obj, $strRenderFunc], $aParams);
             } else {
-                $strRenderFunc = 'Render';
+                return $obj->$strRenderFunc(false);
             }
         }
-
-        if (count($aParams) === 1 && is_array($aParams[0])) {
-            // single array of params which is a key->value array
-            return $obj->$strRenderFunc(false, $aParams[0]);
-        }
-
-        if ($aParams) {
-            return call_user_func_array([$obj, $strRenderFunc], $aParams);
-        }
-
-        return $obj->$strRenderFunc(false);
+        return null;
     }
-
-
-
-    //    function _r(ControlBase $obj, ?string $strRenderFunc = null /*, $overrides */): ?string
-    //    {
-    //        $aParams = func_get_args();
-    //        array_shift($aParams);
-    //        array_shift($aParams);
-    //        if (!$strRenderFunc) {
-    //            if ($obj->PreferredRenderMethod) {
-    //                $strRenderFunc = $obj->PreferredRenderMethod;
-    //            }
-    //            else {
-    //                $strRenderFunc = 'Render';
-    //            }
-    //        }
-    //        if (count($aParams) == 1 && is_array($aParams[0])) {
-    //            return $obj->$strRenderFunc(false, $aParams[0]); // single array of params which is a key->value array
-    //        }
-    //        elseif ($aParams) {
-    //            return call_user_func_array([$obj, $strRenderFunc], $aParams);
-    //        } else {
-    //            return $obj->$strRenderFunc(false);
-    //        }
-    //        return null;
-    //    }
-
+    
     /** TODO: Implement the following. */
     /*
     function _i($intNumber) {
