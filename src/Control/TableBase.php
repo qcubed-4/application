@@ -49,6 +49,9 @@
      * @property boolean $ShowFooter           true to show the footer row
      * @property boolean $RenderColumnTags     true to include col tags in the table output
      * @property boolean $HideIfEmpty          true to completely hide the table if there is no data, vs. drawing the table with no rows.
+     * @property boolean $ShowEmptyTable if true, the table will be rendered even if there are no records to display.
+     * @property string $EmptyTableText the text to display in the table if ShowEmptyTable is true.
+     *
      * @property integer $HeaderRowCount
      * @property integer $CurrentHeaderRowIndex
      * @property-write callable $RowParamsCallback    Set to a callback function to fetch custom attributes for row tags.
@@ -76,6 +79,10 @@
         protected ?string $strCaption = null;
         /** @var bool When set, the table is hidden/not rendered when the data source is empty */
         protected bool $blnHideIfEmpty = false;
+        /** @var boolean */
+        protected bool $blnShowEmptyTable = false;
+        /** @var string */
+        protected string $strEmptyTableText = 'No records';
 
         /** @var integer */
         protected int $intHeaderRowCount = 1;
@@ -627,7 +634,6 @@
                 }
                 $strToReturn .= Html::renderTag('tr', $this->getHeaderRowParams(), $strCells);
             }
-
             return $strToReturn;
         }
 
@@ -814,12 +820,56 @@
             // DataGrid Rows
             $strRows = '';
             $this->intCurrentRowIndex = 0;
-            if ($this->objDataSource) {
+
+            /**
+             * Handle empty datasource rendering
+             */
+            if (empty($this->objDataSource)) {
+
+                // Hide the table if HideIfEmpty is enabled
+                if ($this->blnHideIfEmpty) {
+                    $this->objDataSource = [];
+                    return '';
+                }
+
+                // Show empty row if enabled
+                if ($this->blnShowEmptyTable) {
+
+                    // Calculate column count (visible columns only)
+                    $intColumnCount = 0;
+                    foreach ($this->objColumnArray as $objColumn) {
+                        if ($objColumn->Visible) {
+                            $intColumnCount += $objColumn->Span;
+                        }
+                    }
+                    if ($intColumnCount < 1) {
+                        $intColumnCount = 1; // safety
+                    }
+
+                    // Render <td colspan="X"> message </td>
+                    $strEmptyTd = Html::renderTag(
+                        'td',
+                        [
+                            'colspan' => $intColumnCount,
+                            'class'   => 'table-empty-message'
+                        ],
+                        Html::renderString($this->strEmptyTableText)
+                    );
+
+                    // Wrap in <tr>
+                    $strRows .= Html::renderTag('tr', null, $strEmptyTd);
+                }
+
+            } else {
+
+                // Render actual records
                 foreach ($this->objDataSource as $objObject) {
                     $strRows .= $this->getDataGridRowHtml($objObject, $this->intCurrentRowIndex);
                     $this->intCurrentRowIndex++;
                 }
             }
+
+            // Render <tbody>
             $strHtml .= Html::renderTag('tbody', null, $strRows);
 
             $strHtml = $this->renderTag('table', null, null, $strHtml);
@@ -896,6 +946,10 @@
                     return $this->intCurrentHeaderRowIndex;
                 case 'HideIfEmpty':
                     return $this->blnHideIfEmpty;
+                case "ShowEmptyTable":
+                    return $this->blnShowEmptyTable;
+                case "EmptyTableText":
+                    return $this->strEmptyTableText;
                 case 'CurrentRowIndex':
                     return $this->intCurrentRowIndex;
 
@@ -997,6 +1051,24 @@
                 case "HideIfEmpty":
                     try {
                         $this->blnHideIfEmpty = Type::cast($mixValue, Type::BOOLEAN);
+                        break;
+                    } catch (InvalidCast $objExc) {
+                        $objExc->incrementOffset();
+                        throw $objExc;
+                    }
+
+                case "ShowEmptyTable":
+                    try {
+                        $this->blnShowEmptyTable = Type::cast($mixValue, Type::BOOLEAN);
+                        break;
+                    } catch (InvalidCast $objExc) {
+                        $objExc->incrementOffset();
+                        throw $objExc;
+                    }
+
+                case "EmptyTableText":
+                    try {
+                        $this->strEmptyTableText = Type::cast($mixValue, Type::STRING);
                         break;
                     } catch (InvalidCast $objExc) {
                         $objExc->incrementOffset();

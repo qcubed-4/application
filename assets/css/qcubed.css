@@ -181,6 +181,14 @@ form {
   color: #fff;
   padding: 0 5px;
 }
+/* Added for Datagrid */
+.table-empty-message {
+    text-align: center;
+    color: #666;
+    padding: 12px;
+    font-style: italic;
+}
+
 /* Status coloring */
 .warning {
   color: orange;
