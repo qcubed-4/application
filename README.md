@@ -2,7 +2,7 @@
 This is the application part of the QCubed-4 framework, and includes forms, controls, actions, events and code to tie them all together.
 
 ## What is QCubed-4?
-QCubed (pronounced 'Q' - cubed) is a PHP Model-View-Controller Rapid Application Development framework with support for PHP8 and above. The goal of the framework is to save development time around mundane, repetitive tasks - allowing you to concentrate on things that are useful AND fun. QCubed excels in situations where you have a large database structure that you quickly want to make available to users.
+QCubed (pronounced 'Q' - cubed) is a PHP Model-View-Controller Rapid Application Development framework with support for PHP8 and above. The goal of the framework is to save development time around mundane, repetitive tasks - allowing you to concentrate on things that are useful AND fun. QCubed-4 excels in situations where you have a large database structure that you quickly want to make available to users.
 
 ## Additional Documentation and Knowledge Base
 
@@ -15,7 +15,7 @@ As with any open-source effort, community contributions and shared experiences h
 https://deepwiki.com/qcubed-4
 
 ## Stateful architecture
-With QCubed-4, you don't have to deal with POSTs and GETs coming from the browser. QCubed automatically handles that for you and packages the information into object oriented forms and controls. Programming with QCubed feels very much like programming a desktop application. If you are familiar with ASP, it is similar.
+With QCubed-4, you don't have to deal with POSTs and GETs coming from the browser. QCubed-4 automatically handles that for you and packages the information into object oriented forms and controls. Programming with QCubed-4 feels very much like programming a desktop application. If you are familiar with ASP, it is similar.
 
 ## The Code Generator
 The Code Generator automatically creates object classes with matching forms and controls based on your database schema. It uses the concept of ORM, [object-relational mapping](http://en.wikipedia.org/wiki/Object-relational_mapping), to practically create your whole model layer for you.
