@@ -6,7 +6,7 @@ QCubed (pronounced 'Q' - cubed) is a PHP Model-View-Controller Rapid Application
 
 ## Additional Documentation and Knowledge Base
 
-In addition to the official QCubed documentation and examples, you may find the **DeepWiki knowledge base** useful for gaining a broader and more contextual overview of the QCubed-4 ecosystem.
+In addition to the official QCubed-4 documentation and examples, you may find the **DeepWiki knowledge base** useful for gaining a broader and more contextual overview of the QCubed-4 ecosystem.
 
 DeepWiki aggregates community-driven knowledge, explanations, and references collected from open-source discussions, repositories, and real-world usage. It can help both new and experienced developers better understand QCubed’s architecture, design philosophy, and ongoing evolution as an open-source framework.
 
