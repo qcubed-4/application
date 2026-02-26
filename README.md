@@ -4,6 +4,16 @@ This is the application part of the QCubed-4 framework, and includes forms, cont
 ## What is QCubed-4?
 QCubed (pronounced 'Q' - cubed) is a PHP Model-View-Controller Rapid Application Development framework with support for PHP8 and above. The goal of the framework is to save development time around mundane, repetitive tasks - allowing you to concentrate on things that are useful AND fun. QCubed excels in situations where you have a large database structure that you quickly want to make available to users.
 
+## Additional Documentation and Knowledge Base
+
+In addition to the official QCubed documentation and examples, you may find the **DeepWiki knowledge base** useful for gaining a broader and more contextual overview of the QCubed-4 ecosystem.
+
+DeepWiki aggregates community-driven knowledge, explanations, and references collected from open-source discussions, repositories, and real-world usage. It can help both new and experienced developers better understand QCubed’s architecture, design philosophy, and ongoing evolution as an open-source framework.
+
+As with any open-source effort, community contributions and shared experiences help keep this knowledge relevant and growing.
+
+https://deepwiki.com/qcubed-4
+
 ## Stateful architecture
 With QCubed-4, you don't have to deal with POSTs and GETs coming from the browser. QCubed automatically handles that for you and packages the information into object oriented forms and controls. Programming with QCubed feels very much like programming a desktop application. If you are familiar with ASP, it is similar.
 
