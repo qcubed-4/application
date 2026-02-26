@@ -349,13 +349,17 @@
             $objParams = $this->generalOptions;
             foreach ($objParams as $objParam) {
                 $objControl = $objParam->getControl($this->dtgGeneralOptions);
-                $strName = $objControl->Name;
-                $value = $objControl->Value;
+                if ($objControl) {
+                    $strName = $objControl->Name;
+                    $value = $objControl->Value;
 
-                if (!is_null($value)) {
-                    $this->params[$strName] = $value;
-                } else {
-                    unset($this->params[$strName]);
+                    // In design mode, a user can clear a text value. We do not want to persist empty strings,
+                    // since that can later overwrite defaults and break rendering.
+                    if (!is_null($value) && $value !== '') {
+                        $this->params[$strName] = $value;
+                    } else {
+                        unset($this->params[$strName]);
+                    }
                 }
             }
 
@@ -364,19 +368,25 @@
                     $objControl = $objParam->getControl();
                     if ($objControl) {
                         $strName = $objControl->Name;
-                        $value = $objControl->Value;
+                        $rawValue = $objControl->Value;
 
+                        // Only wrap translated values after we have verified the raw value is not an empty string.
                         if ($objParam->getOption('translate')) {
-                            $value = ["value"=>$value, "translate"=>true];
+                            $value = ["value" => $rawValue, "translate" => true];
+                            $isEmpty = is_null($rawValue) || $rawValue === '';
+                        } else {
+                            $value = $rawValue;
+                            $isEmpty = is_null($value) || $value === '';
                         }
 
-                        if (!is_null($value)) {
+                        if (!$isEmpty) {
                             $this->params['Overrides'][$strName] = $value;
                         } else {
                             unset($this->params['Overrides'][$strName]);
                         }
                     } else {
-                        unset($this->params['Overrides'][$strName]);
+                        // If there is no control, there is nothing to save.
+                        // (Also avoid referencing an undefined $strName.)
                     }
                 }
             }
