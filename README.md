@@ -98,3 +98,5 @@ Also, the JQuery UI framework has been put in its own directory to prepare for m
 
 ## Credits
 QCubed was branched out of QCodo, a project by Michael Ho. QCubed-4v was branched out of QCubed project, which @spekary (Shannon Pekary) has been instrumental in redesigning.
+
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/qcubed-4/application)
