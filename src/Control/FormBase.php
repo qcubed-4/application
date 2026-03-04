@@ -533,7 +533,7 @@
 
                 $objClass->formInitialize();
 
-                if (defined('QCUBED_DESIGN_MODE') && QCUBED_DESIGN_MODE == 1) {
+                if (defined('DESIGN_MODE') && DESIGN_MODE == 1) {
                     // Attach a custom event to dialog to handle right click menu items sent by form
 
                     $dlg = new Q\ModelConnector\EditDlg ($objClass, 'qconnectoreditdlg');
@@ -1882,7 +1882,7 @@
             }
 
             // Design mode event
-            if (defined('QCUBED_DESIGN_MODE') && QCUBED_DESIGN_MODE == 1) {
+            if (defined('DESIGN_MODE') && DESIGN_MODE == 1) {
                 // attach an event listener to the form to send context menu selections to the designer dialog for processing
                 $strEndScript .= sprintf(
                     '$j("#%s").on("contextmenu", "[id]", 
