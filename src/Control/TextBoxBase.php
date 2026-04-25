@@ -30,7 +30,7 @@
      * [input type="password"] or [textarea] depending on the TextMode (see below).
      *
      * @package Controls\Base
-     * @property integer $Columns               is the "cols" HTML attribute (applicable for MultiLine textboxes)
+     * @property integer $Columns               is the "cols" HTML attribute (applicable for MultiLine textboxes)?
      * @property string $Format
      * @property string $Text                  are the contents of the textbox, itself?
      * @property string|null $Value            Returns the value of the text. If the text is empty, it will return null.
@@ -166,7 +166,10 @@
          */
         public function setPurifierConfig(string $strParameter, mixed $mixValue): void
         {
-            $this->objHTMLPurifierConfig = HTMLPurifier_Config::createDefault();
+            if (!$this->objHTMLPurifierConfig) {
+                $this->objHTMLPurifierConfig = HTMLPurifier_Config::createDefault();
+            }
+
             $this->objHTMLPurifierConfig->set($strParameter, $mixValue);
         }
 
@@ -292,7 +295,7 @@
                 $attributeOverrides['type'] = $typeStr;
             }
 
-            if (strlen($this->strPlaceholder) > 0) {
+            if ($this->strPlaceholder) {
                 $attributeOverrides['placeholder'] = $this->strPlaceholder;
             }
 

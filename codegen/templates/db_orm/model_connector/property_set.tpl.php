@@ -3,6 +3,9 @@
  * @var SqlTable $objTable
  * @var CodeGenBase $objCodeGen
  */
+
+    use QCubed\ModelConnector\Options;
+
 ?>
 
     /**
@@ -23,7 +26,7 @@
 
                 // Controls that point to <?= $objTable->ClassName ?> fields
 <?php foreach ($objTable->ColumnArray as $objColumn) {
-    if (isset($objColumn->Options['FormGen']) && $objColumn->Options['FormGen'] == \QCubed\ModelConnector\Options::FORMGEN_NONE) continue;
+    if (isset($objColumn->Options['FormGen']) && $objColumn->Options['FormGen'] == Options::FORMGEN_NONE) continue;
     $strControlVarName = $objCodeGen->modelConnectorVariableName($objColumn);
     $strPropertyName = $objColumn->PropertyName;
 
@@ -34,7 +37,7 @@
     print($objControlCodeGenerator->connectorSet($objCodeGen, $objTable, $objColumn));
 } ?>
 <?php foreach ($objTable->ReverseReferenceArray as $objReverseReference) { ?><?php if ($objReverseReference->Unique) { ?><?php
-    if (isset($objReverseReference->Options['FormGen']) && $objReverseReference->Options['FormGen'] == \QCubed\ModelConnector\Options::FORMGEN_NONE) continue;
+    if (isset($objReverseReference->Options['FormGen']) && $objReverseReference->Options['FormGen'] == Options::FORMGEN_NONE) continue;
     $strControlVarName = $objCodeGen->modelConnectorVariableName($objReverseReference);
     $strPropertyName = $objReverseReference->ObjectDescription;
     $strClassName = $objCodeGen->getControlCodeGenerator($objReverseReference)->getControlClass();
@@ -42,7 +45,7 @@
 ?><?php include("property_set_case.tpl.php"); ?>
 <?php } ?><?php } ?>
 <?php foreach ($objTable->ManyToManyReferenceArray as $objManyToManyReference) { ?><?php
-    if (isset($objManyToManyReference->Options['FormGen']) && $objManyToManyReference->Options['FormGen'] == \QCubed\ModelConnector\Options::FORMGEN_NONE) continue;
+    if (isset($objManyToManyReference->Options['FormGen']) && $objManyToManyReference->Options['FormGen'] == Options::FORMGEN_NONE) continue;
     $strControlVarName = $objCodeGen->modelConnectorVariableName($objManyToManyReference);
     $strPropertyName = $objManyToManyReference->ObjectDescription;
     $strClassName = $objCodeGen->getControlCodeGenerator($objManyToManyReference)->getControlClass();

@@ -10,6 +10,7 @@
     namespace QCubed\FormState;
 
     use Exception;
+    use Predis\Client;
     use QCubed\Cryptography;
     use QCubed\Exception\Caller;
     use QCubed\ObjectBase;
@@ -61,7 +62,7 @@
          * @return \Predis\Client
          * @throws Caller
          */
-        private static function GetClient(): \Predis\Client
+        private static function GetClient(): Client
         {
             if (!class_exists('Predis\Client')) {
                 throw new Caller('Predis\' library needs to be installed for Redis Formstate Handler to work');

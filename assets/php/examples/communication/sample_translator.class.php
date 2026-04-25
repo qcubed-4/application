@@ -1,9 +1,12 @@
 <?php
-class QSampleTranslation implements QTranslationBase {
+
+    use QCubed\Project\Application;
+
+    class QSampleTranslation implements QTranslationBase {
 	protected $strTranslationArray = array();
 	protected $strCode;
 	public static function Initialize() {
-		return self::Load(\QCubed\Project\Application::$LanguageCode, \QCubed\Project\Application::$CountryCode);
+		return self::Load(Application::$LanguageCode, Application::$CountryCode);
 	}
 	
 	public static function Load($strLanguageCode = null, $strCountryCode = null) {

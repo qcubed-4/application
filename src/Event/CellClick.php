@@ -12,7 +12,7 @@
     use QCubed\Exception\Caller;
 
     /**
-     * Class CellClickEvent
+     * Class CellClick
      *
      * An event to detect clicking on a table cell.
      * Lots of things can be determined using this event by changing the JsReturnParam values. When this event fires,
@@ -41,7 +41,7 @@
      * The default returns the array(row=>rowIndex, col=>colIndex), but you can override this with your action. For
      * example:
      *
-     * new AjaxAction ('yourFunction', null, 'this.cellIndex')
+     * new Ajax ('yourFunction', null, 'this.cellIndex')
      *
      * Will return the column index into the strParameter, instead of the default.
      *

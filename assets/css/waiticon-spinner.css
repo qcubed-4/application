@@ -6,6 +6,7 @@
     height: 1.5em;
     vertical-align: middle;
 }
+
 .qc-wait-spinner-colors .bar {
     position: absolute;
     width: 16%;
@@ -19,28 +20,31 @@
     animation: qc-spinner-bar-fade 1.2s linear infinite;
     transition: background 0.25s, opacity 0.25s;
 }
+
 .qc-wait-spinner-colors .bar:nth-child(3n+1) { background: #d5dbe6; }
 .qc-wait-spinner-colors .bar:nth-child(3n+2) { background: #8fd5ff; }
 .qc-wait-spinner-colors .bar:nth-child(3n)   { background: #246ab5; }
-.qc-wait-spinner-colors .bar:nth-child(1)  { transform: rotate(0deg);   animation-delay: -1.1s;}
-.qc-wait-spinner-colors .bar:nth-child(2)  { transform: rotate(30deg);  animation-delay: -1s;}
-.qc-wait-spinner-colors .bar:nth-child(3)  { transform: rotate(60deg);  animation-delay: -0.9s;}
-.qc-wait-spinner-colors .bar:nth-child(4)  { transform: rotate(90deg);  animation-delay: -0.8s;}
-.qc-wait-spinner-colors .bar:nth-child(5)  { transform: rotate(120deg); animation-delay: -0.7s;}
-.qc-wait-spinner-colors .bar:nth-child(6)  { transform: rotate(150deg); animation-delay: -0.6s;}
-.qc-wait-spinner-colors .bar:nth-child(7)  { transform: rotate(180deg); animation-delay: -0.5s;}
-.qc-wait-spinner-colors .bar:nth-child(8)  { transform: rotate(210deg); animation-delay: -0.4s;}
-.qc-wait-spinner-colors .bar:nth-child(9)  { transform: rotate(240deg); animation-delay: -0.3s;}
-.qc-wait-spinner-colors .bar:nth-child(10) { transform: rotate(270deg); animation-delay: -0.2s;}
-.qc-wait-spinner-colors .bar:nth-child(11) { transform: rotate(300deg); animation-delay: -0.1s;}
-.qc-wait-spinner-colors .bar:nth-child(12) { transform: rotate(330deg); animation-delay: 0s;}
+
+.qc-wait-spinner-colors .bar:nth-child(1)  { transform: rotate(0deg);   animation-delay: -1.1s; }
+.qc-wait-spinner-colors .bar:nth-child(2)  { transform: rotate(30deg);  animation-delay: -1.0s; }
+.qc-wait-spinner-colors .bar:nth-child(3)  { transform: rotate(60deg);  animation-delay: -0.9s; }
+.qc-wait-spinner-colors .bar:nth-child(4)  { transform: rotate(90deg);  animation-delay: -0.8s; }
+.qc-wait-spinner-colors .bar:nth-child(5)  { transform: rotate(120deg); animation-delay: -0.7s; }
+.qc-wait-spinner-colors .bar:nth-child(6)  { transform: rotate(150deg); animation-delay: -0.6s; }
+.qc-wait-spinner-colors .bar:nth-child(7)  { transform: rotate(180deg); animation-delay: -0.5s; }
+.qc-wait-spinner-colors .bar:nth-child(8)  { transform: rotate(210deg); animation-delay: -0.4s; }
+.qc-wait-spinner-colors .bar:nth-child(9)  { transform: rotate(240deg); animation-delay: -0.3s; }
+.qc-wait-spinner-colors .bar:nth-child(10) { transform: rotate(270deg); animation-delay: -0.2s; }
+.qc-wait-spinner-colors .bar:nth-child(11) { transform: rotate(300deg); animation-delay: -0.1s; }
+.qc-wait-spinner-colors .bar:nth-child(12) { transform: rotate(330deg); animation-delay: 0s; }
+
 @keyframes qc-spinner-bar-fade {
-    0%   { opacity: 1; filter: brightness(1.3);}
-    60%  { opacity: .25; filter: brightness(.93);}
-    100% { opacity: .12; filter: brightness(.85);}
+    0%   { opacity: 1; filter: brightness(1.3); }
+    60%  { opacity: 0.25; filter: brightness(0.93); }
+    100% { opacity: 0.12; filter: brightness(0.85); }
 }
 
-/* ------------ Classic spinner (gradient ring) --------------- */
+/* ------------ Classic spinner (two-tone ring) --------------- */
 .qc-wait-spinner-classic {
     display: inline-block;
     width: 1.5em;
@@ -52,13 +56,13 @@
     box-sizing: border-box;
     vertical-align: middle;
 }
+
 @keyframes qc-spinner-classic-spin {
-    0%   { transform: rotate(0);}
-    100% { transform: rotate(360deg);}
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
-/* ------------ Ripple / Circular Wave / Google-type --------------- */
-/* ------------ Ripple spinner (fully width/height relative!)--------------- */
+/* ------------ Ripple spinner --------------- */
 .qc-wait-spinner-ripple {
     display: inline-block;
     position: relative;
@@ -66,20 +70,84 @@
     height: 1.5em;
     vertical-align: middle;
 }
+
 .qc-wait-spinner-ripple-circle {
     position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 0;
+    height: 0;
     border: 0.16em solid #419ee9;
-    opacity: 0.6;
     border-radius: 50%;
-    left: 50%; top: 50%;
+    opacity: 0.6;
     transform: translate(-50%, -50%);
-    width: 0; height: 0;
     animation: qc-spinner-ripple-anim 1.2s infinite cubic-bezier(0.21, 0.53, 0.56, 0.8);
+    box-sizing: border-box;
 }
+
 .qc-wait-spinner-ripple-circle:nth-child(2) {
     animation-delay: -0.6s;
 }
+
 @keyframes qc-spinner-ripple-anim {
-    0%   { width: 0; height: 0; opacity: 1; }
-    100% { width: 100%; height: 100%; opacity: 0; }
+    0% {
+        width: 0;
+        height: 0;
+        opacity: 1;
+    }
+    100% {
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+    }
+}
+
+/* ------------ Bar loader with text --------------- */
+.qc-wait-bar-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    vertical-align: middle;
+}
+
+.qc-wait-bar {
+    width: 110px;
+    height: 14px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(0, 91, 187, 0.16);
+    box-shadow: inset 0 0 0 1px rgba(0, 91, 187, 0.08);
+    flex: 0 0 auto;
+}
+
+.qc-wait-bar::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -32%;
+    width: 32%;
+    border-radius: 999px;
+    background: linear-gradient(
+            90deg,
+            rgba(0, 91, 187, 0.75) 0%,
+            #005bbb 50%,
+            rgba(0, 91, 187, 0.75) 100%
+    );
+    animation: qc-wait-bar-slide 1s ease-in-out infinite;
+}
+
+.qc-wait-text {
+    font-size: 0.9rem;
+    line-height: 1.2;
+    color: #2f3b52;
+    font-weight: 500;
+    white-space: nowrap;
+    flex: 0 0 auto;
+}
+
+@keyframes qc-wait-bar-slide {
+    0%   { left: -32%; }
+    100% { left: 100%; }
 }

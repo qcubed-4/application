@@ -19,7 +19,7 @@
     use QCubed\Html;
     use QCubed\ObjectBase;
     use QCubed\Project\Control\FormBase as QForm;
-//use QCubed\Project\Control\ControlBase;
+    //use QCubed\Project\Control\ControlBase;
     use QCubed\Project\Watcher\Watcher;
     use QCubed\Type;
     use QCubed\Project\Application;
@@ -1961,7 +1961,7 @@
             $strHtml .= "</form>" . _nl();
 
             // Add the JavaScripts rendered above
-            $strHtml .= $strEndScript;
+            $strHtml .= _nl($strEndScript);
 
             // close the body tag
             if ($this->blnRenderedBodyTag) {

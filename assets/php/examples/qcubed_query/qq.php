@@ -1,4 +1,6 @@
-<?php require_once('../qcubed.inc.php'); ?>
+<?php use QCubed\Query\QQ;
+
+    require_once('../qcubed.inc.php'); ?>
 <?php require('../includes/header.inc.php'); ?>
 
 	<div id="instructions">
@@ -48,7 +50,7 @@
 	<p>
 <?php
 	$objPerson = Person::querySingle(
-		\QCubed\Query\QQ::equal(QQN::person()->Id, 1)
+		QQ::equal(QQN::person()->Id, 1)
 	);
 
 	// Notice that QuerySingle returned just a single Person object
@@ -59,7 +61,7 @@
 	<ul>
 <?php
 	$objPersonArray = Person::queryArray(
-		\QCubed\Query\QQ::in(QQN::person()->Id, array(5, 6, 8))
+		QQ::in(QQN::person()->Id, array(5, 6, 8))
 	);
 
 	// Notice that QueryArray returns an array of Person objects... this will
@@ -73,7 +75,7 @@
 	<p>
 <?php
 	$intCount = Person::queryCount(
-		\QCubed\Query\QQ::in(QQN::person()->Id, array(5, 6, 8))
+		QQ::in(QQN::person()->Id, array(5, 6, 8))
 	);
 
 	// Notice that QueryCount returns an integer

@@ -17,7 +17,7 @@ require_once('../qcubed.inc.php');
 
 require('panels/ProjectListPanel.php'); // Vasak paneel: projektide loend
 require('panels/ProjectEditPanel.php'); // Parem paneel: projekti detailid JA tiimi liikmed
-require('panels/TeamMemberListPanel.php');;// Parem paneeli alam: tiimi liikmed (datagrid)
+require('panels/TeamMemberListPanel.php');// Parem paneeli alam: tiimi liikmed (datagrid)
 
 
 class DemoForm extends FormBase

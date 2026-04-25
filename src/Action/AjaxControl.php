@@ -10,6 +10,7 @@
     namespace QCubed\Action;
 
     use QCubed\Control\ControlBase;
+    use QCubed\Control\WaitIcon;
     use QCubed\Exception\Caller;
 
     /**
@@ -25,21 +26,28 @@
         /**
          * @param ControlBase $objControl Control where the action handler is defined
          * @param string $strMethodName Name of the action handler method
-         * @param string|null $objWaitIconControl The wait icon to be implemented
+         * @param null|string|WaitIcon $objWaitIconControl The wait icon to be implemented
          * @param null $mixCausesValidationOverride Override for CausesValidation (if needed)
          * @param string $strJsReturnParam Override for ActionParameter
          * @param boolean $blnAsync True to have the events for this action fire asynchronously
+         *
          * @throws Caller
          */
         public function __construct(
-            ControlBase $objControl,
-            string $strMethodName,
-            ?string $objWaitIconControl = 'default',
-            mixed $mixCausesValidationOverride = null,
-            mixed $strJsReturnParam = "",
-            ?bool $blnAsync = false
+            ControlBase          $objControl,
+            string               $strMethodName,
+            string|WaitIcon|null $objWaitIconControl = 'default',
+            mixed                $mixCausesValidationOverride = null,
+            mixed                $strJsReturnParam = "",
+            ?bool                $blnAsync = false
         ) {
-            parent::__construct([$objControl, $strMethodName], $objWaitIconControl,
-                $mixCausesValidationOverride, $strJsReturnParam, $blnAsync);
+            parent::__construct(
+                [$objControl, $strMethodName],
+                $objWaitIconControl,
+                $mixCausesValidationOverride,
+                $strJsReturnParam,
+                $blnAsync
+            );
         }
+
     }

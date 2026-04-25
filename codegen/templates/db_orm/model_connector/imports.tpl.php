@@ -71,7 +71,7 @@ foreach ($imports as $import) {
         $outImports[$import['class']] = $import;
     }
     elseif (array_diff_assoc($outImports[$import['class']], $import)) {
-        throw new \Exception ('Found incompatible namespace imports: ' . $import['class']);
+        throw new Exception ('Found incompatible namespace imports: ' . $import['class']);
     }
 }
 

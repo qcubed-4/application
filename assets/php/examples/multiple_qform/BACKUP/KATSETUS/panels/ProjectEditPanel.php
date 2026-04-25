@@ -32,7 +32,7 @@ class ProjectEditPanel extends Panel
 
         $this->callbackCloseEdit = $callbackCloseEdit;
 
-        Application::displayAlert('callbackCloseEdit: ' . print_r($callbackCloseEdit, true));;
+        Application::displayAlert('callbackCloseEdit: ' . print_r($callbackCloseEdit, true));
 
         Application::displayAlert("ProjectEditPanel: $projectId");
 

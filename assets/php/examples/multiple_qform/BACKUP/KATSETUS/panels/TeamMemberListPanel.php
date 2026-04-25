@@ -11,7 +11,7 @@ class TeamMemberListPanel extends Panel
 
     public function __construct($parent, string $projectId, ?string $strControlId = null)
     {
-        parent::__construct($parent, $strControlId);;
+        parent::__construct($parent, $strControlId);
 
 //        $this->dtgMembers = new DataGrid($this);
 //        // Simulaator: lisa read (reaalne variant – lae andmebaasist)

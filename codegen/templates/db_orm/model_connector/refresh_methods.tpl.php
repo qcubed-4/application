@@ -3,6 +3,10 @@
  * @var SqlTable $objTable
  * @var CodeGenBase $objCodeGen
  */
+
+    use QCubed\Codegen\Generator\Label;
+    use QCubed\ModelConnector\Options;
+
 ?>
     /**
     * Refresh this ModelConnector with Data from the local <?= $objTable->ClassName ?> object.
@@ -21,37 +25,37 @@
 <?php
 
         foreach ($objTable->ColumnArray as $objColumn) {
-            if ($objColumn->Options && isset($objColumn->Options['FormGen']) && $objColumn->Options['FormGen'] == \QCubed\ModelConnector\Options::FORMGEN_NONE) continue;
+            if ($objColumn->Options && isset($objColumn->Options['FormGen']) && $objColumn->Options['FormGen'] == Options::FORMGEN_NONE) continue;
 
             $objControlCodeGenerator = $objCodeGen->GetControlCodeGenerator($objColumn);
             echo $objControlCodeGenerator->ConnectorRefresh($objCodeGen, $objTable, $objColumn);
 
-            if ($objControlCodeGenerator->GetControlClass() != 'QCubed\\Control\\Label' && (!isset($objColumn->Options['FormGen']) || $objColumn->Options['FormGen'] == \QCubed\ModelConnector\Options::FORMGEN_BOTH)) {
+            if ($objControlCodeGenerator->GetControlClass() != 'QCubed\\Control\\Label' && (!isset($objColumn->Options['FormGen']) || $objColumn->Options['FormGen'] == Options::FORMGEN_BOTH)) {
                 // also generate a QCubed\\Control\\Label for each control that is not defaulted as a label already
-                echo \QCubed\Codegen\Generator\Label::Instance()->ConnectorRefresh($objCodeGen, $objTable, $objColumn);
+                echo Label::Instance()->ConnectorRefresh($objCodeGen, $objTable, $objColumn);
             }
             echo "\n\n";
         }
         foreach ($objTable->ReverseReferenceArray as $objReverseReference) {
-            if (isset($objReverseReference->Options['FormGen']) && $objReverseReference->Options['FormGen'] == \QCubed\ModelConnector\Options::FORMGEN_NONE) continue;
+            if (isset($objReverseReference->Options['FormGen']) && $objReverseReference->Options['FormGen'] == Options::FORMGEN_NONE) continue;
             if ($objReverseReference->Unique) {
                 $objControlCodeGenerator = $objCodeGen->GetControlCodeGenerator($objReverseReference);
                 echo $objControlCodeGenerator->ConnectorRefresh($objCodeGen, $objTable, $objReverseReference);
-                if ($objControlCodeGenerator->GetControlClass() != 'QCubed\\Control\\Label' && (!isset($objReverseReference->Options['FormGen']) || $objReverseReference->Options['FormGen'] == \QCubed\ModelConnector\Options::FORMGEN_BOTH)) {
+                if ($objControlCodeGenerator->GetControlClass() != 'QCubed\\Control\\Label' && (!isset($objReverseReference->Options['FormGen']) || $objReverseReference->Options['FormGen'] == Options::FORMGEN_BOTH)) {
                     // also generate a QCubed\\Control\\Label for each control that is not defaulted as a label already
-                    echo \QCubed\Codegen\Generator\Label::Instance()->ConnectorRefresh($objCodeGen, $objTable, $objReverseReference);
+                    echo Label::Instance()->ConnectorRefresh($objCodeGen, $objTable, $objReverseReference);
                 }
                 echo "\n\n";
             }
         }
         foreach ($objTable->ManyToManyReferenceArray as $objManyToManyReference) {
-            if (isset($objManyToManyReference->Options['FormGen']) && $objManyToManyReference->Options['FormGen'] == \QCubed\ModelConnector\Options::FORMGEN_NONE) continue;
+            if (isset($objManyToManyReference->Options['FormGen']) && $objManyToManyReference->Options['FormGen'] == Options::FORMGEN_NONE) continue;
 
             $objControlCodeGenerator = $objCodeGen->GetControlCodeGenerator($objManyToManyReference);
             echo $objControlCodeGenerator->ConnectorRefresh($objCodeGen, $objTable, $objManyToManyReference);
-            if ($objControlCodeGenerator->GetControlClass() != 'QCubed\\Control\\Label' && (!isset($objManyToManyReference->Options['FormGen']) || $objManyToManyReference->Options['FormGen'] == \QCubed\ModelConnector\Options::FORMGEN_BOTH)) {
+            if ($objControlCodeGenerator->GetControlClass() != 'QCubed\\Control\\Label' && (!isset($objManyToManyReference->Options['FormGen']) || $objManyToManyReference->Options['FormGen'] == Options::FORMGEN_BOTH)) {
                 // also generate a QCubed\\Control\\Label for each control that is not defaulted as a label already
-                echo \QCubed\Codegen\Generator\Label::Instance()->ConnectorRefresh($objCodeGen, $objTable, $objManyToManyReference);
+                echo Label::Instance()->ConnectorRefresh($objCodeGen, $objTable, $objManyToManyReference);
             }
             echo "\n\n";
         }

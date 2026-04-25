@@ -19,27 +19,36 @@
 
     /**
      * @package QCubed\Control
+     *
+     * @property string $Text
+     * @property string $TagName
+     * @property string $Width
+     * @property string $Height
+     * @property string $SpinnerType
      */
     class WaitIcon extends ControlBase
     {
-        /** @var string String to be displayed as alt text (e.g. "Please wait")  */
+        /** @var string String to be displayed as alt text (e.g. "Please wait") */
         protected string $strText;
+
         /** @var string HTML tag name to be used for rendering the text */
         protected string $strTagName = 'span';
+
         /** @var bool */
         protected bool $blnDisplay = false;
 
-        /** @var string Specifies the spinner type: 'default'|'classic'|'ripple' */
+        /** @var string Specifies the spinner type: 'default'|'classic'|'ripple'|'bar' */
         protected string $strSpinnerType = 'default';
+
         protected string $strWidth = '1.5em';
         protected string $strHeight = '1.5em';
 
-
         /**
-         * Constructor for the class.
+         * Constructor method for initializing the control.
          *
-         * @param mixed $objParentObject The parent object to which this control belongs.
-         * @param string|null $strControlId Optional control ID. If null, an ID will be generated automatically.
+         * @param FormBase|ControlBase $objParentObject The parent object of the control.
+         * @param string|null $strControlId Optional ID for the control.
+         *
          * @return void
          * @throws Caller
          */
@@ -50,7 +59,9 @@
         }
 
         /**
-         * Parses the post-data and updates the control's state accordingly.
+         * Processes and parses POST data submitted to the application.
+         * This method is responsible for handling input processing and
+         * ensuring valid data extraction from the POST request.
          *
          * @return void
          */
@@ -59,9 +70,9 @@
         }
 
         /**
-         * Validates the wait icon (for now it just returns true)
+         * Validates the current state or data.
          *
-         * @return bool
+         * @return bool Returns true if the validation is successful.
          */
         public function validate(): bool
         {
@@ -69,8 +80,7 @@
         }
 
         /**
-         * Returns the HTML we have to send to the browser to render this wait icon
-         * @return string HTML to be returned
+         * Returns the HTML we have to send to the browser to render this wait icon.
          */
         protected function getControlHtml(): string
         {
@@ -96,31 +106,40 @@
                         '</span>';
                     break;
 
+                case 'bar':
+                    $spinnerHtml =
+                        '<span class="qc-wait-bar-wrap" role="status" aria-label="' . htmlspecialchars($this->strText) . '">' .
+                        '<span class="qc-wait-bar" aria-hidden="true"></span>' .
+                        '<span class="qc-wait-text">' . htmlspecialchars($this->strText) . '</span>' .
+                        '</span>';
+                    break;
+
                 case 'default':
                 default:
-                // Three-color pastel ray spinner (12 pieces)
+                    // Three-color pastel ray spinner (12 pieces)
                     $bars = str_repeat('<span class="bar"></span>', 12);
                     $spinnerHtml =
                         '<span class="qc-wait-spinner-colors" style="' . $style .
-                        '" role="status" aria-label="' . htmlspecialchars($this->strText) . '">' . $bars . '</span>';
+                        '" role="status" aria-label="' . htmlspecialchars($this->strText) . '">' .
+                        $bars .
+                        '</span>';
                     break;
             }
+
             return $this->renderTag($this->strTagName, null, null, $spinnerHtml);
         }
 
         /**
-         * Magic method to get the value of a property by its name.
+         * Magic method to retrieve the value of a property.
          *
          * @param string $strName The name of the property to retrieve.
          *
          * @return mixed The value of the requested property.
-         * @throws Caller If the property does not exist or an error occurs during retrieval.
-         * @throws \Exception
+         * @throws Caller If the property does not exist.
          */
         public function __get(string $strName): mixed
         {
             switch ($strName) {
-                // APPEARANCE
                 case "Text":
                     return $this->strText;
                 case "TagName":
@@ -143,15 +162,14 @@
         }
 
         /**
-         * Magic method to set the value of a property dynamically.
+         * Magic method to set property values dynamically.
          *
-         * @param string $strName The name of the property to be set.
+         * @param string $strName The name of the property to set.
          * @param mixed $mixValue The value to assign to the property.
          *
          * @return void
-         * @throws InvalidCast If the value cannot be cast to the required type.
-         * @throws Caller If the property does not exist or cannot be set.
-         * @throws \Exception
+         * @throws Caller Thrown if the property is not valid in the current context.
+         * @throws InvalidCast Thrown if the provided value cannot be cast to the expected type.
          */
         public function __set(string $strName, mixed $mixValue): void
         {
@@ -166,6 +184,7 @@
                         $objExc->incrementOffset();
                         throw $objExc;
                     }
+
                 case "TagName":
                     try {
                         $this->strTagName = Type::cast($mixValue, Type::STRING);
@@ -174,6 +193,7 @@
                         $objExc->incrementOffset();
                         throw $objExc;
                     }
+
                 case "Width":
                     try {
                         $this->strWidth = Type::cast($mixValue, Type::STRING);
@@ -182,6 +202,7 @@
                         $objExc->incrementOffset();
                         throw $objExc;
                     }
+
                 case "Height":
                     try {
                         $this->strHeight = Type::cast($mixValue, Type::STRING);
@@ -190,6 +211,7 @@
                         $objExc->incrementOffset();
                         throw $objExc;
                     }
+
                 case "SpinnerType":
                     try {
                         $this->strSpinnerType = Type::cast($mixValue, Type::STRING);

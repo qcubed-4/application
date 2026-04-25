@@ -1,7 +1,7 @@
 # About `i18n` directory
 
 These are QCubed-specific (e.g. "Core") language files for
-translating the form drafts and other QControls to various
+translating the form drafts and other Controls to various
 languages.
 
 PLEASE NOTE: we need contributions for other languages!

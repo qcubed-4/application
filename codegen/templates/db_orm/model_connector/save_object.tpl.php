@@ -3,6 +3,9 @@
  * @var SqlTable $objTable
  * @var CodeGenBase $objCodeGen
  */
+
+    use QCubed\ModelConnector\Options;
+
 ?>
     /**
     * This will update this object's <?= $objTable->ClassName; ?> instance,
@@ -18,7 +21,7 @@
             // Update any fields for controls that have been created
 <?php
 foreach ($objTable->ColumnArray as $objColumn) {
-        if (isset($objColumn->Options['FormGen']) && $objColumn->Options['FormGen'] == \QCubed\ModelConnector\Options::FORMGEN_NONE) continue;
+        if (isset($objColumn->Options['FormGen']) && $objColumn->Options['FormGen'] == Options::FORMGEN_NONE) continue;
         $objControlCodeGenerator = $objCodeGen->getControlCodeGenerator($objColumn);
         echo $objControlCodeGenerator->connectorUpdate($objCodeGen, $objTable, $objColumn);
         echo "\n";
@@ -30,7 +33,7 @@ foreach ($objTable->ColumnArray as $objColumn) {
 <?php
 foreach ($objTable->ReverseReferenceArray as $objReverseReference) {
         if (!$objReverseReference->Unique) continue;
-        if (isset($objReverseReference->Options['FormGen']) && $objReverseReference->Options['FormGen'] == \QCubed\ModelConnector\Options::FORMGEN_NONE) continue;
+        if (isset($objReverseReference->Options['FormGen']) && $objReverseReference->Options['FormGen'] == Options::FORMGEN_NONE) continue;
 
         $objControlCodeGenerator = $objCodeGen->getControlCodeGenerator($objReverseReference);
         echo $objControlCodeGenerator->connectorUpdate($objCodeGen, $objTable, $objReverseReference);

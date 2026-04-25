@@ -1,9 +1,16 @@
 <?php
-require_once('../qcubed.inc.php');
 
-\QCubed\Project\Control\FormBase::$FormStateHandler = '\QCubed\FormState\SessionHandler';
+    use QCubed\Action\Ajax;
+    use QCubed\Control\Panel;
+    use QCubed\Control\WaitIcon;
+    use QCubed\Event\Change;
+    use QCubed\Project\Control\FormBase;
 
-class ExampleForm extends \QCubed\Project\Control\FormBase {
+    require_once('../qcubed.inc.php');
+
+FormBase::$FormStateHandler = '\QCubed\FormState\SessionHandler';
+
+class ExampleForm extends FormBase {
 
 	protected $tnvExample;
 	protected $tnvExampleDynamic;
@@ -13,17 +20,17 @@ class ExampleForm extends \QCubed\Project\Control\FormBase {
 	protected function formCreate() {
 		$this->tnvExample = new QTreeNav($this);
 		$this->tnvExample->CssClass = 'treenav';
-		$this->tnvExample->AddAction(new \QCubed\Event\Change(), new \QCubed\Action\Ajax('tnvExample_Change'));
+		$this->tnvExample->AddAction(new Change(), new Ajax('tnvExample_Change'));
 
 		$this->tnvExampleDynamic = new QTreeNav($this);
 		$this->tnvExampleDynamic->CssClass = 'treenav';
-		$this->tnvExampleDynamic->AddAction(new \QCubed\Event\Change(), new \QCubed\Action\Ajax('tnvExample_Change'));
+		$this->tnvExampleDynamic->AddAction(new Change(), new Ajax('tnvExample_Change'));
 		$this->tnvExampleDynamic->SetLoader('tnvExampleDynamic_LoadItem', $this);
 
-		$this->pnlCode = new \QCubed\Control\Panel($this);
+		$this->pnlCode = new Panel($this);
 		$this->pnlCode->CssClass = 'codeDisplay';
 
-		$this->objDefaultWaitIcon = new \QCubed\Control\WaitIcon($this);
+		$this->objDefaultWaitIcon = new WaitIcon($this);
 
 		// Create a treenav of the file/folder directory for qqcubed includes
 		$this->tnvExample_AddItems(dirname(QCUBED_PROJECT_INCLUDES_DIR . '.'));

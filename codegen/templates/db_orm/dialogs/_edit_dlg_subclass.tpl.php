@@ -2,9 +2,10 @@
 	/** @var QSqlTable $objTable */
 	/** @var \QCubed\Codegen\DatabaseCodeGen $objCodeGen */
 
+    use QCubed\Project\Codegen\CodegenBase;
 	global $_TEMPLATE_SETTINGS;
 
-	$strPropertyName = \QCubed\Project\Codegen\CodegenBase::DataListPropertyName($objTable);
+	$strPropertyName = CodegenBase::DataListPropertyName($objTable);
 
 	$_TEMPLATE_SETTINGS = array(
 		'OverwriteFlag' => false,
@@ -12,7 +13,6 @@
 		'TargetDirectory' => QCUBED_PROJECT_DIALOG_DIR,
 		'TargetFileName' => $strPropertyName . 'EditDlg.php'
 	);
-
 ?>
 <?php print("<?php\n"); ?>
 

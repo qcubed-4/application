@@ -1,15 +1,19 @@
 <?php
-	require_once('qcubed.inc.php');
+
+    use QCubed\AutoloaderService;
+    use QCubed\Project\Application;
+
+    require_once('qcubed.inc.php');
 	require('includes/examples.inc.php');
 
-	$strCategoryId = \QCubed\Project\Application::instance()->context()->pathItem(0);
-	$strExampleId = \QCubed\Project\Application::instance()->context()->pathItem(1);
+	$strCategoryId = Application::instance()->context()->pathItem(0);
+	$strExampleId = Application::instance()->context()->pathItem(1);
 	if ($strCategoryId == 'plugin') {
-		$strSubId = \QCubed\Project\Application::instance()->context()->pathItem(2);
-		$strScript = \QCubed\Project\Application::instance()->context()->pathItem(3);
+		$strSubId = Application::instance()->context()->pathItem(2);
+		$strScript = Application::instance()->context()->pathItem(3);
 	} else {
 		$strSubId = null;
-		$strScript = \QCubed\Project\Application::instance()->context()->pathItem(2);
+		$strScript = Application::instance()->context()->pathItem(2);
 	}
 
 	$strReference = Examples::GetExampleScriptPath($strCategoryId, $strExampleId);
@@ -17,13 +21,13 @@
 
 
 if (!$strScript) {
-		$strUrl = \QCubed\Project\Application::instance()->context()->requestUri() . substr($strReference, strrpos($strReference, '/'));
-		\QCubed\Project\Application::Redirect($strUrl, true);
+		$strUrl = Application::instance()->context()->requestUri() . substr($strReference, strrpos($strReference, '/'));
+		Application::Redirect($strUrl, true);
 	}
 ?>
 <html>
 	<head>
-		<meta charset="<?php _p(\QCubed\Project\Application::encodingType()); ?>" />
+		<meta charset="<?php _p(Application::encodingType()); ?>" />
 		<title>QCubed PHP 5 Development Framework - View Source</title>
 		<link rel="stylesheet" type="text/css" href="<?php _p(QCUBED_CSS_URL . '/qcubed.css'); ?>" />
 		<link rel="stylesheet" type="text/css" href="<?php _p(QCUBED_EXAMPLES_URL . '/includes/examples.css'); ?>" />
@@ -40,7 +44,7 @@ if (!$strScript) {
 		$strFilename = $strScript;
 	}
 	elseif ($strScript[0] == '\\') {    // a fully qualified class name
-        $strFilename = \QCubed\AutoloaderService::instance()->findFile($strScript);
+        $strFilename = AutoloaderService::instance()->findFile($strScript);
     } else {
 	    // convert a url to a dir
 		$strFilename = QCUBED_EXAMPLES_DIR . substr($strReference, strlen(QCUBED_EXAMPLES_URL));

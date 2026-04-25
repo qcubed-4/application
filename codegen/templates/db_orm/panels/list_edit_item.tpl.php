@@ -1,5 +1,6 @@
 <?php
 use QCubed\Project\Codegen\CodegenBase;
+    use QCubed\QString;
 
 ?>
     /**
@@ -33,7 +34,7 @@ if ($blnUseDialog) { ?>
 <?php } ?>
         }
 
-        $strEditPageUrl = QCUBED_FORMS_URL . '/<?php echo \QCubed\QString::underscoreFromCamelCase($strPropertyName) ?>_edit.php' . $strQuery;
+        $strEditPageUrl = QCUBED_FORMS_URL . '/<?php echo QString::underscoreFromCamelCase($strPropertyName) ?>_edit.php' . $strQuery;
         Application::redirect($strEditPageUrl);
 <?php }
     else {	// pathinfo type request
@@ -51,7 +52,7 @@ if ($blnUseDialog) { ?>
 <?php } ?>
         }
 
-        $strEditPageUrl = QCUBED_FORMS_URL . '/<?php echo \QCubed\QString::underscoreFromCamelCase($strPropertyName) ?>_edit.php' . $strQuery;
+        $strEditPageUrl = QCUBED_FORMS_URL . '/<?php echo QString::underscoreFromCamelCase($strPropertyName) ?>_edit.php' . $strQuery;
         Application::redirect($strEditPageUrl);
 <?php }?>
     }

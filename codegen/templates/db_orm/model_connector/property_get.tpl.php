@@ -3,6 +3,9 @@
 	 * @var QSqlTable $objTable
 	 * @var QCodeGenBase $objCodeGen
 	 */
+
+    use QCubed\ModelConnector\Options;
+
 ?>
 
     /**
@@ -25,7 +28,7 @@
 
             // Controls that point to <?= $objTable->ClassName ?> fields -- will be created dynamically if not yet created
 <?php foreach ($objTable->ColumnArray as $objColumn) { ?><?php
-    if ($objColumn->Options && isset($objColumn->Options['FormGen']) && $objColumn->Options['FormGen'] == \QCubed\ModelConnector\Options::FORMGEN_NONE) continue;
+    if ($objColumn->Options && isset($objColumn->Options['FormGen']) && $objColumn->Options['FormGen'] == Options::FORMGEN_NONE) continue;
     $strControlVarName = $objCodeGen->ModelConnectorVariableName($objColumn);
     $strLabelVarName = $objCodeGen->ModelConnectorLabelVariableName($objColumn);
     $strPropertyName = $objColumn->PropertyName;
@@ -36,7 +39,7 @@
 <?php print($objControlCodeGenerator->ConnectorGet($objCodeGen, $objTable, $objColumn)); ?>
 <?php } ?>
 <?php foreach ($objTable->ReverseReferenceArray as $objReverseReference) { ?><?php if ($objReverseReference->Unique) { ?><?php
-	if (isset($objReverseReference->Options['FormGen']) && $objReverseReference->Options['FormGen'] == \QCubed\ModelConnector\Options::FORMGEN_NONE) continue;
+	if (isset($objReverseReference->Options['FormGen']) && $objReverseReference->Options['FormGen'] == Options::FORMGEN_NONE) continue;
 	$strControlVarName = $objCodeGen->ModelConnectorVariableName($objReverseReference);
 	$strLabelVarName = $objCodeGen->ModelConnectorLabelVariableName($objReverseReference);
 	$strPropertyName = $objReverseReference->ObjectDescription;
@@ -44,7 +47,7 @@
 ?><?php include("property_get_case.tpl.php"); ?>
 <?php } ?><?php } ?>
 <?php foreach ($objTable->ManyToManyReferenceArray as $objManyToManyReference) { ?><?php
-	if (isset($objManyToManyReference->Options['FormGen']) && $objManyToManyReference->Options['FormGen'] == \QCubed\ModelConnector\Options::FORMGEN_NONE) continue;
+	if (isset($objManyToManyReference->Options['FormGen']) && $objManyToManyReference->Options['FormGen'] == Options::FORMGEN_NONE) continue;
 	$strControlVarName = $objCodeGen->ModelConnectorVariableName($objManyToManyReference);
 	$strLabelVarName = $objCodeGen->ModelConnectorLabelVariableName($objManyToManyReference);
 	$strPropertyName = $objManyToManyReference->ObjectDescription;

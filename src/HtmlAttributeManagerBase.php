@@ -573,7 +573,6 @@
             }
         }
 
-
         /**
          * Dynamically sets a property value for certain predefined style-related properties.
          * Updates corresponding CSS styles based on the given property name and value.

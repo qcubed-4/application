@@ -20,7 +20,7 @@
      */
 
     class Purifier {
-        public static $default_xss_setting; // ???
+        //public static $default_xss_setting; // ???
 
         protected object $objConfig;
         protected ?object $objPurifier = null;

@@ -17,7 +17,6 @@
      * Registers a click on a table checkbox column.
      *
      * @package QCubed\Event
-     * @was QHtmlTableCheckBoxColumn_ClickEvent
      */
     class CheckboxColumnClick extends Click
     {

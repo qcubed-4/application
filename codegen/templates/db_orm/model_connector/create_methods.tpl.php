@@ -4,7 +4,8 @@
 	 * @var CodeGenBase $objCodeGen
 	 */
 
-use QCubed\ModelConnector\Options;
+    use QCubed\Codegen\Generator\Label;
+    use QCubed\ModelConnector\Options;
 
 foreach ($objTable->ColumnArray as $objColumn) {
 		if ($objColumn->Options && isset($objColumn->Options['FormGen']) && $objColumn->Options['FormGen'] == Options::FORMGEN_NONE) continue;
@@ -13,7 +14,7 @@ foreach ($objTable->ColumnArray as $objColumn) {
 		echo $objControlCodeGenerator->connectorCreate($objCodeGen, $objTable, $objColumn);
 		if ($objControlCodeGenerator->getControlClass() != 'QCubed\\Control\\Label' && (!isset($objColumn->Options['FormGen']) || $objColumn->Options['FormGen'] == Options::FORMGEN_BOTH)) {
 			// also generate a QCubed\\Control\\Label for each control that generates both
-			echo \QCubed\Codegen\Generator\Label::instance()->connectorCreate($objCodeGen, $objTable, $objColumn);
+			echo Label::instance()->connectorCreate($objCodeGen, $objTable, $objColumn);
 		}
 		echo "\n\n";
 	}
@@ -28,7 +29,7 @@ foreach ($objTable->ColumnArray as $objColumn) {
 
 		if ($objControlCodeGenerator->getControlClass() != 'QCubed\\Control\\Label' && (!isset($objReverseReference->Options['FormGen']) || $objReverseReference->Options['FormGen'] == Options::FORMGEN_BOTH)) {
 			// also generate a QCubed\\Control\\Label for each control that generates both
-			echo \QCubed\Codegen\Generator\Label::instance()->connectorCreate($objCodeGen, $objTable, $objReverseReference);
+			echo Label::instance()->connectorCreate($objCodeGen, $objTable, $objReverseReference);
 		}
 		echo "\n\n";
 	}
@@ -41,7 +42,7 @@ foreach ($objTable->ColumnArray as $objColumn) {
 
 		if ($objControlCodeGenerator->getControlClass() != 'QCubed\\Control\\Label' && (!isset($objManyToManyReference->Options['FormGen']) || $objManyToManyReference->Options['FormGen'] == Options::FORMGEN_BOTH)) {
 			// also generate a QCubed\\Control\\Label for each control that generates both
-			echo \QCubed\Codegen\Generator\Label::instance()->connectorCreate($objCodeGen, $objTable, $objManyToManyReference);
+			echo Label::instance()->connectorCreate($objCodeGen, $objTable, $objManyToManyReference);
 		}
 		echo "\n\n";
 	}

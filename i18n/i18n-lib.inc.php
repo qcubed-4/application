@@ -21,7 +21,7 @@
         if (class_exists("\\QCubed\\I18n\\TranslationService") && TranslationService::instance()->translator()) {
             if (!defined (I18N_DOMAIN . '__BOUND')) {
                 define(I18N_DOMAIN . '__BOUND', 1);
-                TranslationService::instance()->bindDomain(I18N_DOMAIN, __DIR__);	// bind the directory containing the .po files to my domain
+                TranslationService::instance()->bindDomain(I18N_DOMAIN, __DIR__); // bind the directory containing the .po files to my domain
             }
             return TranslationService::instance()->translate($strmsgid, I18N_DOMAIN, $strContext);
         }
@@ -40,5 +40,23 @@
      */
     function tp(string $strmsgid, string $strmsgid_plural, int $intNum, ?string $strContext = null)
     {
-        return extracted($strmsgid, $strmsgid_plural, $intNum, $strContext);
+        if (class_exists("\\QCubed\\I18n\\TranslationService") && TranslationService::instance()->translator()) {
+            if (!defined (I18N_DOMAIN . '__BOUND')) {
+                define(I18N_DOMAIN . '__BOUND', 1);
+                TranslationService::instance()->bindDomain(I18N_DOMAIN, __DIR__); // bind the directory containing the .po files to my domain
+
+            }
+            return TranslationService::instance()->translatePlural(
+                $strmsgid,
+                $strmsgid_plural,
+                $intNum,
+                I18N_DOMAIN,
+                $strContext);
+        }
+        if ($intNum == 1) {
+            return $strmsgid;
+        }
+        else {
+            return $strmsgid_plural;
+        }
     }

@@ -1091,7 +1091,7 @@
          * white-space:nowrap;margin:10px;height:20px;
          *
          * @return string
-         * @deprected Use
+         * @deprected Use renderHtmlAttributes instead
          */
         public function getStyleAttributes(): string
         {
