@@ -72,6 +72,7 @@
         public const string EMAIL = 'email';
         public const string TEL = 'tel';
         public const string URL = 'url';
+        public const string HIDDEN = 'hidden';
 
         public const string XSS_ALLOW = 'Allow';
         public const string XSS_HTML_ENTITIES = 'HtmlEntities';   // simple entity maker
