@@ -3,11 +3,17 @@
     namespace QCubed\Project;
 
     use QCubed;
-    use QCubed\ApplicationBase;
+    use QCubed\Exception\Caller;
+    use QCubed\Exception\InvalidCast;
+    use QCubed\I18n\SimpleCacheTranslator;
     use QCubed\Purifier;
     use QCubed\I18n\TranslationService;
     use QCubed\Project\Watcher\Watcher;
+    use QCubed\QDateTime;
     use Random\RandomException;
+    use Psr\SimpleCache\InvalidArgumentException;
+    // use QCubed\Session\DatabaseHandler;
+    use User;
 
 
     /**
@@ -19,62 +25,67 @@
      * @package QCubed\Project
      * @was QApplication
      */
-    class Application extends ApplicationBase
+    class Application extends QCubed\ApplicationBase
     {
 
         // define any services you will need for your application here
         //protected $authService;
 
         /**
-         * This is called by the PHP5 Autoloader.  This method overrides the
-         * one in ApplicationBase.
+         * Delegates class autoloading to the base application.
          *
-         * @param string $strClassName
-         * @return bool
+         * Override this method when project-specific autoloading behavior is required.
+         *
+         * @param string $strClassName Fully qualified class name to load.
+         *
+         * @return bool True when the class was successfully loaded.
          */
         public static function autoload(string $strClassName): bool
         {
             return parent::autoload($strClassName);
-
-//        if (!parent::autoload($strClassName)) {
-//            // Run any custom autoloader functionality (if any) here...
-//            // return true; if you find the class
-//        }
-//        return false;
         }
 
         /**
-         * Initializes core services required for the application.
+         * Initializes application-wide services.
          *
-         * This method ensures that essential services such as session handling,
-         * CSRF protection, translation setup, and application watcher are
-         * properly initialized to maintain system stability and security.
+         * The session is started first because CSRF protection, authentication,
+         * translation, and other services may depend on session data.
          *
          * @return void
          * @throws RandomException
-         * @throws \Psr\SimpleCache\InvalidArgumentException
+         * @throws InvalidArgumentException
          */
         public function initializeServices(): void
         {
-            $this->startSession();  // make sure we start the session first in case other services need it.
+            $this->startSession();
             $this->initCsrfProtection();
             $this->initTranslator();
             $this->initWatcher();
-
-            //$this->authService = new \Project\Service\Auth();
         }
 
         /**
-         * If you want to use a custom session handler, set it up here. The commented example below uses a QCubed handler that
-         * puts sessions in a database.
+         * Starts the PHP session for the application.
+         *
+         * A custom session handler may be initialized here before session_start()
+         * when required by the project. For example, QCubed provides the
+         * DatabaseHandler implementation for storing sessions in a database.
+         *
+         * @return void
          */
         protected function startSession(): void
         {
             /*
-            QDbBackedSessionHandler::initialize(DB_BACKED_SESSION_HANDLER_DB_INDEX,
-                DB_BACKED_SESSION_HANDLER_TABLE_NAME);*/
+             * Optional database-backed session storage.
+             *
+             * Applications that need centralized session storage may initialize
+             * DatabaseHandler before starting the PHP session.
+             *
+             * DatabaseHandler::initialize(
+             *     DB_BACKED_SESSION_HANDLER_DB_INDEX,
+             *     DB_BACKED_SESSION_HANDLER_TABLE_NAME
+             * );
+             */
 
-            // start the session
             session_start();
         }
 
@@ -85,19 +96,19 @@
          * Register the translator within the translation service.
          *
          * @return void
-         * @throws \Psr\SimpleCache\InvalidArgumentException
+         * @throws InvalidArgumentException
          */
         protected function initTranslator(): void
         {
-            $translator = new QCubed\I18n\SimpleCacheTranslator();
+            $translator = new SimpleCacheTranslator();
 
-            $translator->bindDomain('app', QCUBED_PROJECT_DIR . "/i18n")  // set to application's i18n directory
-            ->setDefaultDomain('app')
+            $translator->bindDomain('app', QCUBED_PROJECT_DIR . "/i18n")
+                ->setDefaultDomain('app')
                 ->setTempDir(QCUBED_CACHE_DIR);
+
             TranslationService::instance()->setTranslator($translator);
 
-            // If the user or you want a language other than English, set that here.
-            //TranslationService::instance()->setLanguage('et');
+            // TranslationService::instance()->setLanguage('en');
         }
 
         /**
@@ -110,7 +121,9 @@
         }
 
         /**
-         * Initialize your watcher class here, if needed.
+         * Initializes the application watcher.
+         *
+         * @return void
          */
         protected function initWatcher(): void
         {
@@ -118,69 +131,57 @@
         }
 
         /**
-         * Initializes CSRF protection by setting up both persistent and dynamic CSRF tokens.
+         * Initializes CSRF protection for the current session.
+         *
+         * A CSRF token is generated once when it does not yet exist in the session.
+         * The same token is reused for form rendering and subsequent POST/Ajax
+         * validation throughout the session.
+         *
+         * Keeping token generation centralized prevents the session token from being
+         * replaced while a previously rendered form still contains the original token.
          *
          * @return void
          * @throws RandomException
          */
         protected function initCsrfProtection(): void
         {
-            // If there is no CSRF token in the session, generate and store a persistent token
             if (empty($_SESSION['csrf_token'])) {
-                $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // Initial persistent token
+                $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
             }
 
-            // Generate a dynamic CSRF token for each request
-            $GLOBALS['_csrf_token'] = bin2hex(random_bytes(32)); // Dynamic token for every request
+            $GLOBALS['_csrf_token'] = $_SESSION['csrf_token'];
         }
 
         /**
-         * Verifies the CSRF token by comparing the token from the POST request with the session value.
+         * Verifies the CSRF token submitted with a QCubed form request.
          *
-         * There are several methods to implement CSRF protection. The simplest approach is as follows:
+         * The submitted form token is compared with the token stored in the current
+         * session. Validation works for both regular form submissions and Ajax events.
          *
-         * In your formCreate():
+         * This method only validates the token. It does not regenerate or modify the
+         * session token.
+         *
+         * Example:
+         *
          * <code>
-         * // Adds all the necessary inputs for your form.
+         * if (!Application::verifyCsrfToken()) {
+         *     // Handle an invalid or expired request.
+         *     return;
+         * }
          * </code>
          *
-         * Usage example in a function such as Submit_Click:
-         * <code>
-         * protected function Submit_Click(ActionParams $params) {
-         *     // Validate the CSRF token.
-         *     if (!Application::verifyCsrfToken()) {
-         *         // Developers can define how they want to handle invalid tokens.
-         *         // The following Application::DisplayAlert() is a generalized example.
-         *         Application::DisplayAlert('CSRF Token is invalid! The request was aborted.');
-         *         // Compress session after token validation (optional):
-         *         // Once the token is validated, you can "amortize" it for further use:
-         *         // $_SESSION['csrf_token'] = 'binhex'(random_bytes(32));
-         *         return;
-         *     }
-         *
-         *     // If the token is valid, continue processing the data.
-         *     // Save the necessary inputs or perform other actions as required by the developer.
-         * '}'
-         * </code>
-         *
-         * Note: This method is not limited to click events; it can also be applied to other events like change, etc.
-         *
-         * @return bool Returns true if the CSRF token is valid, false otherwise.
+         * @return bool True when both tokens exist and match; otherwise false.
          */
+        public static function verifyCsrfToken(): bool
+        {
+            $postedToken = $_POST['Qform__FormCsrfToken'] ?? '';
+            $sessionToken = $_SESSION['csrf_token'] ?? '';
 
-        /**
-         * Verifies the CSRF token by comparing the token from the POST request
-         * with the token stored in the session.
-         *
-         * @return bool Returns true if the tokens match, otherwise false.
-         */
-        public static function verifyCsrfToken(): bool {
-            // Check if the CSRF token from the POST request is missing or does not match the session token
-            if (empty($_POST['Qform__FormCsrfToken']) || $_POST['Qform__FormCsrfToken'] !== $_SESSION['csrf_token']) {
-                return false; // Token is invalid or missing, return false
+            if ($postedToken === '' || $sessionToken === '') {
+                return false;
             }
 
-            return true; // Token is valid, return true
+            return hash_equals($sessionToken, $postedToken);
         }
 
         /**
@@ -193,5 +194,4 @@
         {
             return true;
         }
-
     }

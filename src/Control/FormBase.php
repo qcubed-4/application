@@ -1949,12 +1949,11 @@
             $strHtml .= sprintf('<input type="hidden" name="' . self::POST_FORM_STATE . '" id="Qform__FormState" value="%s" />',
                     QForm::serialize(clone($this))) . _nl();
 
-            $GLOBALS['_csrf_token'] = bin2hex(random_bytes(32));
-            $_SESSION['csrf_token'] = $GLOBALS['_csrf_token']; // Ajax's new tokens
-
-            if (!empty($GLOBALS['_csrf_token'])) {
-                $strHtml .= sprintf('<input type="hidden" name="Qform__FormCsrfToken" id="Qform__FormCsrfToken" value="%s" />',
-                        $GLOBALS['_csrf_token']) . _nl();
+            if (!empty($_SESSION['csrf_token'])) {
+                $strHtml .= sprintf(
+                        '<input type="hidden" name="Qform__FormCsrfToken" id="Qform__FormCsrfToken" value="%s" />',
+                        $_SESSION['csrf_token']
+                    ) . _nl();
             }
 
             // close the form tag
