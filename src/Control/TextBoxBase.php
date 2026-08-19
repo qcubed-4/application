@@ -78,7 +78,6 @@
         public const string XSS_HTML_ENTITIES = 'HtmlEntities';   // simple entity maker
         public const string XSS_HTML_PURIFIER = 'HTMLPurifier'; // use html purifier
         public const string XSS_PHP_SANITIZE = 'PhpSanitize'; // Use PHP's built-in cleaner
-        // Legacy and Deny are removed. Use something else.
 
         public static string $DefaultCrossScriptingMode = self::XSS_PHP_SANITIZE;
 
@@ -112,10 +111,12 @@
         protected ?int $intRows = null;
         /** @var string Subclasses should not set this directly but rather use the TextMode accessor */
         protected string $strTextMode = self::SINGLE_LINE;
+
         /** @var string|null */
         protected ?string $strCrossScripting = null;
-        /** @var object|null */
-        protected ?object $objHTMLPurifierConfig = null;
+
+        /** @var HTMLPurifier_Config|null */
+        protected ?HTMLPurifier_Config $objHTMLPurifierConfig = null;
 
         // Sanitization and validating
         /** @var bool */
@@ -131,6 +132,20 @@
         protected mixed $mixValidateFilterOptions = null;
         /** @var string|null */
         protected ?string $strLabelForInvalid = null;
+
+        /**
+         * Custom HTMLPurifier attributes grouped by HTML element.
+         *
+         * @var array<string, array<string, string>>
+         */
+        protected array $arrPurifierAttributes = [];
+
+        /**
+         * Indicates whether the custom HTMLPurifier definition has already been prepared.
+         *
+         * @var bool
+         */
+        protected bool $blnPurifierDefinitionPrepared = false;
 
         /**
          * Constructor for the class.
@@ -175,6 +190,116 @@
         }
 
         /**
+         * Registers a custom attribute for an HTML element in HTMLPurifier.
+         *
+         * The attribute is stored until the HTMLPurifier configuration is prepared.
+         * This allows regular purifier directives and custom HTML definitions to be
+         * configured independently and prevents premature configuration finalization.
+         *
+         * @param string $strElement   The HTML element to extend.
+         * @param string $strAttribute The attribute name to add.
+         * @param string $strType      The HTMLPurifier attribute type, e.g. "Text" or "Bool".
+         *
+         * @return void
+         */
+        public function addPurifierAttribute(string $strElement, string $strAttribute, string $strType): void
+        {
+            $this->arrPurifierAttributes[$strElement][$strAttribute] = $strType;
+        }
+
+        /**
+         * Registers multiple custom attributes for an HTML element in HTMLPurifier.
+         *
+         * Attribute names must be provided as array keys and valid HTMLPurifier
+         * attribute definition types as their values.
+         *
+         * The attributes are applied immediately before purification, so this method
+         * may be called before or after setPurifierConfig().
+         *
+         * Example:
+         *
+         *     $control->addPurifierAttributes('iframe', [
+         *         'allow' => 'Text',
+         *         'allowfullscreen' => 'Bool'
+         *     ]);
+         *
+         * @param string               $strElement    The HTML element to extend.
+         * @param array<string,string> $arrAttributes Attribute names and their
+         *                                            HTMLPurifier definition types.
+         *
+         * @return void
+         */
+        public function addPurifierAttributes(string $strElement, array $arrAttributes): void
+        {
+            foreach ($arrAttributes as $strAttribute => $strType) {
+                $this->arrPurifierAttributes[$strElement][$strAttribute] = $strType;
+            }
+        }
+
+        /**
+         * Applies registered custom attributes to the HTMLPurifier definition.
+         *
+         * A deterministic definition ID is generated from the registered elements,
+         * attributes and attribute types. Therefore, whenever the custom definition
+         * changes, HTMLPurifier automatically receives a new cache identifier and no
+         * manual DefinitionRev increment is required.
+         *
+         * @return void
+         */
+        protected function preparePurifierDefinition(): void
+        {
+            if ($this->blnPurifierDefinitionPrepared || !$this->arrPurifierAttributes) {
+                return;
+            }
+
+            if (!$this->objHTMLPurifierConfig) {
+                $this->objHTMLPurifierConfig = HTMLPurifier_Config::createDefault();
+            }
+
+            $arrAttributes = $this->arrPurifierAttributes;
+
+            ksort($arrAttributes);
+
+            foreach ($arrAttributes as &$arrElementAttributes) {
+                ksort($arrElementAttributes);
+            }
+
+            unset($arrElementAttributes);
+
+            $strDefinitionHash = substr(
+                sha1(serialize($arrAttributes)),
+                0,
+                16
+            );
+
+            $this->objHTMLPurifierConfig->set(
+                'HTML.DefinitionID',
+                'qcubed-custom-html-' . $strDefinitionHash
+            );
+
+            $this->objHTMLPurifierConfig->set(
+                'HTML.DefinitionRev',
+                1
+            );
+
+            $objDefinition = $this->objHTMLPurifierConfig->maybeGetRawHTMLDefinition();
+
+            if ($objDefinition !== null) {
+                foreach ($arrAttributes as $strElement => $arrElementAttributes) {
+                    foreach ($arrElementAttributes as $strAttribute => $strType) {
+                        $objDefinition->addAttribute(
+                            $strElement,
+                            $strAttribute,
+                            $strType
+                        );
+                    }
+                }
+            }
+
+            $this->blnPurifierDefinitionPrepared = true;
+        }
+
+        /**
          * Parse the data posted back via the control.
          * This function basically tests for the Crossscripting rules applied to the TextBox
          * @throws Caller
@@ -198,6 +323,7 @@
                         $this->strText = QString::htmlEntities($this->strText);
                         break;
                     case self::XSS_HTML_PURIFIER: // Very advanced filtering
+                        $this->preparePurifierDefinition();
                         $this->strText = Application::purify($this->strText, $this->objHTMLPurifierConfig); // don't save data as HTML entities! Encode at display time.
                         break;
                     default:
