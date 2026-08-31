@@ -11,8 +11,8 @@ use QCubed\Control\CheckboxList;
 
 require_once('../qcubed.inc.php');
 
-if (!defined('QCUBED_DESIGN_MODE')) {
-    define('QCUBED_DESIGN_MODE', 1);
+if (!defined('DESIGN_MODE')) {
+    define('DESIGN_MODE', 1);
 } // normally, you would define this in your config file
 
 // Define the \QCubed\Project\Control\FormBase with all our Controls

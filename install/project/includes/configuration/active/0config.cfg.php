@@ -82,7 +82,7 @@
             define ('QCUBED_FORMS_DIR', QCUBED_PROJECT_DIR . '/forms');
 
             define ('ALLOW_REMOTE_ADMIN', true);
-            define ('__DESIGN_MODE__', 1);
+            define ('DESIGN_MODE', 1);
             break;
 
         case 'test':
