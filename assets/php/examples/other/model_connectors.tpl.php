@@ -36,7 +36,7 @@
         you can use the <strong>ModelConnector Designer</strong>. To use the designer, do the following:</p>
 
         <ol>
-            <li>Define the constant <strong>QCUBED_DESIGN_MODE</strong> in your configuration file.</li>
+            <li>Define the constant <strong>DESIGN_MODE</strong> in your configuration file.</li>
             <li>Right-click the <strong>control</strong> you want to modify in the browser.</li>
             <li>Set your options, click Save, and regenerate the code.</li>
         </ol>
