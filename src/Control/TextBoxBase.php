@@ -12,6 +12,7 @@
     require_once(dirname(__DIR__, 2) . '/i18n/i18n-lib.inc.php');
     require_once(dirname(__DIR__, 1) . '/ForceTargetBlank.php');
 
+    use QCubed\ForceTargetBlankTransform;
     use HTMLPurifier_Config;
     use QCubed as Q;
     use QCubed\Codegen\Generator\TextBox;
