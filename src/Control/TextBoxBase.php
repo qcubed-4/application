@@ -10,6 +10,7 @@
     namespace QCubed\Control;
 
     require_once(dirname(__DIR__, 2) . '/i18n/i18n-lib.inc.php');
+    require_once(dirname(__DIR__, 1) . '/ForceTargetBlank.php');
 
     use HTMLPurifier_Config;
     use QCubed as Q;
@@ -148,6 +149,22 @@
         protected bool $blnPurifierDefinitionPrepared = false;
 
         /**
+         * Determines if all hyperlinks generated within this context should have their "target" attribute
+         * set to "_blank", forcing them to open in a new tab or window.
+         *
+         * @var bool $blnForceLinkTargetBlank
+         */
+        protected bool $blnForceLinkTargetBlank = false;
+
+        /**
+         * Internal revision of custom HTMLPurifier definitions.
+         *
+         * Increment this value whenever the QCubed custom definition-building
+         * logic changes in a way that requires cached definitions to be rebuilt.
+         */
+        private const int PURIFIER_DEFINITION_REVISION = 3;
+
+        /**
          * Constructor for the class.
          *
          * @param FormBase|ControlBase $objParentObject The parent object of the control or form.
@@ -237,18 +254,42 @@
         }
 
         /**
-         * Applies registered custom attributes to the HTMLPurifier definition.
+         * Forces existing link target attributes to "_blank"
+         * during HTMLPurifier processing.
          *
-         * A deterministic definition ID is generated from the registered elements,
-         * attributes and attribute types. Therefore, whenever the custom definition
-         * changes, HTMLPurifier automatically receives a new cache identifier and no
-         * manual DefinitionRev increment is required.
+         * Links without a target attribute are left unchanged.
+         *
+         * @param bool $blnForce
+         *
+         * @return void
+         */
+        public function forceLinkTargetBlank(bool $blnForce = true): void
+        {
+            $this->blnForceLinkTargetBlank = $blnForce;
+        }
+
+        /**
+         * Prepares the HTMLPurifier definition by configuring custom attributes
+         * and optional transformations.
+         *
+         * This method finalizes the setup of the HTMLPurifier configuration object by
+         * adding custom HTML attributes and optional transformations, ensuring proper
+         * sanitation of HTML content.
+         *
+         * If no custom attributes are defined and the force link target blank option
+         * is disabled, the method will exit early. Otherwise, it calculates a unique
+         * hash based on the attributes and configuration settings, applies the
+         * appropriate attributes to the purifier's definition, and optionally
+         * enforces target="_blank" on links.
          *
          * @return void
          */
         protected function preparePurifierDefinition(): void
         {
-            if ($this->blnPurifierDefinitionPrepared || !$this->arrPurifierAttributes) {
+            if (
+                $this->blnPurifierDefinitionPrepared ||
+                (!$this->arrPurifierAttributes && !$this->blnForceLinkTargetBlank)
+            ) {
                 return;
             }
 
@@ -267,7 +308,10 @@
             unset($arrElementAttributes);
 
             $strDefinitionHash = substr(
-                sha1(serialize($arrAttributes)),
+                sha1(serialize([
+                    'attributes' => $arrAttributes,
+                    'forceLinkTargetBlank' => $this->blnForceLinkTargetBlank
+                ])),
                 0,
                 16
             );
@@ -279,7 +323,7 @@
 
             $this->objHTMLPurifierConfig->set(
                 'HTML.DefinitionRev',
-                1
+                self::PURIFIER_DEFINITION_REVISION
             );
 
             $objDefinition = $this->objHTMLPurifierConfig->maybeGetRawHTMLDefinition();
@@ -293,6 +337,11 @@
                             $strType
                         );
                     }
+                }
+
+                if ($this->blnForceLinkTargetBlank) {
+                    $objDefinition->info_attr_transform_pre[] =
+                        new ForceTargetBlankTransform();
                 }
             }
 
